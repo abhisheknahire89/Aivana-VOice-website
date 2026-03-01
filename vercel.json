@@ -1,0 +1,12 @@
+{
+    "buildCommand": "cd voice-canvas && npm install && npm run build",
+    "outputDirectory": "voice-canvas/dist",
+    "installCommand": "echo 'skip root install'",
+    "framework": "vite",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
