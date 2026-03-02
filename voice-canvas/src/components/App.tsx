@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import '../styles/globals.css';
 import { PERSONAS, type Persona } from '../data/personas';
 import Navbar from './Navbar/Navbar';
@@ -12,21 +12,74 @@ import FloatingOrbs from './FloatingOrbs/FloatingOrbs';
 export type ModalType = 'features' | 'faqs' | 'demo' | null;
 
 const App: React.FC = () => {
-    const [activePersona, setActivePersona] = useState<Persona>(PERSONAS[0]);
+    const [personaIndex, setPersonaIndex] = useState(0);
     const [activeModal, setActiveModal] = useState<ModalType>(null);
     const [isTalking, setIsTalking] = useState(false);
+    const [transitioning, setTransitioning] = useState(false);
+
+    // scroll throttle
+    const scrollCooldown = useRef(false);
+
+    const activePersona: Persona = PERSONAS[personaIndex];
+
+    // ── Scroll to cycle personas ──────────────────────────────────────────────
+    useEffect(() => {
+        const handleWheel = (e: WheelEvent) => {
+            if (activeModal) return;             // ignore while modal is open
+            if (scrollCooldown.current) return;  // throttle
+
+            const direction = e.deltaY > 0 ? 1 : -1;
+
+            setTransitioning(true);
+            setTimeout(() => {
+                setPersonaIndex(prev => (prev + direction + PERSONAS.length) % PERSONAS.length);
+                setIsTalking(false);
+                setTransitioning(false);
+            }, 200); // brief fade-out, then swap
+
+            scrollCooldown.current = true;
+            setTimeout(() => { scrollCooldown.current = false; }, 700); // 700 ms cooldown
+        };
+
+        window.addEventListener('wheel', handleWheel, { passive: true });
+        return () => window.removeEventListener('wheel', handleWheel);
+    }, [activeModal]);
+
+    // ── Touch swipe to cycle personas (mobile) ────────────────────────────────
+    const touchStart = useRef<number | null>(null);
+    useEffect(() => {
+        const onTouchStart = (e: TouchEvent) => { touchStart.current = e.touches[0].clientY; };
+        const onTouchEnd = (e: TouchEvent) => {
+            if (touchStart.current === null || activeModal) return;
+            const diff = touchStart.current - e.changedTouches[0].clientY;
+            if (Math.abs(diff) < 40) return; // too small → ignore
+            const direction = diff > 0 ? 1 : -1;
+            setTransitioning(true);
+            setTimeout(() => {
+                setPersonaIndex(prev => (prev + direction + PERSONAS.length) % PERSONAS.length);
+                setIsTalking(false);
+                setTransitioning(false);
+            }, 200);
+            touchStart.current = null;
+        };
+        window.addEventListener('touchstart', onTouchStart, { passive: true });
+        window.addEventListener('touchend', onTouchEnd, { passive: true });
+        return () => {
+            window.removeEventListener('touchstart', onTouchStart);
+            window.removeEventListener('touchend', onTouchEnd);
+        };
+    }, [activeModal]);
 
     const openModal = useCallback((m: ModalType) => setActiveModal(m), []);
     const closeModal = useCallback(() => setActiveModal(null), []);
-
     const handleOrbClick = useCallback(() => {
         if (activeModal) return;
         setIsTalking(prev => !prev);
     }, [activeModal]);
-
     const handlePersonaChange = useCallback((p: Persona) => {
+        const idx = PERSONAS.findIndex(x => x.id === p.id);
+        setPersonaIndex(idx);
         setIsTalking(false);
-        setActivePersona(p);
     }, []);
 
     const isBlurred = activeModal !== null;
@@ -54,6 +107,71 @@ const App: React.FC = () => {
             {/* Floating background orbs */}
             <FloatingOrbs persona={activePersona} />
 
+            {/* Scroll hint arrows on sides */}
+            {!activeModal && (
+                <>
+                    <div
+                        onClick={() => {
+                            setPersonaIndex(prev => (prev - 1 + PERSONAS.length) % PERSONAS.length);
+                            setIsTalking(false);
+                        }}
+                        style={{
+                            position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)',
+                            zIndex: 20, cursor: 'pointer', opacity: 0.4,
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                            transition: 'opacity 0.2s',
+                        }}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '0.4'}
+                    >
+                        <span style={{ fontSize: 11, color: '#333', writingMode: 'vertical-rl', letterSpacing: '0.08em', fontWeight: 500 }}>PREV</span>
+                        <div style={{ width: 1, height: 40, background: 'rgba(0,0,0,0.25)' }} />
+                    </div>
+                    <div
+                        onClick={() => {
+                            setPersonaIndex(prev => (prev + 1) % PERSONAS.length);
+                            setIsTalking(false);
+                        }}
+                        style={{
+                            position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)',
+                            zIndex: 20, cursor: 'pointer', opacity: 0.4,
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                            transition: 'opacity 0.2s',
+                        }}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '0.4'}
+                    >
+                        <div style={{ width: 1, height: 40, background: 'rgba(0,0,0,0.25)' }} />
+                        <span style={{ fontSize: 11, color: '#333', writingMode: 'vertical-rl', letterSpacing: '0.08em', fontWeight: 500 }}>NEXT</span>
+                    </div>
+                </>
+            )}
+
+            {/* Persona index dots */}
+            {!activeModal && (
+                <div
+                    style={{
+                        position: 'absolute', bottom: 70, left: '50%', transform: 'translateX(-50%)',
+                        zIndex: 20, display: 'flex', gap: 6,
+                    }}
+                >
+                    {PERSONAS.map((p, i) => (
+                        <div
+                            key={p.id}
+                            onClick={() => { setPersonaIndex(i); setIsTalking(false); }}
+                            style={{
+                                width: i === personaIndex ? 20 : 6,
+                                height: 6,
+                                borderRadius: 999,
+                                background: i === personaIndex ? activePersona.color : 'rgba(0,0,0,0.2)',
+                                cursor: 'pointer',
+                                transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+
             {/* Main content layer */}
             <div
                 style={{
@@ -71,7 +189,7 @@ const App: React.FC = () => {
                     onBookDemo={() => openModal('demo')}
                 />
 
-                {/* Hero — fills space below navbar */}
+                {/* Hero */}
                 <div
                     style={{
                         flex: 1,
@@ -80,26 +198,40 @@ const App: React.FC = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: '0 24px',
-                        paddingTop: 72, // navbar height offset
+                        paddingTop: 64,
+                        // fade during transition
+                        opacity: transitioning ? 0 : 1,
+                        transform: transitioning ? 'translateY(12px)' : 'translateY(0)',
+                        transition: 'opacity 0.2s ease, transform 0.2s ease',
                     }}
                 >
-                    {/* Announcement pill */}
+                    {/* Persona label badge */}
                     <div
                         style={{
-                            marginBottom: 20,
-                            padding: '8px 18px',
+                            marginBottom: 16,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '7px 16px',
                             borderRadius: 999,
                             background: 'rgba(255,255,255,0.72)',
                             border: '1px solid rgba(0,0,0,0.07)',
-                            fontSize: 12,
-                            color: '#555',
                             backdropFilter: 'blur(10px)',
                             animation: 'slide-down 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both',
-                            whiteSpace: 'nowrap',
                         }}
                     >
-                        Voice AI built for Indian businesses &nbsp;·&nbsp;
-                        <span style={{ color: '#7C3AED', fontWeight: 600 }}>See how it works →</span>
+                        <div
+                            style={{
+                                width: 8, height: 8, borderRadius: '50%',
+                                background: activePersona.color,
+                                boxShadow: `0 0 8px 2px ${activePersona.glowColor}`,
+                                flexShrink: 0,
+                            }}
+                        />
+                        <span style={{ fontSize: 12, color: '#555', fontWeight: 500 }}>
+                            {activePersona.name} &nbsp;·&nbsp; {activePersona.role}
+                        </span>
+                        <span style={{ fontSize: 11, color: '#bbb' }}>scroll to explore ↕</span>
                     </div>
 
                     {/* Headline */}
@@ -120,27 +252,42 @@ const App: React.FC = () => {
                         for every customer journey
                     </h1>
 
-                    {/* Subheading */}
+                    {/* Persona tagline */}
                     <p
                         style={{
-                            marginTop: 14,
+                            marginTop: 10,
                             textAlign: 'center',
                             fontSize: 'clamp(13px, 1.5vw, 17px)',
+                            color: activePersona.color,
+                            fontWeight: 600,
+                            letterSpacing: '-0.01em',
+                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.28s both',
+                        }}
+                    >
+                        {activePersona.tagline}
+                    </p>
+
+                    {/* Persona description */}
+                    <p
+                        style={{
+                            marginTop: 6,
+                            textAlign: 'center',
+                            fontSize: 'clamp(13px, 1.4vw, 16px)',
                             color: '#64646e',
-                            maxWidth: 480,
+                            maxWidth: 460,
                             lineHeight: 1.65,
-                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.3s both',
+                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.34s both',
                         }}
                     >
                         {activePersona.description}
                     </p>
 
                     {/* Hero Orb */}
-                    <div style={{ animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.4s both' }}>
+                    <div style={{ animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.42s both' }}>
                         <HeroOrb persona={activePersona} isTalking={isTalking} onClick={handleOrbClick} />
                     </div>
 
-                    {/* CTA Button */}
+                    {/* CTA */}
                     <button
                         onClick={() => openModal('demo')}
                         style={{
@@ -155,10 +302,11 @@ const App: React.FC = () => {
                             cursor: 'pointer',
                             transition: 'background 0.2s ease, transform 0.15s ease',
                             animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.5s both',
+                            fontFamily: "'Inter', sans-serif",
                         }}
                         onMouseEnter={e => {
                             (e.currentTarget as HTMLElement).style.background = '#2d2d2d';
-                            (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)';
+                            (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)';
                         }}
                         onMouseLeave={e => {
                             (e.currentTarget as HTMLElement).style.background = '#0f0f0f';
@@ -182,8 +330,8 @@ const App: React.FC = () => {
                             : 'Go live in a day. Multilingual from day one.'}
                     </p>
 
-                    {/* Persona Switcher */}
-                    <div style={{ marginTop: 18, animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.65s both' }}>
+                    {/* Persona Switcher pills */}
+                    <div style={{ marginTop: 20, animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.65s both' }}>
                         <PersonaSwitcher
                             personas={PERSONAS}
                             active={activePersona}
@@ -195,12 +343,11 @@ const App: React.FC = () => {
                 {/* Trust bar */}
                 <div
                     style={{
-                        paddingBottom: 18,
+                        paddingBottom: 22,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: 8,
-                        animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.8s both',
                     }}
                 >
                     <p style={{ fontSize: 10, color: '#aaa', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center' }}>

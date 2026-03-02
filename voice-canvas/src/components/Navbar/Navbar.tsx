@@ -9,37 +9,65 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
     return (
         <nav
-            className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10"
-            style={{ height: 64 }}
+            style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 50,
+                height: 64,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 28px',
+            }}
         >
-            {/* Logo */}
-            <div className="flex items-center gap-2" style={{ cursor: 'default' }}>
+            {/* ── Logo (left) ── */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'default' }}>
                 <div
                     style={{
-                        width: 28, height: 28,
+                        width: 30,
+                        height: 30,
                         borderRadius: 8,
                         background: 'rgba(0,0,0,0.08)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 13, fontWeight: 700, color: '#0f0f0f',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: '#0f0f0f',
+                        fontFamily: "'Inter', sans-serif",
                     }}
                 >
                     A
                 </div>
-                <span style={{ fontSize: 16, fontWeight: 700, color: '#0f0f0f', letterSpacing: '-0.03em' }}>
+                <span
+                    style={{
+                        fontSize: 16,
+                        fontWeight: 700,
+                        color: '#0f0f0f',
+                        letterSpacing: '-0.03em',
+                        fontFamily: "'Inter', sans-serif",
+                    }}
+                >
                     Aivana
                 </span>
             </div>
 
-            {/* Pill nav — right side */}
+            {/* ── Pill Nav (right) ── */}
             <div
-                className="flex items-center"
                 style={{
-                    background: 'rgba(255,255,255,0.75)',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 2,
+                    background: 'rgba(255,255,255,0.78)',
                     border: '1px solid rgba(0,0,0,0.08)',
                     borderRadius: 999,
                     backdropFilter: 'blur(16px)',
-                    padding: '6px 6px',
-                    gap: 2,
+                    WebkitBackdropFilter: 'blur(16px)',
+                    padding: '5px 5px',
+                    flexShrink: 0,
                 }}
             >
                 {[
@@ -50,15 +78,17 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                         key={label}
                         onClick={action}
                         style={{
-                            padding: '6px 16px',
+                            padding: '7px 16px',
                             borderRadius: 999,
                             background: 'transparent',
                             border: 'none',
                             fontSize: 13,
                             fontWeight: 500,
-                            color: '#444',
+                            color: '#555',
                             cursor: 'pointer',
-                            transition: 'all 0.18s ease',
+                            fontFamily: "'Inter', sans-serif",
+                            whiteSpace: 'nowrap',
+                            transition: 'background 0.18s ease, color 0.18s ease',
                         }}
                         onMouseEnter={e => {
                             (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.05)';
@@ -66,19 +96,29 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                         }}
                         onMouseLeave={e => {
                             (e.currentTarget as HTMLElement).style.background = 'transparent';
-                            (e.currentTarget as HTMLElement).style.color = '#444';
+                            (e.currentTarget as HTMLElement).style.color = '#555';
                         }}
                     >
                         {label}
                     </button>
                 ))}
 
-                <div style={{ width: 1, height: 16, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
+                {/* Divider */}
+                <div
+                    style={{
+                        width: 1,
+                        height: 16,
+                        background: 'rgba(0,0,0,0.1)',
+                        margin: '0 3px',
+                        flexShrink: 0,
+                    }}
+                />
 
+                {/* Book a demo */}
                 <button
                     onClick={onBookDemo}
                     style={{
-                        padding: '7px 18px',
+                        padding: '8px 18px',
                         borderRadius: 999,
                         background: '#0f0f0f',
                         border: 'none',
@@ -86,11 +126,19 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                         fontWeight: 600,
                         color: '#fff',
                         cursor: 'pointer',
-                        transition: 'all 0.18s ease',
+                        fontFamily: "'Inter', sans-serif",
+                        whiteSpace: 'nowrap',
                         letterSpacing: '-0.01em',
+                        transition: 'background 0.18s ease, transform 0.15s ease',
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#333'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#0f0f0f'; }}
+                    onMouseEnter={e => {
+                        (e.currentTarget as HTMLElement).style.background = '#333';
+                        (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)';
+                    }}
+                    onMouseLeave={e => {
+                        (e.currentTarget as HTMLElement).style.background = '#0f0f0f';
+                        (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                    }}
                 >
                     Book a demo
                 </button>
