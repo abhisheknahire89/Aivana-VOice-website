@@ -23,30 +23,13 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
             }}
         >
             {/* ── Logo (left) ── */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'default' }}>
-                <div
-                    style={{
-                        width: 30,
-                        height: 30,
-                        borderRadius: 8,
-                        background: 'rgba(0,0,0,0.08)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: '#0f0f0f',
-                        fontFamily: "'Inter', sans-serif",
-                    }}
-                >
-                    A
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'default' }}>
                 <span
                     style={{
-                        fontSize: 16,
+                        fontSize: 19,
                         fontWeight: 700,
-                        color: '#0f0f0f',
-                        letterSpacing: '-0.03em',
+                        color: '#080808',
+                        letterSpacing: '-0.05em',
                         fontFamily: "'Inter', sans-serif",
                     }}
                 >
@@ -60,13 +43,13 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: 2,
-                    background: 'rgba(255,255,255,0.78)',
-                    border: '1px solid rgba(0,0,0,0.08)',
+                    gap: 0,
+                    background: 'rgba(255,255,255,0.4)',
+                    border: '1px solid rgba(0,0,0,0.05)',
                     borderRadius: 999,
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)',
-                    padding: '5px 5px',
+                    padding: '3px',
                     flexShrink: 0,
                 }}
             >

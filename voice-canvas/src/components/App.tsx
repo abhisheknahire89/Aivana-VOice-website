@@ -3,11 +3,10 @@ import '../styles/globals.css';
 import { PERSONAS, type Persona } from '../data/personas';
 import Navbar from './Navbar/Navbar';
 import HeroOrb from './HeroOrb/HeroOrb';
-import PersonaSwitcher from './PersonaSwitcher/PersonaSwitcher';
 import FeaturesModal from './FeaturesModal/FeaturesModal';
 import FAQsModal from './FAQsModal/FAQsModal';
 import BookDemoModal from './BookDemoModal/BookDemoModal';
-import FloatingOrbs from './FloatingOrbs/FloatingOrbs';
+import SplineBackground from './SplineBackground/SplineBackground';
 
 export type ModalType = 'features' | 'faqs' | 'demo' | null;
 
@@ -16,59 +15,51 @@ const App: React.FC = () => {
     const [activeModal, setActiveModal] = useState<ModalType>(null);
     const [isTalking, setIsTalking] = useState(false);
     const [transitioning, setTransitioning] = useState(false);
-
-    // scroll throttle
     const scrollCooldown = useRef(false);
+    const touchStart = useRef<number | null>(null);
 
     const activePersona: Persona = PERSONAS[personaIndex];
 
-    // ── Scroll to cycle personas ──────────────────────────────────────────────
+    const cyclePersona = useCallback((dir: 1 | -1) => {
+        if (scrollCooldown.current) return;
+        setTransitioning(true);
+        setTimeout(() => {
+            setPersonaIndex(prev => (prev + dir + PERSONAS.length) % PERSONAS.length);
+            setIsTalking(false);
+            setTransitioning(false);
+        }, 180);
+        scrollCooldown.current = true;
+        setTimeout(() => { scrollCooldown.current = false; }, 650);
+    }, []);
+
+    // ── Arrow keys ────────────────────────────────────────────────────────────
     useEffect(() => {
-        const handleWheel = (e: WheelEvent) => {
-            if (activeModal) return;             // ignore while modal is open
-            if (scrollCooldown.current) return;  // throttle
-
-            const direction = e.deltaY > 0 ? 1 : -1;
-
-            setTransitioning(true);
-            setTimeout(() => {
-                setPersonaIndex(prev => (prev + direction + PERSONAS.length) % PERSONAS.length);
-                setIsTalking(false);
-                setTransitioning(false);
-            }, 200); // brief fade-out, then swap
-
-            scrollCooldown.current = true;
-            setTimeout(() => { scrollCooldown.current = false; }, 700); // 700 ms cooldown
+        const onKey = (e: KeyboardEvent) => {
+            if (activeModal) return;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') cyclePersona(1);
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') cyclePersona(-1);
         };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [activeModal, cyclePersona]);
 
-        window.addEventListener('wheel', handleWheel, { passive: true });
-        return () => window.removeEventListener('wheel', handleWheel);
-    }, [activeModal]);
-
-    // ── Touch swipe to cycle personas (mobile) ────────────────────────────────
-    const touchStart = useRef<number | null>(null);
+    // ── Touch swipe ───────────────────────────────────────────────────────────
     useEffect(() => {
-        const onTouchStart = (e: TouchEvent) => { touchStart.current = e.touches[0].clientY; };
-        const onTouchEnd = (e: TouchEvent) => {
+        const onStart = (e: TouchEvent) => { touchStart.current = e.touches[0].clientY; };
+        const onEnd = (e: TouchEvent) => {
             if (touchStart.current === null || activeModal) return;
             const diff = touchStart.current - e.changedTouches[0].clientY;
-            if (Math.abs(diff) < 40) return; // too small → ignore
-            const direction = diff > 0 ? 1 : -1;
-            setTransitioning(true);
-            setTimeout(() => {
-                setPersonaIndex(prev => (prev + direction + PERSONAS.length) % PERSONAS.length);
-                setIsTalking(false);
-                setTransitioning(false);
-            }, 200);
+            if (Math.abs(diff) < 44) return;
+            cyclePersona(diff > 0 ? 1 : -1);
             touchStart.current = null;
         };
-        window.addEventListener('touchstart', onTouchStart, { passive: true });
-        window.addEventListener('touchend', onTouchEnd, { passive: true });
+        window.addEventListener('touchstart', onStart, { passive: true });
+        window.addEventListener('touchend', onEnd, { passive: true });
         return () => {
-            window.removeEventListener('touchstart', onTouchStart);
-            window.removeEventListener('touchend', onTouchEnd);
+            window.removeEventListener('touchstart', onStart);
+            window.removeEventListener('touchend', onEnd);
         };
-    }, [activeModal]);
+    }, [activeModal, cyclePersona]);
 
     const openModal = useCallback((m: ModalType) => setActiveModal(m), []);
     const closeModal = useCallback(() => setActiveModal(null), []);
@@ -76,11 +67,6 @@ const App: React.FC = () => {
         if (activeModal) return;
         setIsTalking(prev => !prev);
     }, [activeModal]);
-    const handlePersonaChange = useCallback((p: Persona) => {
-        const idx = PERSONAS.findIndex(x => x.id === p.id);
-        setPersonaIndex(idx);
-        setIsTalking(false);
-    }, []);
 
     const isBlurred = activeModal !== null;
 
@@ -88,108 +74,71 @@ const App: React.FC = () => {
         <div
             style={{
                 position: 'relative',
-                width: '100%',
-                height: '100%',
+                width: '100%', height: '100%',
                 overflow: 'hidden',
-                background: 'radial-gradient(ellipse at 50% 50%, #eaeaee 0%, #d8d8e0 40%, #c4c4d0 70%, #b8b8c8 100%)',
-                fontFamily: "'Inter', -apple-system, sans-serif",
+                background: '#ebebef',
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 userSelect: 'none',
-            }}
+                WebkitFontSmoothing: 'antialiased',
+            } as React.CSSProperties}
         >
-            {/* Edge vignette */}
-            <div
-                style={{
-                    position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-                    background: 'radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(70,70,100,0.12) 65%, rgba(50,50,80,0.28) 100%)',
-                }}
-            />
+            {/* ── 1. Spline 3D background (fully interactive) ─────────────────── */}
+            <SplineBackground />
 
-            {/* Floating background orbs */}
-            <FloatingOrbs persona={activePersona} />
-
-            {/* Scroll hint arrows on sides */}
-            {!activeModal && (
-                <>
-                    <div
-                        onClick={() => {
-                            setPersonaIndex(prev => (prev - 1 + PERSONAS.length) % PERSONAS.length);
-                            setIsTalking(false);
-                        }}
-                        style={{
-                            position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)',
-                            zIndex: 20, cursor: 'pointer', opacity: 0.4,
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                            transition: 'opacity 0.2s',
-                        }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '0.4'}
-                    >
-                        <span style={{ fontSize: 11, color: '#333', writingMode: 'vertical-rl', letterSpacing: '0.08em', fontWeight: 500 }}>PREV</span>
-                        <div style={{ width: 1, height: 40, background: 'rgba(0,0,0,0.25)' }} />
-                    </div>
-                    <div
-                        onClick={() => {
-                            setPersonaIndex(prev => (prev + 1) % PERSONAS.length);
-                            setIsTalking(false);
-                        }}
-                        style={{
-                            position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)',
-                            zIndex: 20, cursor: 'pointer', opacity: 0.4,
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                            transition: 'opacity 0.2s',
-                        }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '0.4'}
-                    >
-                        <div style={{ width: 1, height: 40, background: 'rgba(0,0,0,0.25)' }} />
-                        <span style={{ fontSize: 11, color: '#333', writingMode: 'vertical-rl', letterSpacing: '0.08em', fontWeight: 500 }}>NEXT</span>
-                    </div>
-                </>
-            )}
-
-            {/* Persona index dots */}
+            {/* ── 2. Persona dots — bottom-center, subtle ─────────────────────── */}
             {!activeModal && (
                 <div
                     style={{
-                        position: 'absolute', bottom: 70, left: '50%', transform: 'translateX(-50%)',
-                        zIndex: 20, display: 'flex', gap: 6,
+                        position: 'absolute', bottom: 32, left: '50%',
+                        transform: 'translateX(-50%)',
+                        zIndex: 20, display: 'flex', gap: 8,
+                        pointerEvents: 'auto',
                     }}
                 >
                     {PERSONAS.map((p, i) => (
                         <div
                             key={p.id}
-                            onClick={() => { setPersonaIndex(i); setIsTalking(false); }}
+                            onClick={() => {
+                                if (i === personaIndex) return;
+                                setTransitioning(true);
+                                setTimeout(() => { setPersonaIndex(i); setIsTalking(false); setTransitioning(false); }, 180);
+                            }}
+                            title={p.name}
                             style={{
-                                width: i === personaIndex ? 20 : 6,
-                                height: 6,
+                                width: i === personaIndex ? 24 : 7,
+                                height: 7,
                                 borderRadius: 999,
-                                background: i === personaIndex ? activePersona.color : 'rgba(0,0,0,0.2)',
-                                cursor: 'pointer',
-                                transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
+                                background: i === personaIndex ? activePersona.color : 'rgba(0,0,0,0.18)',
+                                cursor: i === personaIndex ? 'default' : 'pointer',
+                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
+                                boxShadow: i === personaIndex ? `0 0 10px 2px ${activePersona.glowColor}` : 'none',
                             }}
                         />
                     ))}
                 </div>
             )}
 
-            {/* Main content layer */}
+            {/* ── 3. Main content (pointer-events none, children opt-in) ────────── */}
             <div
                 style={{
                     position: 'absolute', inset: 0, zIndex: 10,
                     display: 'flex', flexDirection: 'column',
-                    transition: 'filter 0.5s ease, transform 0.5s ease',
-                    filter: isBlurred ? 'blur(8px)' : 'none',
-                    transform: isBlurred ? 'scale(1.02)' : 'scale(1)',
-                    pointerEvents: isBlurred ? 'none' : 'auto',
+                    filter: isBlurred ? 'blur(10px)' : 'none',
+                    transform: isBlurred ? 'scale(1.025)' : 'scale(1)',
+                    transition: 'filter 0.45s ease, transform 0.45s ease',
+                    pointerEvents: 'none',
                 }}
             >
-                <Navbar
-                    onFeatures={() => openModal('features')}
-                    onFAQs={() => openModal('faqs')}
-                    onBookDemo={() => openModal('demo')}
-                />
+                {/* Navbar */}
+                <div style={{ pointerEvents: 'auto' }}>
+                    <Navbar
+                        onFeatures={() => openModal('features')}
+                        onFAQs={() => openModal('faqs')}
+                        onBookDemo={() => openModal('demo')}
+                    />
+                </div>
 
-                {/* Hero */}
+                {/* ── Hero ────────────────────────────────────────────────────────── */}
                 <div
                     style={{
                         flex: 1,
@@ -197,171 +146,202 @@ const App: React.FC = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        padding: '0 24px',
-                        paddingTop: 64,
-                        // fade during transition
+                        paddingTop: 56,
                         opacity: transitioning ? 0 : 1,
-                        transform: transitioning ? 'translateY(12px)' : 'translateY(0)',
-                        transition: 'opacity 0.2s ease, transform 0.2s ease',
+                        transform: transitioning ? 'translateY(10px) scale(0.99)' : 'translateY(0) scale(1)',
+                        transition: 'opacity 0.18s ease, transform 0.18s ease',
                     }}
                 >
-                    {/* Persona label badge */}
+                    {/* Persona eyebrow — just color dot + name, nothing else */}
                     <div
                         style={{
-                            marginBottom: 16,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            padding: '7px 16px',
-                            borderRadius: 999,
-                            background: 'rgba(255,255,255,0.72)',
-                            border: '1px solid rgba(0,0,0,0.07)',
-                            backdropFilter: 'blur(10px)',
-                            animation: 'slide-down 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+                            display: 'flex', alignItems: 'center', gap: 7,
+                            marginBottom: 22,
+                            animation: 'fade-in 0.5s ease 0.1s both',
                         }}
                     >
                         <div
                             style={{
-                                width: 8, height: 8, borderRadius: '50%',
+                                width: 7, height: 7, borderRadius: '50%',
                                 background: activePersona.color,
-                                boxShadow: `0 0 8px 2px ${activePersona.glowColor}`,
-                                flexShrink: 0,
+                                boxShadow: `0 0 10px 3px ${activePersona.glowColor}`,
+                                transition: 'background 0.6s ease, box-shadow 0.6s ease',
                             }}
                         />
-                        <span style={{ fontSize: 12, color: '#555', fontWeight: 500 }}>
-                            {activePersona.name} &nbsp;·&nbsp; {activePersona.role}
+                        <span
+                            style={{
+                                fontSize: 11,
+                                fontWeight: 600,
+                                letterSpacing: '0.12em',
+                                textTransform: 'uppercase',
+                                color: activePersona.color,
+                                transition: 'color 0.6s ease',
+                            }}
+                        >
+                            {activePersona.name} &mdash; {activePersona.role}
                         </span>
-                        <span style={{ fontSize: 11, color: '#bbb' }}>scroll to explore ↕</span>
                     </div>
 
-                    {/* Headline */}
+                    {/* H1 — Jobs would make this BIG and SHORT */}
                     <h1
                         style={{
                             textAlign: 'center',
                             fontWeight: 700,
-                            fontSize: 'clamp(26px, 4.5vw, 54px)',
-                            color: '#0f0f0f',
-                            letterSpacing: '-0.03em',
-                            lineHeight: 1.12,
-                            maxWidth: 680,
+                            fontSize: 'clamp(30px, 5.2vw, 62px)',
+                            color: '#080808',
+                            letterSpacing: '-0.04em',
+                            lineHeight: 1.08,
+                            maxWidth: 700,
                             margin: '0 auto',
-                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s both',
+                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s both',
                         }}
                     >
-                        Voice AI agents, tailored<br />
-                        for every customer journey
+                        Every customer call,<br />handled by AI.
                     </h1>
 
-                    {/* Persona tagline */}
+                    {/* Tagline — ONE line, persona-specific, high contrast */}
                     <p
                         style={{
-                            marginTop: 10,
-                            textAlign: 'center',
-                            fontSize: 'clamp(13px, 1.5vw, 17px)',
-                            color: activePersona.color,
-                            fontWeight: 600,
+                            marginTop: 14,
+                            fontSize: 'clamp(14px, 1.6vw, 18px)',
+                            color: '#555',
+                            fontWeight: 400,
+                            lineHeight: 1.5,
                             letterSpacing: '-0.01em',
-                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.28s both',
+                            textAlign: 'center',
+                            maxWidth: 420,
+                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.25s both',
                         }}
                     >
                         {activePersona.tagline}
                     </p>
 
-                    {/* Persona description */}
-                    <p
+                    {/* THE ORB — the hero, unchanged, just bigger breathing room */}
+                    <div
                         style={{
-                            marginTop: 6,
-                            textAlign: 'center',
-                            fontSize: 'clamp(13px, 1.4vw, 16px)',
-                            color: '#64646e',
-                            maxWidth: 460,
-                            lineHeight: 1.65,
-                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.34s both',
+                            pointerEvents: 'auto',
+                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.35s both',
                         }}
                     >
-                        {activePersona.description}
-                    </p>
-
-                    {/* Hero Orb */}
-                    <div style={{ animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.42s both' }}>
-                        <HeroOrb persona={activePersona} isTalking={isTalking} onClick={handleOrbClick} />
-                    </div>
-
-                    {/* CTA */}
-                    <button
-                        onClick={() => openModal('demo')}
-                        style={{
-                            padding: '13px 32px',
-                            borderRadius: 999,
-                            background: '#0f0f0f',
-                            color: '#fff',
-                            fontSize: 14,
-                            fontWeight: 600,
-                            letterSpacing: '-0.01em',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'background 0.2s ease, transform 0.15s ease',
-                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.5s both',
-                            fontFamily: "'Inter', sans-serif",
-                        }}
-                        onMouseEnter={e => {
-                            (e.currentTarget as HTMLElement).style.background = '#2d2d2d';
-                            (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)';
-                        }}
-                        onMouseLeave={e => {
-                            (e.currentTarget as HTMLElement).style.background = '#0f0f0f';
-                            (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
-                        }}
-                    >
-                        Book a demo
-                    </button>
-
-                    <p
-                        style={{
-                            marginTop: 8,
-                            fontSize: 11,
-                            color: '#9090a0',
-                            textAlign: 'center',
-                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.58s both',
-                        }}
-                    >
-                        {isTalking
-                            ? `Connected to ${activePersona.name} · AI conversation in progress`
-                            : 'Go live in a day. Multilingual from day one.'}
-                    </p>
-
-                    {/* Persona Switcher pills */}
-                    <div style={{ marginTop: 20, animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.65s both' }}>
-                        <PersonaSwitcher
-                            personas={PERSONAS}
-                            active={activePersona}
-                            onChange={handlePersonaChange}
+                        <HeroOrb
+                            persona={activePersona}
+                            isTalking={isTalking}
+                            onClick={handleOrbClick}
                         />
                     </div>
-                </div>
 
-                {/* Trust bar */}
-                <div
-                    style={{
-                        paddingBottom: 22,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 8,
-                    }}
-                >
-                    <p style={{ fontSize: 10, color: '#aaa', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center' }}>
-                        Trusted by leading businesses across India
-                    </p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 32, flexWrap: 'wrap', justifyContent: 'center', padding: '0 16px' }}>
-                        {['HealthFirst', 'QuickCure', 'ZenClinics', 'MediRoute'].map(b => (
-                            <span key={b} style={{ fontSize: 13, fontWeight: 700, color: '#999', letterSpacing: '-0.02em' }}>{b}</span>
-                        ))}
+                    {/* CTA — one button, dark pill, no competition */}
+                    <div
+                        style={{
+                            pointerEvents: 'auto',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: 8,
+                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.45s both',
+                        }}
+                    >
+                        <button
+                            onClick={() => openModal('demo')}
+                            style={{
+                                padding: '14px 36px',
+                                borderRadius: 999,
+                                background: '#0a0a0a',
+                                color: '#fff',
+                                fontSize: 15,
+                                fontWeight: 600,
+                                letterSpacing: '-0.02em',
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s ease, transform 0.18s cubic-bezier(0.16,1,0.3,1)',
+                                fontFamily: 'inherit',
+                            }}
+                            onMouseEnter={e => {
+                                (e.currentTarget as HTMLElement).style.background = '#222';
+                                (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)';
+                            }}
+                            onMouseLeave={e => {
+                                (e.currentTarget as HTMLElement).style.background = '#0a0a0a';
+                                (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                            }}
+                        >
+                            Book a demo
+                        </button>
+
+                        <span style={{ fontSize: 11, color: '#aaa', letterSpacing: '0.01em' }}>
+                            {isTalking
+                                ? `Speaking with ${activePersona.name}…`
+                                : 'Live in one day. No engineering needed.'}
+                        </span>
+                    </div>
+
+                    {/* Persona switcher — 4 minimal pills, no role subtitle clutter */}
+                    <div
+                        style={{
+                            pointerEvents: 'auto',
+                            display: 'flex',
+                            gap: 6,
+                            marginTop: 28,
+                            padding: '6px',
+                            background: 'rgba(255,255,255,0.55)',
+                            border: '1px solid rgba(0,0,0,0.06)',
+                            borderRadius: 999,
+                            backdropFilter: 'blur(16px)',
+                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s both',
+                        }}
+                    >
+                        {PERSONAS.map((p, i) => {
+                            const isActive = i === personaIndex;
+                            return (
+                                <button
+                                    key={p.id}
+                                    onClick={() => {
+                                        if (!isActive) {
+                                            setTransitioning(true);
+                                            setTimeout(() => { setPersonaIndex(i); setIsTalking(false); setTransitioning(false); }, 180);
+                                        }
+                                    }}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: 6,
+                                        padding: '7px 16px',
+                                        borderRadius: 999,
+                                        background: isActive ? '#fff' : 'transparent',
+                                        border: 'none',
+                                        boxShadow: isActive ? '0 2px 12px rgba(0,0,0,0.1)' : 'none',
+                                        cursor: isActive ? 'default' : 'pointer',
+                                        transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
+                                        fontFamily: 'inherit',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: 7, height: 7,
+                                            borderRadius: '50%',
+                                            background: p.color,
+                                            flexShrink: 0,
+                                            boxShadow: isActive ? `0 0 6px 2px ${p.glowColor}` : 'none',
+                                            transition: 'box-shadow 0.3s ease',
+                                        }}
+                                    />
+                                    <span
+                                        style={{
+                                            fontSize: 13,
+                                            fontWeight: isActive ? 600 : 400,
+                                            color: isActive ? '#0a0a0a' : '#777',
+                                            transition: 'color 0.2s ease, font-weight 0.2s ease',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {p.name}
+                                    </span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* Modals */}
+            {/* ── 4. Modals ────────────────────────────────────────────────────── */}
             {activeModal === 'features' && <FeaturesModal persona={activePersona} onClose={closeModal} />}
             {activeModal === 'faqs' && <FAQsModal onClose={closeModal} />}
             {activeModal === 'demo' && <BookDemoModal onClose={closeModal} />}
