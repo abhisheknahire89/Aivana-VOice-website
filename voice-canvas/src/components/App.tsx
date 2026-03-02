@@ -33,24 +33,33 @@ const App: React.FC = () => {
 
     return (
         <div
-            className="relative w-full h-full overflow-hidden select-none"
-            style={{ background: 'radial-gradient(ellipse at 50% 50%, #e8e8ec 0%, #d4d4dc 40%, #c0c0cc 70%, #b0b0c4 100%)' }}
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                background: 'radial-gradient(ellipse at 50% 50%, #eaeaee 0%, #d8d8e0 40%, #c4c4d0 70%, #b8b8c8 100%)',
+                fontFamily: "'Inter', -apple-system, sans-serif",
+                userSelect: 'none',
+            }}
         >
             {/* Edge vignette */}
             <div
-                className="absolute inset-0 pointer-events-none z-0"
                 style={{
-                    background: 'radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(80,80,110,0.18) 70%, rgba(60,60,90,0.35) 100%)',
+                    position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+                    background: 'radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(70,70,100,0.12) 65%, rgba(50,50,80,0.28) 100%)',
                 }}
             />
 
             {/* Floating background orbs */}
             <FloatingOrbs persona={activePersona} />
 
-            {/* Main content — blurs when modal open */}
+            {/* Main content layer */}
             <div
-                className="absolute inset-0 z-10 flex flex-col transition-all duration-500"
                 style={{
+                    position: 'absolute', inset: 0, zIndex: 10,
+                    display: 'flex', flexDirection: 'column',
+                    transition: 'filter 0.5s ease, transform 0.5s ease',
                     filter: isBlurred ? 'blur(8px)' : 'none',
                     transform: isBlurred ? 'scale(1.02)' : 'scale(1)',
                     pointerEvents: isBlurred ? 'none' : 'auto',
@@ -62,65 +71,80 @@ const App: React.FC = () => {
                     onBookDemo={() => openModal('demo')}
                 />
 
-                {/* Hero */}
-                <div className="flex-1 flex flex-col items-center justify-center px-4">
+                {/* Hero — fills space below navbar */}
+                <div
+                    style={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 24px',
+                        paddingTop: 72, // navbar height offset
+                    }}
+                >
                     {/* Announcement pill */}
                     <div
-                        className="mb-6 px-4 py-2 rounded-full text-xs font-medium animate-slide-down"
                         style={{
-                            background: 'rgba(255,255,255,0.7)',
+                            marginBottom: 20,
+                            padding: '8px 18px',
+                            borderRadius: 999,
+                            background: 'rgba(255,255,255,0.72)',
                             border: '1px solid rgba(0,0,0,0.07)',
+                            fontSize: 12,
                             color: '#555',
                             backdropFilter: 'blur(10px)',
-                            animationDelay: '0.1s',
-                            opacity: 0,
+                            animation: 'slide-down 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+                            whiteSpace: 'nowrap',
                         }}
                     >
-                        Voice AI built for Indian businesses &nbsp;·&nbsp; <span style={{ color: '#7C3AED', fontWeight: 600 }}>See how it works →</span>
+                        Voice AI built for Indian businesses &nbsp;·&nbsp;
+                        <span style={{ color: '#7C3AED', fontWeight: 600 }}>See how it works →</span>
                     </div>
 
                     {/* Headline */}
                     <h1
-                        className="text-center font-bold leading-tight animate-fade-up"
                         style={{
-                            fontSize: 'clamp(28px, 5vw, 58px)',
+                            textAlign: 'center',
+                            fontWeight: 700,
+                            fontSize: 'clamp(26px, 4.5vw, 54px)',
                             color: '#0f0f0f',
                             letterSpacing: '-0.03em',
-                            maxWidth: 720,
-                            animationDelay: '0.2s',
-                            opacity: 0,
+                            lineHeight: 1.12,
+                            maxWidth: 680,
+                            margin: '0 auto',
+                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s both',
                         }}
                     >
                         Voice AI agents, tailored<br />
                         for every customer journey
                     </h1>
 
-                    {/* Sub */}
+                    {/* Subheading */}
                     <p
-                        className="mt-4 text-center animate-fade-up"
                         style={{
-                            fontSize: 'clamp(14px, 1.6vw, 18px)',
+                            marginTop: 14,
+                            textAlign: 'center',
+                            fontSize: 'clamp(13px, 1.5vw, 17px)',
                             color: '#64646e',
-                            maxWidth: 500,
-                            lineHeight: 1.6,
-                            animationDelay: '0.32s',
-                            opacity: 0,
+                            maxWidth: 480,
+                            lineHeight: 1.65,
+                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.3s both',
                         }}
                     >
                         {activePersona.description}
                     </p>
 
-                    {/* Orb */}
-                    <div className="my-6 md:my-8">
+                    {/* Hero Orb */}
+                    <div style={{ animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.4s both' }}>
                         <HeroOrb persona={activePersona} isTalking={isTalking} onClick={handleOrbClick} />
                     </div>
 
-                    {/* Book a demo CTA */}
+                    {/* CTA Button */}
                     <button
                         onClick={() => openModal('demo')}
-                        className="animate-fade-up"
                         style={{
-                            padding: '14px 32px',
+                            padding: '13px 32px',
                             borderRadius: 999,
                             background: '#0f0f0f',
                             color: '#fff',
@@ -129,32 +153,37 @@ const App: React.FC = () => {
                             letterSpacing: '-0.01em',
                             border: 'none',
                             cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                            animationDelay: '0.5s',
-                            opacity: 0,
+                            transition: 'background 0.2s ease, transform 0.15s ease',
+                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.5s both',
                         }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#333'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#0f0f0f'; }}
+                        onMouseEnter={e => {
+                            (e.currentTarget as HTMLElement).style.background = '#2d2d2d';
+                            (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)';
+                        }}
+                        onMouseLeave={e => {
+                            (e.currentTarget as HTMLElement).style.background = '#0f0f0f';
+                            (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                        }}
                     >
                         Book a demo
                     </button>
+
                     <p
-                        className="mt-2 animate-fade-up"
                         style={{
-                            fontSize: 12,
+                            marginTop: 8,
+                            fontSize: 11,
                             color: '#9090a0',
-                            animationDelay: '0.58s',
-                            opacity: 0,
+                            textAlign: 'center',
+                            animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.58s both',
                         }}
                     >
-                        {isTalking ? `Connected to ${activePersona.name} · AI conversation in progress` : 'Go live in a day. Multilingual from day one.'}
+                        {isTalking
+                            ? `Connected to ${activePersona.name} · AI conversation in progress`
+                            : 'Go live in a day. Multilingual from day one.'}
                     </p>
 
-                    {/* Persona switcher */}
-                    <div
-                        className="mt-6 animate-fade-up"
-                        style={{ animationDelay: '0.65s', opacity: 0 }}
-                    >
+                    {/* Persona Switcher */}
+                    <div style={{ marginTop: 18, animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.65s both' }}>
                         <PersonaSwitcher
                             personas={PERSONAS}
                             active={activePersona}
@@ -165,30 +194,30 @@ const App: React.FC = () => {
 
                 {/* Trust bar */}
                 <div
-                    className="pb-5 flex flex-col items-center gap-2 animate-fade-up"
-                    style={{ animationDelay: '0.8s', opacity: 0 }}
+                    style={{
+                        paddingBottom: 18,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 8,
+                        animation: 'fade-up 0.7s cubic-bezier(0.16,1,0.3,1) 0.8s both',
+                    }}
                 >
-                    <p style={{ fontSize: 11, color: '#aaa', letterSpacing: '0.04em' }}>
-                        TRUSTED BY LEADING BUSINESSES ACROSS INDIA
+                    <p style={{ fontSize: 10, color: '#aaa', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center' }}>
+                        Trusted by leading businesses across India
                     </p>
-                    <div className="flex items-center gap-8 flex-wrap justify-center px-4">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 32, flexWrap: 'wrap', justifyContent: 'center', padding: '0 16px' }}>
                         {['HealthFirst', 'QuickCure', 'ZenClinics', 'MediRoute'].map(b => (
-                            <span key={b} style={{ fontSize: 13, fontWeight: 600, color: '#888', letterSpacing: '-0.02em' }}>{b}</span>
+                            <span key={b} style={{ fontSize: 13, fontWeight: 700, color: '#999', letterSpacing: '-0.02em' }}>{b}</span>
                         ))}
                     </div>
                 </div>
             </div>
 
             {/* Modals */}
-            {activeModal === 'features' && (
-                <FeaturesModal persona={activePersona} onClose={closeModal} />
-            )}
-            {activeModal === 'faqs' && (
-                <FAQsModal onClose={closeModal} />
-            )}
-            {activeModal === 'demo' && (
-                <BookDemoModal onClose={closeModal} />
-            )}
+            {activeModal === 'features' && <FeaturesModal persona={activePersona} onClose={closeModal} />}
+            {activeModal === 'faqs' && <FAQsModal onClose={closeModal} />}
+            {activeModal === 'demo' && <BookDemoModal onClose={closeModal} />}
         </div>
     );
 };

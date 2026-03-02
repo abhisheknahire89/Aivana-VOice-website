@@ -10,7 +10,7 @@ interface HeroOrbProps {
 const HeroOrb: React.FC<HeroOrbProps> = ({ persona, isTalking, onClick }) => {
     const orbRef = useRef<HTMLDivElement>(null);
 
-    // Subtle mouse parallax on the orb
+    // Subtle mouse parallax
     useEffect(() => {
         const onMove = (e: MouseEvent) => {
             if (!orbRef.current) return;
@@ -18,26 +18,28 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, isTalking, onClick }) => {
             const cy = window.innerHeight / 2;
             const dx = (e.clientX - cx) / cx;
             const dy = (e.clientY - cy) / cy;
-            orbRef.current.style.transform = `translate(${dx * 8}px, ${dy * 8}px)`;
+            orbRef.current.style.transform = `translate(${dx * 10}px, ${dy * 10}px)`;
         };
         window.addEventListener('mousemove', onMove);
         return () => window.removeEventListener('mousemove', onMove);
     }, []);
 
-    const size = typeof window !== 'undefined' && window.innerWidth < 640 ? 180 : 220;
+    const orbSize = window.innerWidth < 640 ? 180 : 240;
+    const wrapSize = orbSize + 100;
 
     return (
         <div
+            onClick={onClick}
             style={{
                 position: 'relative',
-                width: size + 80,
-                height: size + 80,
+                width: wrapSize,
+                height: wrapSize,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
+                margin: '8px auto',
             }}
-            onClick={onClick}
         >
             {/* Ripple rings when talking */}
             {isTalking && [0, 1, 2].map(i => (
@@ -45,82 +47,81 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, isTalking, onClick }) => {
                     key={i}
                     style={{
                         position: 'absolute',
-                        width: size,
-                        height: size,
+                        width: orbSize,
+                        height: orbSize,
                         borderRadius: '50%',
                         border: `1.5px solid ${persona.color}`,
-                        opacity: 0,
                         animation: `ripple-out 2.2s ease-out ${i * 0.7}s infinite`,
+                        pointerEvents: 'none',
                     }}
                 />
             ))}
 
-            {/* Outer glow halo */}
+            {/* Soft outer glow */}
             <div
                 style={{
                     position: 'absolute',
-                    width: size + 40,
-                    height: size + 40,
+                    width: orbSize + 60,
+                    height: orbSize + 60,
                     borderRadius: '50%',
                     background: `radial-gradient(circle, ${persona.glowColor} 0%, transparent 70%)`,
-                    filter: 'blur(20px)',
-                    opacity: isTalking ? 0.9 : 0.5,
-                    transition: 'opacity 0.6s ease',
-                    animation: isTalking ? 'orb-connecting 1.2s ease-in-out infinite' : 'float-a 6s ease-in-out infinite',
+                    filter: 'blur(24px)',
+                    opacity: isTalking ? 1 : 0.55,
+                    transition: 'opacity 0.6s ease, background 0.8s ease',
+                    animation: isTalking ? 'orb-connecting 1.2s ease-in-out infinite' : 'float-c 5s ease-in-out infinite',
+                    pointerEvents: 'none',
                 }}
             />
 
-            {/* Main orb */}
+            {/* Main orb sphere */}
             <div
                 ref={orbRef}
                 style={{
-                    width: size,
-                    height: size,
+                    position: 'relative',
+                    width: orbSize,
+                    height: orbSize,
                     borderRadius: '50%',
                     background: persona.orbGradient,
                     boxShadow: `
-            0 0 0 1px rgba(255,255,255,0.25) inset,
-            0 0 40px 10px ${persona.glowColor},
-            0 20px 60px rgba(0,0,0,0.15),
-            inset 0 -20px 40px rgba(0,0,0,0.15)
+            inset 0 0 0 1px rgba(255,255,255,0.22),
+            0 0 50px 12px ${persona.glowColor},
+            0 24px 72px rgba(0,0,0,0.18),
+            inset 0 -24px 48px rgba(0,0,0,0.14)
           `,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     transition: 'background 0.8s ease, box-shadow 0.8s ease',
                     animation: isTalking
                         ? 'orb-connecting 0.9s ease-in-out infinite'
                         : 'orb-breathe 4s ease-in-out infinite',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    userSelect: 'none',
-                    position: 'relative',
                 }}
             >
-                {/* Specular highlight */}
+                {/* Primary specular highlight */}
                 <div
                     style={{
                         position: 'absolute',
-                        top: '12%',
-                        left: '16%',
-                        width: '38%',
-                        height: '25%',
+                        top: '10%',
+                        left: '14%',
+                        width: '40%',
+                        height: '28%',
                         borderRadius: '50%',
-                        background: 'radial-gradient(ellipse, rgba(255,255,255,0.55) 0%, transparent 80%)',
-                        filter: 'blur(6px)',
+                        background: 'radial-gradient(ellipse, rgba(255,255,255,0.6) 0%, transparent 80%)',
+                        filter: 'blur(7px)',
                         pointerEvents: 'none',
                     }}
                 />
-
-                {/* Secondary highlight */}
+                {/* Secondary rim highlight */}
                 <div
                     style={{
                         position: 'absolute',
-                        top: '55%',
-                        right: '18%',
-                        width: '16%',
-                        height: '10%',
+                        bottom: '20%',
+                        right: '16%',
+                        width: '18%',
+                        height: '12%',
                         borderRadius: '50%',
-                        background: 'radial-gradient(ellipse, rgba(255,255,255,0.2) 0%, transparent 80%)',
-                        filter: 'blur(3px)',
+                        background: 'radial-gradient(ellipse, rgba(255,255,255,0.22) 0%, transparent 80%)',
+                        filter: 'blur(4px)',
                         pointerEvents: 'none',
                     }}
                 />
@@ -128,13 +129,14 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, isTalking, onClick }) => {
                 {/* Label */}
                 <span
                     style={{
-                        color: 'rgba(255,255,255,0.9)',
-                        fontSize: 13,
+                        color: 'rgba(255,255,255,0.88)',
+                        fontSize: 14,
                         fontWeight: 500,
                         letterSpacing: '-0.01em',
-                        textShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                        textShadow: '0 1px 6px rgba(0,0,0,0.35)',
                         zIndex: 1,
                         transition: 'opacity 0.3s ease',
+                        fontFamily: "'Inter', sans-serif",
                     }}
                 >
                     {isTalking ? 'Connecting...' : 'Tap to talk'}
