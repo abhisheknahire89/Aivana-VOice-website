@@ -2,16 +2,13 @@ export interface Persona {
     id: string;
     name: string;
     role: string;
-    color: string;
-    deepColor: string;
-    glowColor: string;
-    position: { x: string; y: string };
-    mobilePosition: { x: string; y: string };
-    whisperAudio: string;
-    fullIntroAudio: string;
-    fullIntroText: string;
+    color: string;         // main orb colour
+    orbGradient: string;   // CSS radial gradient for the CSS orb shell
+    glowColor: string;     // rgba glow
+    description: string;
+    tagline: string;
     prompts: string[];
-    description: string; // New field for guidance layer
+    features: { title: string; body: string }[];
 }
 
 export const PERSONAS: Persona[] = [
@@ -19,79 +16,68 @@ export const PERSONAS: Persona[] = [
         id: 'priya',
         name: 'Priya',
         role: 'Customer Support',
-        description: 'Handles complaints, returns & order tracking in 10 Indian languages with empathy.',
-        color: '#9333EA',
-        deepColor: '#1a0a2e',
-        glowColor: 'rgba(147, 51, 234, 0.4)',
-        position: { x: '35%', y: '25%' },
-        mobilePosition: { x: '50%', y: '20%' },
-        whisperAudio: '/audio/priya-whisper.mp3',
-        fullIntroAudio: '/audio/priya-intro.mp3',
-        fullIntroText: 'Hi, I\'m Priya — your customer support specialist. I can help you track orders, process refunds, and resolve any issues you\'re facing.',
+        tagline: 'Empathetic. Fast. Multilingual.',
+        description: 'Resolves complaints, tracks orders & processes refunds across 10 Indian languages — 24 × 7 with zero wait time.',
+        color: '#7C3AED',
+        orbGradient: 'radial-gradient(circle at 35% 30%, #c4b5fd 0%, #7C3AED 40%, #4c1d95 75%, #1e1b4b 100%)',
+        glowColor: 'rgba(124,58,237,0.35)',
         prompts: ['Track my order', 'I want a refund', 'Speak in Tamil'],
+        features: [
+            { title: 'Multilingual', body: 'Speaks 10 Indian languages fluently, switching mid-conversation if needed.' },
+            { title: 'Smart Resolution', body: 'Resolves 85% of issues without human escalation using context-aware reasoning.' },
+            { title: 'Empathy Engine', body: 'Detects frustration in voice tone and adapts responses to de-escalate.' },
+        ],
     },
     {
         id: 'rohan',
         name: 'Rohan',
-        role: 'Sales',
-        description: 'Qualifies leads, pitches products & books demos. Works 24/7, never misses a follow-up.',
-        color: '#F59E0B',
-        deepColor: '#2a1a00',
-        glowColor: 'rgba(245, 158, 11, 0.4)',
-        position: { x: '65%', y: '25%' },
-        mobilePosition: { x: '50%', y: '80%' },
-        whisperAudio: '/audio/rohan-whisper.mp3',
-        fullIntroAudio: '/audio/rohan-intro.mp3',
-        fullIntroText: 'Hey there, I\'m Rohan — your sales consultant. Let me walk you through our pricing, book a demo, or help you understand the ROI.',
+        role: 'Sales & Lead Qualification',
+        tagline: 'Never misses a follow-up.',
+        description: 'Qualifies leads, delivers tailored pitches & books demos. Works around the clock so your team wakes up to warm leads.',
+        color: '#D97706',
+        orbGradient: 'radial-gradient(circle at 35% 30%, #fde68a 0%, #D97706 40%, #92400e 75%, #1c1917 100%)',
+        glowColor: 'rgba(217,119,6,0.35)',
         prompts: ['Tell me pricing', 'Book a demo', 'What\'s the ROI?'],
+        features: [
+            { title: 'Lead Scoring', body: 'Scores inbound leads in real-time and prioritises high-intent prospects.' },
+            { title: 'Dynamic Pitch', body: 'Adapts the sales narrative based on industry, role and pain points detected.' },
+            { title: 'Calendar Sync', body: 'Books demos directly into your CRM calendar — no back-and-forth emails.' },
+        ],
     },
     {
         id: 'neha',
         name: 'Neha',
-        role: 'Appointments',
-        description: 'Schedules appointments, sends reminders & handles reschedules. Zero no-shows.',
-        color: '#10B981',
-        deepColor: '#0a2a1a',
-        glowColor: 'rgba(16, 185, 129, 0.4)',
-        position: { x: '50%', y: '75%' },
-        mobilePosition: { x: '50%', y: '50%' },
-        whisperAudio: '/audio/neha-whisper.mp3',
-        fullIntroAudio: '/audio/neha-intro.mp3',
-        fullIntroText: 'Hello, I\'m Neha — your scheduling assistant. I can book, cancel, or reschedule appointments for you in seconds.',
+        role: 'Appointments & Scheduling',
+        tagline: 'Zero no-shows. Zero friction.',
+        description: 'Books, reschedules & sends reminders for appointments via voice — syncing instantly with your existing calendar stack.',
+        color: '#059669',
+        orbGradient: 'radial-gradient(circle at 35% 30%, #6ee7b7 0%, #059669 40%, #064e3b 75%, #022c22 100%)',
+        glowColor: 'rgba(5,150,105,0.35)',
         prompts: ['Book tomorrow 3 PM', 'Cancel appointment', 'Reschedule to Friday'],
+        features: [
+            { title: 'Smart Reminders', body: 'Sends voice + SMS reminders 24 h and 1 h before appointments.' },
+            { title: 'Conflict Detection', body: 'Automatically detects calendar conflicts and proposes alternatives.' },
+            { title: 'Multi-platform Sync', body: 'Integrates with Google Calendar, Outlook and 20+ booking platforms.' },
+        ],
     },
     {
         id: 'veda',
         name: 'Veda',
         role: 'Healthcare Triage',
-        description: 'Patient triage, symptom collection & department routing. Clinically accurate.',
-        color: '#EF4444',
-        deepColor: '#2a0a0a',
-        glowColor: 'rgba(239, 68, 68, 0.4)',
-        position: { x: '20%', y: '55%' },
-        mobilePosition: { x: '20%', y: '50%' },
-        whisperAudio: '/audio/veda-whisper.mp3',
-        fullIntroAudio: '/audio/veda-intro.mp3',
-        fullIntroText: 'Hi, I\'m Veda — your healthcare triage assistant. Describe your symptoms and I\'ll guide you to the right care.',
-        prompts: ['I have a headache', 'Book OPD appointment', 'Speak in Hindi'],
-    },
-    {
-        id: 'arjun',
-        name: 'Arjun',
-        role: 'General Queries',
-        description: 'Answers FAQs, routes calls & handles overflow. Nothing slips through.',
-        color: '#06B6D4',
-        deepColor: '#0a1a2a',
-        glowColor: 'rgba(6, 182, 212, 0.4)',
-        position: { x: '80%', y: '55%' },
-        mobilePosition: { x: '80%', y: '50%' },
-        whisperAudio: '/audio/arjun-whisper.mp3',
-        fullIntroAudio: '/audio/arjun-intro.mp3',
-        fullIntroText: 'Hey, I\'m Arjun — your go-to for general queries. Ask me about hours, locations, or get connected to the right team.',
-        prompts: ['What are your hours?', 'Connect to support', 'Where are you located?'],
+        tagline: 'Clinically accurate. Always available.',
+        description: 'Collects symptoms, triages patients and routes them to the right department — reducing ER load with clinical-grade accuracy.',
+        color: '#DC2626',
+        orbGradient: 'radial-gradient(circle at 35% 30%, #fca5a5 0%, #DC2626 40%, #7f1d1d 75%, #1c0a0a 100%)',
+        glowColor: 'rgba(220,38,38,0.35)',
+        prompts: ['I have a headache', 'Book OPD', 'Speak in Hindi'],
+        features: [
+            { title: 'Symptom Intake', body: 'Structured symptom collection following clinically validated triage protocols.' },
+            { title: 'Smart Routing', body: 'Routes patients to the right specialist based on urgency and symptoms.' },
+            { title: 'EHR Integration', body: 'Writes structured notes directly into your EHR system — no re-entry.' },
+        ],
     },
 ];
 
 export function getPersonaById(id: string): Persona | undefined {
-    return PERSONAS.find((persona) => persona.id === id);
+    return PERSONAS.find((p) => p.id === id);
 }
