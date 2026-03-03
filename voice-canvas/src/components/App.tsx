@@ -220,6 +220,7 @@ const App: React.FC = () => {
                         justifyContent: 'center',
                         padding: '0 32px 24px',
                         pointerEvents: 'auto',
+                        width: '100%',
                     }}
                 >
                     <section className="agent-section-wrapper">

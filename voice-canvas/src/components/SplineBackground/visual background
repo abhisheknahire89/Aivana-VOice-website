@@ -1,221 +1,221 @@
-1. Water & Boat visuals
-Goal: Keep the paper‑boat Spline as the main ambient element, but add a fluid, watery feel and gentle motion.
-
-1.1 Animated mesh‑style gradient behind the boat
-Add a slow animated gradient layer behind the Spline iframe to suggest water, without overpowering the content.
-
-css
-.hero-section {
-position: relative;
-overflow: hidden;
-width: 100%;
-min-height: 100vh;
-background: radial-gradient(circle at 20% 20%, #eef1ff 0, #ffffff 45%, #f4f7ff 100%);
-}
-
-/* Mesh-like animated gradient */
-.hero-section::before {
-content: '';
-position: absolute;
-inset: -20%;
-background:
-radial-gradient(circle at 10% 20%, rgba(120, 132, 255, 0.28), transparent 55%),
-radial-gradient(circle at 80% 10%, rgba(130, 220, 255, 0.24), transparent 55%),
-radial-gradient(circle at 50% 90%, rgba(180, 150, 255, 0.25), transparent 55%);
-animation: meshDrift 30s ease-in-out infinite alternate;
-z-index: 0;
-pointer-events: none;
-}
-@keyframes meshDrift {
-0% { transform: translate3d(0, 0, 0); }
-50% { transform: translate3d(-40px, 20px, 0); }
-100% { transform: translate3d(30px, -30px, 0); }
-}
-This sits under your cards and under (or behind) the Spline boat, giving a slow liquid feel.
+Here's the exact prompt for your AI coder to fix all the issues visible in:
 ​
 
-1.2 Paper boat float + parallax
-Wrap the Spline iframe in a boat-layer that floats up/down and reacts slightly to mouse movement on desktop.
+Prompt for AI Coder — Fix Layout, Center the Petal Orb, Fix Arrows, Add Mic Emoji:
 
-xml
-<div class="spline-background">
-    <div class="boat-layer">
-        <iframe src="https://my.spline.design/animatedpaperboat-jeJTnCRZkUeZW3jf48yUoDEa/" frameborder="0" width="100%"
-            height="100%">
-        </iframe>
-    </div>
-</div>
-css
-.boat-layer {
-position: absolute;
-inset: 0;
-animation: boatFloat 8s ease-in-out infinite alternate;
-will-change: transform;
-}
-@keyframes boatFloat {
-0% { transform: translateY(0px); }
-100% { transform: translateY(-10px); } /* 5–10px gentle bob */
-}
-javascript
-// Subtle parallax on desktop
-const boatLayer = document.querySelector('.boat-layer');
-window.addEventListener('mousemove', (e) => {
-const x = (e.clientX / window.innerWidth - 0.5) * 10; // -5 to +5
-const y = (e.clientY / window.innerHeight - 0.5) * 6; // -3 to +3
-boatLayer.style.transform = `translate3d(${x}px, ${y - 5}px, 0)`; // keep float offset
-});
-For mobile, you can skip the mouse parallax and rely only on boatFloat.
+Looking at the current agent section, there are several layout issues to fix:
 
-1.3 Refraction / reflection feel
-When the central card overlaps the water/boat area, simulate subtle reflection / glass.
+Problem 1: Arrows overlapping content
+The left ‹ and right › carousel arrows are overlapping the agent description text and the capabilities list. Fix this:
 
 css
-.agent-card {
-backdrop-filter: blur(6px);
-background: rgba(255, 255, 255, 0.9);
-}
-
-/* Soft reflection under boat region (optional) */
-.boat-reflection {
+.carousel-arrow {
 position: absolute;
-bottom: 12%;
-left: 50%;
-width: 40%;
+top: 50%;
+transform: translateY(-50%);
+z-index: 10;
+width: 40px;
 height: 40px;
-transform: translateX(-50%);
-background: radial-gradient(ellipse at center,
-rgba(120, 132, 255, 0.25), transparent 70%);
-filter: blur(6px);
-opacity: 0.4;
-}
-2. Visual hierarchy & depth
-2.1 Headline emphasis
-Make “intelligent conversations” the key phrase.
-
-css
-.hero-title {
-font-size: 3rem;
-font-weight: 700;
-color: #111111;
-}
-.hero-title span.highlight {
-color: #6b4bff; /* signature purple */
-text-shadow: 0 6px 18px rgba(107, 75, 255, 0.22);
-}
-xml
-<h1 class="hero-title">
-    AI voice agents for <span class="highlight">intelligent conversations</span>
-</h1>
-2.2 Stronger floating card shadow
-css
-.agent-card {
-background: #ffffff;
-border-radius: 32px;
-box-shadow:
-0 18px 60px rgba(15, 23, 42, 0.08),
-0 0 0 1px rgba(148, 163, 184, 0.18);
-}
-3. “Tap to talk” pulsing ring
-Turn the central flower into a clear interactive trigger with a soft pulse ring.
-
-xml
-<button class="tap-to-talk">
-    <span class="pulse-ring"></span>
-    <span class="inner-circle">
-        <!-- flower/petal element goes here -->
-    </span>
-</button>
-css
-.tap-to-talk {
-position: relative;
-border: none;
-background: transparent;
-cursor: pointer;
-}
-.tap-to-talk .inner-circle {
-position: relative;
-z-index: 2;
-width: 80px;
-height: 80px;
 border-radius: 50%;
-background: #ffffff;
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid rgba(255, 255, 255, 0.15);
+color: rgba(255, 255, 255, 0.6);
 display: flex;
 align-items: center;
 justify-content: center;
+cursor: pointer;
 }
-.tap-to-talk .pulse-ring {
-position: absolute;
-inset: -10px;
-border-radius: 50%;
-border: 2px solid rgba(107, 75, 255, 0.5); /* purple */
-animation: pulseRing 2s ease-out infinite;
-z-index: 1;
+.carousel-arrow.left {
+left: -60px; /* OUTSIDE the content area, not overlapping */
 }
-@keyframes pulseRing {
-0% {
-transform: scale(0.8);
-opacity: 0.8;
+.carousel-arrow.right {
+right: -60px; /* OUTSIDE the content area, not overlapping */
 }
-100% {
-transform: scale(1.4);
-opacity: 0;
-}
-}
-You can further tie the ring intensity to the states:
+The parent container of the agent section needs enough margin so the arrows sit outside:
 
-Idle: slow, low‑opacity pulse.
-
-Listening: faster pulse.
-
-Speaking: thicker border or dual rings.
-
-4. Layout, nav, and carousel tweaks
-4.1 Narrower header container
 css
-.header {
-max-width: 1120px;
+.agent-section-wrapper {
+position: relative;
+max-width: 900px;
 margin: 0 auto;
-padding: 24px 32px;
-display: flex;
-align-items: center;
-justify-content: space-between;
+padding: 0 80px; /* room for arrows outside */
 }
-This pulls logo and “Book a demo” closer together, reducing eye travel.
+Problem 2: Petal orb must be dead center
+The petal/flower orb is currently off-center, pushed to the left. It must be exactly centered horizontally on the page
+and vertically centered within the agent section.
 
-4.2 Carousel dots and counter
+css
+.agent-section {
+display: grid;
+grid-template-columns: 1fr auto 1fr; /* left text | center orb | right list */
+align-items: center;
+gap: 48px;
+max-width: 900px;
+margin: 0 auto;
+}
+
+.petal-area {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+/* This column is "auto" width, so the orb sits exactly in the middle */
+}
+Problem 3: Add 🎙️ mic emoji + "Tap to talk" on the petal orb
+Place a grey microphone emoji centered on/below the petal orb with "Tap to talk" text underneath. This acts as the
+interactive trigger.
+
 xml
-<div class="carousel-meta">
-    <div class="carousel-dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
+<div class="petal-area">
+    <div class="petal-wrapper">
+        <!-- rotating petal element here -->
     </div>
-    <div class="carousel-count">01 / 03</div>
+    <button class="tap-to-talk-btn">
+        <span class="mic-emoji">🎙️</span>
+        <span class="tap-label">Tap to talk</span>
+    </button>
 </div>
 css
-.carousel-meta {
+.tap-to-talk-btn {
 display: flex;
+flex-direction: column;
 align-items: center;
-gap: 12px;
+gap: 6px;
+margin-top: 16px;
+background: none;
+border: none;
+cursor: pointer;
 }
-.carousel-dots .dot {
-width: 8px;
-height: 8px;
-border-radius: 999px;
-background: #e2e8f0;
+.mic-emoji {
+font-size: 1.6rem;
+filter: grayscale(1) brightness(0.7); /* makes it grey */
+transition: filter 0.3s;
 }
-.carousel-dots .dot.active {
-width: 18px;
-background: #6b4bff;
+.tap-to-talk-btn:hover .mic-emoji {
+filter: grayscale(0) brightness(1); /* colorful on hover */
 }
-.carousel-count {
-font-size: 0.78rem;
-color: #64748b;
+.tap-label {
+font-size: 0.75rem;
+color: rgba(255, 255, 255, 0.4);
+text-transform: uppercase;
+letter-spacing: 0.1em;
 }
-4.3 Typographic tweaks
+.tap-to-talk-btn:hover .tap-label {
+color: rgba(255, 255, 255, 0.8);
+}
+Problem 4: Fix overall positioning & alignment
+The entire agent section layout should be a clean three-column grid, perfectly balanced:
+
+text
+[Left: Name + Desc + CTA] [Center: Petal + 🎙️ Tap to talk] [Right: Capabilities]
 css
-.agent-name {
-font-weight: 700; /* heavier for names like Priya */
+/* Left column — text aligned left */
+.agent-info {
+text-align: left;
+max-width: 280px;
 }
-.hero-title { font-weight: 700; }
-.agent-description { font-weight: 400; color: #4b5563; }
+.agent-name {
+font-size: 2.2rem;
+font-weight: 600;
+color: #a78bfa;
+margin-bottom: 12px;
+}
+.agent-description {
+font-size: 0.9rem;
+line-height: 1.6;
+color: rgba(255, 255, 255, 0.5);
+margin-bottom: 24px;
+}
+
+/* Center column — everything centered */
+.petal-area {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+.petal-wrapper {
+width: 180px;
+height: 180px;
+}
+
+/* Right column — list aligned left within its column */
+.capabilities-list {
+list-style: none;
+padding: 0;
+display: flex;
+flex-direction: column;
+gap: 14px;
+}
+.capabilities-list li {
+font-size: 0.85rem;
+color: rgba(255, 255, 255, 0.6);
+}
+Problem 5: Agent name tabs (Priya, Rohan, Neha, Veda)
+The name tabs at the bottom-right are awkwardly placed. Move them to center, below the whole agent section:
+
+css
+.agent-tabs {
+display: flex;
+justify-content: center;
+gap: 24px;
+margin-top: 40px;
+}
+.agent-tab {
+font-size: 0.85rem;
+color: rgba(255, 255, 255, 0.35);
+cursor: pointer;
+padding: 6px 12px;
+border-radius: 999px;
+transition: all 0.2s;
+}
+.agent-tab.active {
+color: #ffffff;
+background: rgba(167, 139, 250, 0.2);
+border: 1px solid rgba(167, 139, 250, 0.4);
+}
+Full section structure
+xml
+<section class="agent-section-wrapper">
+    <!-- Arrows outside -->
+    <button class="carousel-arrow left">‹</button>
+    <button class="carousel-arrow right">›</button>
+
+    <div class="agent-section">
+        <!-- Left -->
+        <div class="agent-info">
+            <h2 class="agent-name">Priya</h2>
+            <p class="agent-description">
+                Resolves complaints, tracks orders & processes refunds
+                across 10 Indian languages — 24×7 with zero wait time.
+            </p>
+            <button class="cta-button">Book a Live Demo</button>
+        </div>
+
+        <!-- Center -->
+        <div class="petal-area">
+            <div class="petal-wrapper">
+                <!-- petal/flower element -->
+            </div>
+            <button class="tap-to-talk-btn">
+                <span class="mic-emoji">🎙️</span>
+                <span class="tap-label">Tap to talk</span>
+            </button>
+        </div>
+
+        <!-- Right -->
+        <ul class="capabilities-list">
+            <li>Customer queries • 24/7 resolution</li>
+            <li>Refund tracking • 100% automated</li>
+            <li>Multilingual support • 10 languages</li>
+            <li>Billing support • Zero wait time</li>
+        </ul>
+    </div>
+
+    <!-- Tabs below, centered -->
+    <div class="agent-tabs">
+        <span class="agent-tab active">Priya</span>
+        <span class="agent-tab">Rohan</span>
+        <span class="agent-tab">Neha</span>
+        <span class="agent-tab">Veda</span>
+    </div>
+</section>
