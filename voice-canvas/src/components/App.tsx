@@ -81,7 +81,7 @@ const App: React.FC = () => {
                 width: '100%',
                 height: '100%',
                 overflow: 'hidden',
-                background: '#f4f4f6',
+                background: 'transparent',
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 userSelect: 'none',
                 WebkitFontSmoothing: 'antialiased',
@@ -124,16 +124,17 @@ const App: React.FC = () => {
                         style={{
                             fontSize: 'clamp(24px, 3.8vw, 50px)',
                             fontWeight: 700,
-                            color: '#111111',
+                            color: '#f9fafb',
                             letterSpacing: '-0.04em',
                             lineHeight: 1.08,
                             margin: 0,
+                            textShadow: '0 8px 24px rgba(0,0,0,0.6)',
                         }}
                     >
                         AI voice agents for{' '}
                         <span style={{
-                            color: '#6b4bff',
-                            textShadow: '0 6px 18px rgba(107,75,255,0.22)',
+                            color: '#a78bfa',
+                            textShadow: '0 6px 28px rgba(139,92,246,0.55)',
                         }}>
                             intelligent conversations
                         </span>.
@@ -155,19 +156,20 @@ const App: React.FC = () => {
                         style={{
                             position: 'relative',
                             width: '100%',
-                            maxWidth: 960,
-                            background: 'rgba(255,255,255,0.92)',
-                            backdropFilter: 'blur(6px)',
-                            WebkitBackdropFilter: 'blur(6px)',
+                            maxWidth: 980,
+                            background: 'radial-gradient(circle at top, rgba(255,255,255,0.92), rgba(245,246,255,0.90))',
+                            backdropFilter: 'blur(18px)',
+                            WebkitBackdropFilter: 'blur(18px)',
                             borderRadius: 32,
-                            boxShadow: '0 18px 60px rgba(15,23,42,0.08), 0 0 0 1px rgba(148,163,184,0.18)',
-                            border: '1px solid rgba(255,255,255,0.7)',
+                            boxShadow: '0 28px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.18)',
+                            border: '1px solid rgba(255,255,255,0.25)',
                             opacity: transitioning ? 0 : 1,
                             transform: transitioning ? 'translateY(8px) scale(0.99)' : 'translateY(0) scale(1)',
                             transition: 'opacity 0.2s ease, transform 0.2s ease',
                             animation: 'fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both',
                             display: 'grid',
-                            gridTemplateColumns: '1fr auto 1fr',
+                            gridTemplateColumns: '1.4fr 1.2fr 1.1fr',
+                            gap: 0,
                             minHeight: 380,
                         }}
                     >
@@ -244,7 +246,7 @@ const App: React.FC = () => {
                         {/* ── Left Column: Persona Info ────────────────────── */}
                         <div
                             style={{
-                                padding: '44px 36px 44px 48px',
+                                padding: '40px 32px 40px 52px',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'center',
@@ -267,12 +269,12 @@ const App: React.FC = () => {
 
                             <p
                                 style={{
-                                    fontSize: 13,
+                                    fontSize: 11,
                                     fontWeight: 600,
-                                    color: activePersona.color,
-                                    letterSpacing: '0.01em',
-                                    margin: '0 0 18px',
-                                    opacity: 0.85,
+                                    color: '#9ca3af',
+                                    letterSpacing: '0.12em',
+                                    textTransform: 'uppercase',
+                                    margin: '0 0 16px',
                                     transition: 'color 0.4s ease',
                                 }}
                             >
@@ -281,9 +283,9 @@ const App: React.FC = () => {
 
                             <p
                                 style={{
-                                    fontSize: 14,
+                                    fontSize: '0.93rem',
                                     lineHeight: 1.65,
-                                    color: '#444',
+                                    color: '#4b5563',
                                     margin: '0 0 28px',
                                     maxWidth: 280,
                                 }}

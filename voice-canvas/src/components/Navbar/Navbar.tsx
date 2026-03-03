@@ -28,7 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                     style={{
                         fontSize: 19,
                         fontWeight: 700,
-                        color: '#080808',
+                        color: '#f9fafb',
                         letterSpacing: '-0.05em',
                         fontFamily: "'Inter', sans-serif",
                     }}
@@ -44,11 +44,11 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 0,
-                    background: 'rgba(255,255,255,0.4)',
-                    border: '1px solid rgba(0,0,0,0.05)',
+                    background: 'rgba(255,255,255,0.12)',
+                    border: '1px solid rgba(255,255,255,0.18)',
                     borderRadius: 999,
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
                     padding: '3px',
                     flexShrink: 0,
                 }}
@@ -67,19 +67,19 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                             border: 'none',
                             fontSize: 13,
                             fontWeight: 500,
-                            color: '#555',
+                            color: '#e5e7eb',
                             cursor: 'pointer',
                             fontFamily: "'Inter', sans-serif",
                             whiteSpace: 'nowrap',
                             transition: 'background 0.18s ease, color 0.18s ease',
                         }}
                         onMouseEnter={e => {
-                            (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.05)';
-                            (e.currentTarget as HTMLElement).style.color = '#111';
+                            (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)';
+                            (e.currentTarget as HTMLElement).style.color = '#fff';
                         }}
                         onMouseLeave={e => {
                             (e.currentTarget as HTMLElement).style.background = 'transparent';
-                            (e.currentTarget as HTMLElement).style.color = '#555';
+                            (e.currentTarget as HTMLElement).style.color = '#e5e7eb';
                         }}
                     >
                         {label}
@@ -91,7 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                     style={{
                         width: 1,
                         height: 16,
-                        background: 'rgba(0,0,0,0.1)',
+                        background: 'rgba(255,255,255,0.15)',
                         margin: '0 3px',
                         flexShrink: 0,
                     }}
