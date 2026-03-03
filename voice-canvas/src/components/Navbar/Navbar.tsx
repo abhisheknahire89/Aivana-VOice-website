@@ -27,43 +27,68 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                     justifyContent: 'space-between',
                 }}
             >
-                {/* ── Logo (left) ── */}
-                <span
-                    style={{
-                        fontSize: 19,
-                        fontWeight: 700,
-                        color: '#f9fafb',
-                        letterSpacing: '-0.05em',
-                        fontFamily: "'Inter', sans-serif",
-                    }}
-                >
-                    Aivana
-                </span>
+                {/* ── Logo + Tagline (left) ── */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2, cursor: 'pointer' }}>
+                    <span
+                        style={{
+                            fontSize: 22,
+                            fontWeight: 700,
+                            color: '#f9fafb',
+                            letterSpacing: '-0.03em',
+                            fontFamily: "'Satoshi', 'General Sans', sans-serif",
+                        }}
+                    >
+                        Aivana
+                    </span>
+                    <span style={{ fontSize: 11, color: '#a78bfa', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                        Voice AI for Healthcare
+                    </span>
+                </div>
+
+                {/* ── Center Links ── */}
+                <div style={{ gap: 32, alignItems: 'center', display: window.innerWidth < 768 ? 'none' : 'flex' }}>
+                    <a href="#"
+                        style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}
+                        onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
+                        For Hospitals
+                    </a>
+                    <a href="#"
+                        style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}
+                        onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                        onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
+                        For Clinics
+                    </a>
+                </div>
 
                 {/* ── CTA (right) ── */}
                 <button
                     onClick={onBookDemo}
                     style={{
-                        padding: '10px 20px',
+                        padding: '10px 24px',
                         borderRadius: 999,
-                        background: 'transparent',
-                        border: '1px solid rgba(255,255,255,0.25)',
-                        fontSize: 13,
-                        fontWeight: 500,
-                        color: '#f1f1f5',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.4)',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: '#ffffff',
                         cursor: 'pointer',
                         fontFamily: "'Inter', sans-serif",
                         whiteSpace: 'nowrap',
                         letterSpacing: '0.01em',
-                        transition: 'background 0.2s ease, border-color 0.2s ease',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 0 0 rgba(167, 139, 250, 0)',
                     }}
                     onMouseEnter={e => {
-                        (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)';
-                        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.4)';
+                        (e.currentTarget as HTMLElement).style.background = 'rgba(167, 139, 250, 0.1)';
+                        (e.currentTarget as HTMLElement).style.borderColor = '#a78bfa';
+                        (e.currentTarget as HTMLElement).style.boxShadow = '0 0 20px rgba(167, 139, 250, 0.4)';
+                        (e.currentTarget as HTMLElement).style.color = '#ffffff';
                     }}
                     onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.background = 'transparent';
-                        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.25)';
+                        (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
+                        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.4)';
+                        (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 rgba(167, 139, 250, 0)';
                     }}
                 >
                     Book a demo

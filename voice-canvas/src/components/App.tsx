@@ -15,6 +15,7 @@ const App: React.FC = () => {
     const [activeModal, setActiveModal] = useState<ModalType>(null);
     const [orbState, setOrbState] = useState<OrbState>('idle');
     const [transitioning, setTransitioning] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
     const scrollCooldown = useRef(false);
     const touchStart = useRef<number | null>(null);
 
@@ -42,6 +43,15 @@ const App: React.FC = () => {
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, [activeModal, cyclePersona]);
+
+    // Auto-rotate every 5s
+    useEffect(() => {
+        if (activeModal || isPaused) return;
+        const timer = setInterval(() => {
+            cyclePersona(1);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [activeModal, isPaused, cyclePersona]);
 
     // Touch swipe
     useEffect(() => {
@@ -124,23 +134,106 @@ const App: React.FC = () => {
                 >
                     <h1
                         style={{
-                            fontSize: '3.2rem',
-                            fontWeight: 600,
+                            fontSize: '4.2rem',
+                            fontWeight: 700,
                             color: '#f1f1f5',
-                            letterSpacing: '-0.02em',
-                            lineHeight: 1.15,
-                            margin: 0,
+                            letterSpacing: '-0.03em',
+                            lineHeight: 1.1,
+                            margin: '0 0 20px',
+                            fontFamily: "'Satoshi', 'General Sans', sans-serif"
                         }}
                     >
-                        AI voice agents for{' '}
-                        <span style={{ color: '#a78bfa' }}>
-                            intelligent conversations
-                        </span>.
+                        Cut documentation time by <span style={{ color: '#a78bfa' }}>70%</span>.
                     </h1>
+                    <p
+                        style={{
+                            fontSize: '1.2rem',
+                            color: 'rgba(255, 255, 255, 0.65)',
+                            maxWidth: 600,
+                            margin: '0 auto 40px',
+                            lineHeight: 1.6,
+                        }}
+                    >
+                        Let doctors focus on patients, not paperwork.
+                    </p>
+
+                    {/* CTAs */}
+                    <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 60 }}>
+                        <button
+                            onClick={() => openModal('demo')}
+                            style={{
+                                padding: '14px 28px',
+                                borderRadius: 999,
+                                background: '#7c3aed',
+                                color: '#ffffff',
+                                fontSize: '1rem',
+                                fontWeight: 500,
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s',
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#6d28d9')}
+                            onMouseLeave={e => (e.currentTarget.style.background = '#7c3aed')}
+                        >
+                            Book a Demo
+                        </button>
+                        <button
+                            style={{
+                                padding: '14px 28px',
+                                borderRadius: 999,
+                                background: 'transparent',
+                                color: '#ffffff',
+                                fontSize: '1rem',
+                                fontWeight: 500,
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8,
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                            }}
+                        >
+                            <span style={{ fontSize: '1.2em' }}>▶</span> See it in Action
+                        </button>
+                    </div>
+
+                    {/* Trust Indicators */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 24,
+                            fontSize: '0.85rem',
+                            color: 'rgba(255,255,255,0.5)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            fontWeight: 600,
+                            flexWrap: 'wrap',
+                        }}
+                    >
+                        <span>Trusted by IHH Healthcare</span>
+                        <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+                        <span>Fortis</span>
+                        <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+                        <span>371+ Consultations</span>
+                        <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+                        <span>91% Diagnostic Accuracy</span>
+                    </div>
                 </div>
 
                 {/* ── Content grid — no card, floats on background ─────────── */}
                 <div
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
                     style={{
                         flex: 1,
                         display: 'flex',
@@ -363,7 +456,7 @@ const App: React.FC = () => {
                         style={{
                             display: 'flex',
                             justifyContent: 'center',
-                            gap: 6,
+                            gap: 16,
                             marginTop: 60,
                         }}
                     >
@@ -376,20 +469,119 @@ const App: React.FC = () => {
                                     setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
                                 }}
                                 style={{
-                                    width: i === personaIndex ? 24 : 6,
-                                    height: 6,
-                                    borderRadius: i === personaIndex ? 999 : '50%',
-                                    background: i === personaIndex ? '#a78bfa' : 'rgba(255, 255, 255, 0.2)',
-                                    border: 'none',
+                                    padding: '8px 16px',
+                                    borderRadius: 999,
+                                    background: i === personaIndex ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                    color: i === personaIndex ? '#fff' : 'rgba(255, 255, 255, 0.4)',
+                                    border: i === personaIndex ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid transparent',
                                     cursor: 'pointer',
                                     transition: 'all 0.3s',
-                                    padding: 0,
+                                    fontWeight: 500,
+                                    fontSize: 14,
+                                    letterSpacing: '0.02em',
                                 }}
                                 aria-label={`Select persona ${p.name}`}
-                            />
+                            >
+                                {p.name}
+                            </button>
                         ))}
                     </div>
                 </div>
+            </div>
+
+            {/* ── Conversion Optimization Sections ──────────────────────────── */}
+            <div style={{ position: 'relative', zIndex: 10, padding: '120px 20px', maxWidth: 1100, margin: '0 auto', color: '#fff' }}>
+
+                {/* 1. Problem Statement */}
+                <section style={{ textAlign: 'center', marginBottom: 160 }}>
+                    <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, margin: '0 0 20px', fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
+                        Indian doctors spend <span style={{ color: '#ef4444' }}>3+ hours daily</span> on documentation.
+                    </h2>
+                    <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', maxWidth: 600, margin: '0 auto' }}>
+                        Patients wait. Burnout rises. The system is broken.
+                    </p>
+                </section>
+
+                {/* 2. Solution Demo */}
+                <section style={{ marginBottom: 160, textAlign: 'center' }}>
+                    <div style={{ width: '100%', maxWidth: 800, aspectRatio: '16/9', background: 'rgba(255,255,255,0.03)', borderRadius: 24, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1.2rem' }}>[ 15-second Ambient Documentation Demo Go Here ]</span>
+                    </div>
+                </section>
+
+                {/* 3. How It Works */}
+                <section style={{ marginBottom: 160 }}>
+                    <h2 style={{ fontSize: '2.4rem', fontWeight: 700, textAlign: 'center', marginBottom: 60, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
+                        How It Works
+                    </h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 40, textAlign: 'center' }}>
+                        <div>
+                            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>1</div>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Speak Naturally</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Doctor converses with the patient naturally in English, Hindi, or Hinglish.</p>
+                        </div>
+                        <div>
+                            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>2</div>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>AI Captures Context</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Our models process the conversation, separating medical facts from chit-chat.</p>
+                        </div>
+                        <div>
+                            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>3</div>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Structured Notes</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Prefilled SOAP notes appear in seconds, ready for review and EHR push.</p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 4. Social Proof / Quote */}
+                <section style={{ marginBottom: 160, textAlign: 'center', padding: '60px 40px', background: 'rgba(255,255,255,0.02)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <p style={{ fontSize: '1.4rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', maxWidth: 800, margin: '0 auto 30px', lineHeight: 1.6 }}>
+                        "Aivana has completely transformed my practice. It's like having a highly trained medical scribe in the room, but without the cost or training overhead."
+                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+                        <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#444' }}></div>
+                        <div style={{ textAlign: 'left' }}>
+                            <div style={{ fontWeight: 600 }}>Dr. Anil Sharma</div>
+                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>Cardiologist, Fortis Hospital</div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 5. Pricing Teaser */}
+                <section style={{ marginBottom: 160, textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '2.4rem', fontWeight: 700, marginBottom: 20, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>Simple, Transparent Pricing</h2>
+                    <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)', marginBottom: 40 }}>
+                        Plans starting at <span style={{ color: '#fff', fontWeight: 600 }}>₹X/month</span> per OPD.
+                    </p>
+                    <button onClick={() => openModal('demo')} style={{ padding: '12px 24px', borderRadius: 999, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 500 }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+                        View Pricing Details
+                    </button>
+                </section>
+
+                {/* 6. FAQ Section */}
+                <section style={{ marginBottom: 160 }}>
+                    <h2 style={{ fontSize: '2.4rem', fontWeight: 700, textAlign: 'center', marginBottom: 60, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>Frequently Asked Questions</h2>
+                    <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+                        <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Is my patient data secure?</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>Yes. Aivana is fully HIPAA and ABDM compliant. Audio is processed statelessly and we do not store PII on our servers.</p>
+                        </div>
+                        <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Does it work with my existing EHR?</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>We integrate directly with Epic, Cerner, Bahmni, and most modern Indian EHRs via API or bulk export.</p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 7. Final CTA */}
+                <section style={{ textAlign: 'center', padding: '80px 40px', background: 'linear-gradient(180deg, rgba(124, 58, 237, 0.1) 0%, transparent 100%)', borderRadius: 32, border: '1px solid rgba(124, 58, 237, 0.2)' }}>
+                    <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, margin: '0 0 24px', fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
+                        Ready to give your doctors <br />2 hours back every day?
+                    </h2>
+                    <button onClick={() => openModal('demo')} style={{ padding: '16px 32px', borderRadius: 999, background: '#7c3aed', color: '#fff', fontSize: '1.1rem', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background 0.2s', boxShadow: '0 8px 32px rgba(124, 58, 237, 0.3)' }} onMouseEnter={e => e.currentTarget.style.background = '#6d28d9'} onMouseLeave={e => e.currentTarget.style.background = '#7c3aed'}>
+                        Get Started Today
+                    </button>
+                </section>
             </div>
 
             {/* ── Modals ────────────────────────────────────────────────────── */}

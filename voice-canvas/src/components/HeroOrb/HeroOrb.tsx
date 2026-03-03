@@ -38,7 +38,7 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
     const wrapSize = orbSize + 80;
 
     // ── Colors ──────────────────────────────────────────────────────────────
-    const ORANGE = '#FF6B00';
+    const ORANGE = '#0ea5e9'; // Soft Blue / Teal for healthcare trust
 
     const labelText = isSpeaking
         ? 'Speaking…'
@@ -46,8 +46,12 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
             ? 'Listening…'
             : 'Tap to talk';
 
-    // Petal is fully static — no rotation in any state
-    const svgAnimation = 'none';
+    // Petal breathing animation (scale + subtle opacity/filter depending on globals)
+    const svgAnimation = isSpeaking
+        ? 'orb-breathe-fast 1s ease-in-out infinite'
+        : isListening
+            ? 'orb-breathe-fast 1.8s ease-in-out infinite'
+            : 'orb-breathe 5s ease-in-out infinite';
 
     return (
         <div
