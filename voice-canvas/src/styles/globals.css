@@ -437,3 +437,145 @@ body,
     background: rgba(0, 0, 0, 0.15);
     border-radius: 2px;
 }
+
+/* ── Agent Section Layout / Petal Orb ─────────────────────────── */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.carousel-arrow.left {
+    left: -60px;
+}
+
+.carousel-arrow.right {
+    right: -60px;
+}
+
+.agent-section-wrapper {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 80px;
+}
+
+.agent-section {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 48px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.petal-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.tap-to-talk-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.mic-emoji {
+    font-size: 1.6rem;
+    filter: grayscale(1) brightness(0.7);
+    transition: filter 0.3s;
+}
+
+.tap-to-talk-btn:hover .mic-emoji {
+    filter: grayscale(0) brightness(1);
+}
+
+.tap-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.tap-to-talk-btn:hover .tap-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.agent-info {
+    text-align: left;
+    max-width: 280px;
+}
+
+.agent-name {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #a78bfa;
+    margin-bottom: 12px;
+}
+
+.agent-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 24px;
+}
+
+.petal-wrapper {
+    width: 180px;
+    height: 180px;
+}
+
+.capabilities-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.capabilities-list li {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.agent-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.agent-tab {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: all 0.2s;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.agent-tab.active {
+    color: #ffffff;
+    background: rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(167, 139, 250, 0.4);
+}

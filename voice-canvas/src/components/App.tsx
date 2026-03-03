@@ -215,248 +215,108 @@ const App: React.FC = () => {
                     style={{
                         flex: 1,
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: '0 32px 24px',
                         pointerEvents: 'auto',
                     }}
                 >
-                    <div
-                        style={{
-                            position: 'relative',
-                            width: '100%',
-                            maxWidth: 980,
-                            opacity: transitioning ? 0 : 1,
-                            transform: transitioning ? 'translateY(8px)' : 'translateY(0)',
-                            transition: 'opacity 0.2s ease, transform 0.2s ease',
-                            animation: 'fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both',
-                            display: 'grid',
-                            gridTemplateColumns: '1.4fr 1.2fr 1.1fr',
-                            gap: 0,
-                            minHeight: 380,
-                        }}
-                    >
+                    <section className="agent-section-wrapper">
+
                         {/* ── Left Arrow ──────────────────────────────────── */}
                         <button
+                            className="carousel-arrow left"
                             onClick={() => cyclePersona(-1)}
-                            style={{
-                                position: 'absolute',
-                                left: -20,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                width: 40,
-                                height: 40,
-                                borderRadius: '50%',
-                                background: 'rgba(255,255,255,0.95)',
-                                border: '1px solid rgba(0,0,0,0.08)',
-                                boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: 18,
-                                color: '#444',
-                                zIndex: 2,
-                                transition: 'transform 0.18s ease, box-shadow 0.18s ease',
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
-                                e.currentTarget.style.boxShadow = '0 4px 18px rgba(0,0,0,0.15)';
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.10)';
-                            }}
                         >
                             ‹
                         </button>
 
                         {/* ── Right Arrow ─────────────────────────────────── */}
                         <button
+                            className="carousel-arrow right"
                             onClick={() => cyclePersona(1)}
-                            style={{
-                                position: 'absolute',
-                                right: -20,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                width: 40,
-                                height: 40,
-                                borderRadius: '50%',
-                                background: 'rgba(255,255,255,0.95)',
-                                border: '1px solid rgba(0,0,0,0.08)',
-                                boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: 18,
-                                color: '#444',
-                                zIndex: 2,
-                                transition: 'transform 0.18s ease, box-shadow 0.18s ease',
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
-                                e.currentTarget.style.boxShadow = '0 4px 18px rgba(0,0,0,0.15)';
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.10)';
-                            }}
                         >
                             ›
                         </button>
 
-                        {/* ══ LEFT COLUMN — Persona identity + CTA ════════════════ */}
                         <div
+                            className="agent-section"
                             style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
+                                opacity: transitioning ? 0 : 1,
+                                transform: transitioning ? 'translateY(8px)' : 'translateY(0)',
+                                transition: 'opacity 0.2s ease, transform 0.2s ease',
+                                animation: 'fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both',
                             }}
                         >
-
-                            {/* Name — monumental */}
-                            <h2
-                                style={{
-                                    fontSize: 'clamp(36px, 4vw, 54px)',
-                                    fontWeight: 800,
-                                    color: activePersona.color,
-                                    letterSpacing: '-0.05em',
-                                    lineHeight: 0.95,
-                                    margin: '0 0 20px',
-                                    transition: 'color 0.4s ease',
-                                }}
-                            >
-                                {activePersona.name}
-                            </h2>
-
-                            {/* Description */}
-                            <p
-                                style={{
-                                    fontSize: 14,
-                                    lineHeight: 1.7,
-                                    color: 'rgba(255,255,255,0.70)',
-                                    margin: '0 0 32px',
-                                    maxWidth: 260,
-                                    fontWeight: 400,
-                                }}
-                            >
-                                {activePersona.description}
-                            </p>
-
-                            {/* CTA — persona colored */}
-                            <button
-                                onClick={() => openModal('demo')}
-                                style={{
-                                    alignSelf: 'flex-start',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 8,
-                                    padding: '14px 28px',
-                                    borderRadius: 999,
-                                    background: '#7c3aed',
-                                    color: '#ffffff',
-                                    fontSize: '0.9rem',
-                                    fontWeight: 500,
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    transition: 'background 0.2s',
-                                    fontFamily: 'inherit',
-                                }}
-                                onMouseEnter={e => {
-                                    (e.currentTarget as HTMLElement).style.background = '#6d28d9';
-                                }}
-                                onMouseLeave={e => {
-                                    (e.currentTarget as HTMLElement).style.background = '#7c3aed';
-                                }}
-                            >
-                                Book a Live Demo
-                            </button>
-                        </div>
-
-                        {/* ══ CENTER COLUMN — Petal orb hero ══════════════════════ */}
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: 20,
-                            }}
-                        >
-                            <div style={{ width: 200, height: 200, perspective: 800 }}>
-                                <HeroOrb
-                                    persona={activePersona}
-                                    orbState={orbState}
-                                    onClick={handleOrbClick}
-                                />
+                            {/* ══ LEFT COLUMN — Persona identity + CTA ════════ */}
+                            <div className="agent-info">
+                                <h2 className="agent-name">
+                                    {activePersona.name}
+                                </h2>
+                                <p className="agent-description">
+                                    {activePersona.description}
+                                </p>
+                                <button
+                                    className="cta-button"
+                                    onClick={() => openModal('demo')}
+                                    style={{
+                                        padding: '12px 24px',
+                                        borderRadius: 999,
+                                        background: '#7c3aed',
+                                        color: '#ffffff',
+                                        fontSize: '0.9rem',
+                                        fontWeight: 500,
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        transition: 'background 0.2s',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = '#6d28d9'}
+                                    onMouseLeave={e => e.currentTarget.style.background = '#7c3aed'}
+                                >
+                                    Book a Live Demo
+                                </button>
                             </div>
-                        </div>
 
-                        {/* ══ RIGHT COLUMN — Best for spec ════════════════════════ */}
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                            }}
-                        >
-                            {/* Spec rows */}
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                            {/* ══ CENTER COLUMN — Petal orb hero + Mic ════════ */}
+                            <div className="petal-area">
+                                <div className="petal-wrapper">
+                                    <HeroOrb
+                                        persona={activePersona}
+                                        orbState={orbState}
+                                        onClick={handleOrbClick}
+                                    />
+                                </div>
+                                <button
+                                    className="tap-to-talk-btn"
+                                    onClick={handleOrbClick}
+                                >
+                                    <span className="mic-emoji">🎙️</span>
+                                    <span className="tap-label">Tap to talk</span>
+                                </button>
+                            </div>
+
+                            {/* ══ RIGHT COLUMN — Capabilities List ═══════════ */}
+                            <ul className="capabilities-list">
                                 {activePersona.bestFor.map((item, i) => (
-                                    <li
-                                        key={i}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 10,
-                                            fontSize: '0.9rem',
-                                            color: 'rgba(255, 255, 255, 0.65)',
-                                        }}
-                                    >
-                                        <span
-                                            style={{
-                                                width: 6,
-                                                height: 6,
-                                                borderRadius: '50%',
-                                                background: '#a78bfa',
-                                                flexShrink: 0,
-                                            }}
-                                        />
+                                    <li key={i}>
                                         {item}
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                    </div>
+                    </section> {/* End Agent Section Wrapper */}
 
-                    {/* ══ CAROUSEL NAV ═══════════════════════════════════════════ */}
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            gap: 16,
-                            marginTop: 60,
-                        }}
-                    >
+                    {/* ══ CAROUSEL TABS (Centered Below) ════════════════════ */}
+                    <div className="agent-tabs">
                         {PERSONAS.map((p, i) => (
                             <button
                                 key={p.id}
+                                className={i === personaIndex ? 'agent-tab active' : 'agent-tab'}
                                 onClick={() => {
                                     if (i === personaIndex) return;
                                     setTransitioning(true);
                                     setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
-                                }}
-                                style={{
-                                    padding: '8px 16px',
-                                    borderRadius: 999,
-                                    background: i === personaIndex ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                                    color: i === personaIndex ? '#fff' : 'rgba(255, 255, 255, 0.4)',
-                                    border: i === personaIndex ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid transparent',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s',
-                                    fontWeight: 500,
-                                    fontSize: 14,
-                                    letterSpacing: '0.02em',
                                 }}
                                 aria-label={`Select persona ${p.name}`}
                             >
