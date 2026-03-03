@@ -17,9 +17,9 @@ const Navbar: React.FC<NavbarProps> = ({ onBookDemo }) => {
         >
             <div
                 style={{
-                    maxWidth: 900,
+                    maxWidth: 1100,
                     margin: '0 auto',
-                    padding: '28px 80px',
+                    padding: '28px 40px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
