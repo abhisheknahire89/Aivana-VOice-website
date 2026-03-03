@@ -123,6 +123,25 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
                 />
             ))}
 
+            {/* ── Pulse ring — interactive trigger cue ─────────────────────── */}
+            {/* Idle: 1 slow ring; Listening: 1 fast ring; Speaking: 2 rings */}
+            {[0, ...(isSpeaking ? [1] : [])].map(i => (
+                <div
+                    key={`pulse-${i}`}
+                    style={{
+                        position: 'absolute',
+                        width: orbSize + 20,
+                        height: orbSize + 20,
+                        borderRadius: '50%',
+                        border: `2px solid ${isSpeaking ? ORANGE : isListening ? ORANGE : persona.color}`,
+                        opacity: isSpeaking ? 0.7 : isListening ? 0.6 : 0.45,
+                        animation: `pulseRing ${isSpeaking ? '1.2s' : isListening ? '1.6s' : '2.4s'} ease-out ${i * 0.6}s infinite`,
+                        pointerEvents: 'none',
+                        zIndex: 1,
+                    }}
+                />
+            ))}
+
             {/* ── SVG petal orb inside perspective wrapper ───────────────── */}
             {/* perspective on the container gives rotateY a true 3D coin-flip depth */}
             <div

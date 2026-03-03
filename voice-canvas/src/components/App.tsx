@@ -124,13 +124,19 @@ const App: React.FC = () => {
                         style={{
                             fontSize: 'clamp(24px, 3.8vw, 50px)',
                             fontWeight: 700,
-                            color: '#080808',
+                            color: '#111111',
                             letterSpacing: '-0.04em',
                             lineHeight: 1.08,
                             margin: 0,
                         }}
                     >
-                        AI voice agents for intelligent conversations.
+                        AI voice agents for{' '}
+                        <span style={{
+                            color: '#6b4bff',
+                            textShadow: '0 6px 18px rgba(107,75,255,0.22)',
+                        }}>
+                            intelligent conversations
+                        </span>.
                     </h1>
                 </div>
 
@@ -150,11 +156,11 @@ const App: React.FC = () => {
                             position: 'relative',
                             width: '100%',
                             maxWidth: 960,
-                            background: 'rgba(255,255,255,0.88)',
-                            backdropFilter: 'blur(24px)',
-                            WebkitBackdropFilter: 'blur(24px)',
-                            borderRadius: 28,
-                            boxShadow: '0 8px 48px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.9) inset',
+                            background: 'rgba(255,255,255,0.92)',
+                            backdropFilter: 'blur(6px)',
+                            WebkitBackdropFilter: 'blur(6px)',
+                            borderRadius: 32,
+                            boxShadow: '0 18px 60px rgba(15,23,42,0.08), 0 0 0 1px rgba(148,163,184,0.18)',
                             border: '1px solid rgba(255,255,255,0.7)',
                             opacity: transitioning ? 0 : 1,
                             transform: transitioning ? 'translateY(8px) scale(0.99)' : 'translateY(0) scale(1)',
@@ -383,35 +389,40 @@ const App: React.FC = () => {
                                 ))}
                             </ul>
 
-                            {/* Persona dot switcher */}
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    gap: 6,
-                                    marginTop: 36,
-                                    alignItems: 'center',
-                                }}
-                            >
-                                {PERSONAS.map((p, i) => (
-                                    <div
-                                        key={p.id}
-                                        onClick={() => {
-                                            if (i === personaIndex) return;
-                                            setTransitioning(true);
-                                            setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
-                                        }}
-                                        title={p.name}
-                                        style={{
-                                            width: i === personaIndex ? 22 : 7,
-                                            height: 7,
-                                            borderRadius: 999,
-                                            background: i === personaIndex ? p.color : 'rgba(0,0,0,0.15)',
-                                            cursor: i === personaIndex ? 'default' : 'pointer',
-                                            transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
-                                            boxShadow: i === personaIndex ? `0 0 8px 2px ${p.glowColor}` : 'none',
-                                        }}
-                                    />
-                                ))}
+                            {/* Persona dot switcher + counter */}
+                            <div style={{ marginTop: 36 }}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        gap: 6,
+                                        alignItems: 'center',
+                                        marginBottom: 8,
+                                    }}
+                                >
+                                    {PERSONAS.map((p, i) => (
+                                        <div
+                                            key={p.id}
+                                            onClick={() => {
+                                                if (i === personaIndex) return;
+                                                setTransitioning(true);
+                                                setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
+                                            }}
+                                            title={p.name}
+                                            style={{
+                                                width: i === personaIndex ? 22 : 7,
+                                                height: 7,
+                                                borderRadius: 999,
+                                                background: i === personaIndex ? p.color : 'rgba(0,0,0,0.15)',
+                                                cursor: i === personaIndex ? 'default' : 'pointer',
+                                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
+                                                boxShadow: i === personaIndex ? `0 0 8px 2px ${p.glowColor}` : 'none',
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                                <div style={{ fontSize: '0.78rem', color: '#64748b', letterSpacing: '0.02em' }}>
+                                    {String(personaIndex + 1).padStart(2, '0')} / {String(PERSONAS.length).padStart(2, '0')}
+                                </div>
                             </div>
                         </div>
 

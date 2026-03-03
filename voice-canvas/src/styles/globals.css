@@ -236,6 +236,43 @@ body,
     }
 }
 
+/* ── Visual background spec keyframes ─────────────────────────── */
+@keyframes meshDrift {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(-40px, 20px, 0);
+    }
+
+    100% {
+        transform: translate3d(30px, -30px, 0);
+    }
+}
+
+@keyframes boatFloat {
+    0% {
+        transform: translateY(0px);
+    }
+
+    100% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulseRing {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
 @keyframes fade-up {
     from {
         opacity: 0;
