@@ -216,9 +216,9 @@ const App: React.FC = () => {
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
-                        alignItems: 'center',
+                        alignItems: 'stretch',
                         justifyContent: 'center',
-                        padding: '0 32px 24px',
+                        padding: '0 0 24px',
                         pointerEvents: 'auto',
                         width: '100%',
                     }}

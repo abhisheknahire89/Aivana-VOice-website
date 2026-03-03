@@ -466,10 +466,11 @@ body,
 
 .agent-section-wrapper {
     position: relative;
-    width: 100%;
+    width: 100vw;
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 80px;
+    align-self: center;
 }
 
 .agent-section {
@@ -477,7 +478,7 @@ body,
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 80px;
+    gap: 60px;
     width: 100%;
     margin: 0 auto;
 }
