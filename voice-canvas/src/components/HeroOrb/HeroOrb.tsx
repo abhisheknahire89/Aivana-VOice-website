@@ -62,12 +62,12 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
             ? 'Listening…'
             : 'Tap to talk';
 
-    // Per-state animation — each uses its own keyframe so scale differs too
+    // Per-state animation — oscillation within limited angle, not full 360°
     const svgAnimation = isSpeaking
-        ? 'petalSpinSpeaking 5.5s linear infinite'   // 5.5s + scale 0.95→1.08
+        ? 'petalSpinSpeaking 2.2s ease-in-out infinite'
         : isListening
-            ? 'petalSpinListening 3.5s linear infinite' // 3.5s + scale 1.0→1.05
-            : 'petalSpin 11s linear infinite';           // 11s, no scale
+            ? 'petalSpinListening 2.8s ease-in-out infinite'
+            : 'petalSpin 6s ease-in-out infinite';
 
     return (
         <div
