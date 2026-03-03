@@ -1,12 +1,10 @@
 import React from 'react';
 
 interface NavbarProps {
-    onFeatures: () => void;
-    onFAQs: () => void;
     onBookDemo: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
+const Navbar: React.FC<NavbarProps> = ({ onBookDemo }) => {
     return (
         <nav
             style={{

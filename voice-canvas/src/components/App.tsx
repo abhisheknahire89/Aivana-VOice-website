@@ -116,8 +116,6 @@ const App: React.FC = () => {
                 {/* Navbar */}
                 <div style={{ pointerEvents: 'auto' }}>
                     <Navbar
-                        onFeatures={() => openModal('features')}
-                        onFAQs={() => openModal('faqs')}
                         onBookDemo={() => openModal('demo')}
                     />
                 </div>
