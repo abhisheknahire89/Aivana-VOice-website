@@ -141,7 +141,7 @@ const App: React.FC = () => {
                     </h1>
                 </div>
 
-                {/* ── Card ──────────────────────────────────────────────────── */}
+                {/* ── Content grid — no card, floats on background ─────────── */}
                 <div
                     style={{
                         flex: 1,
@@ -157,14 +157,8 @@ const App: React.FC = () => {
                             position: 'relative',
                             width: '100%',
                             maxWidth: 980,
-                            background: 'radial-gradient(circle at top, rgba(255,255,255,0.92), rgba(245,246,255,0.90))',
-                            backdropFilter: 'blur(18px)',
-                            WebkitBackdropFilter: 'blur(18px)',
-                            borderRadius: 32,
-                            boxShadow: '0 28px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.18)',
-                            border: '1px solid rgba(255,255,255,0.25)',
                             opacity: transitioning ? 0 : 1,
-                            transform: transitioning ? 'translateY(8px) scale(0.99)' : 'translateY(0) scale(1)',
+                            transform: transitioning ? 'translateY(8px)' : 'translateY(0)',
                             transition: 'opacity 0.2s ease, transform 0.2s ease',
                             animation: 'fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both',
                             display: 'grid',
@@ -250,7 +244,7 @@ const App: React.FC = () => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'center',
-                                borderRight: '1px solid rgba(0,0,0,0.06)',
+                                borderRight: '1px solid rgba(255,255,255,0.10)',
                             }}
                         >
                             {/* Role chip */}
@@ -294,7 +288,7 @@ const App: React.FC = () => {
                                 style={{
                                     fontSize: 14,
                                     lineHeight: 1.7,
-                                    color: '#374151',
+                                    color: 'rgba(255,255,255,0.70)',
                                     margin: '0 0 32px',
                                     maxWidth: 260,
                                     fontWeight: 400,
@@ -342,7 +336,7 @@ const App: React.FC = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: '48px 32px',
-                                borderRight: '1px solid rgba(0,0,0,0.06)',
+                                borderRight: '1px solid rgba(255,255,255,0.10)',
                                 minWidth: 300,
                             }}
                         >
@@ -367,7 +361,7 @@ const App: React.FC = () => {
                                 style={{
                                     fontSize: 10,
                                     fontWeight: 700,
-                                    color: '#94a3b8',
+                                    color: '#cbd5e1',
                                     letterSpacing: '0.14em',
                                     textTransform: 'uppercase',
                                     margin: '0 0 20px',
@@ -386,7 +380,7 @@ const App: React.FC = () => {
                                             alignItems: 'center',
                                             gap: 12,
                                             fontSize: 14,
-                                            color: '#1e293b',
+                                            color: 'rgba(255,255,255,0.88)',
                                             fontWeight: 500,
                                             letterSpacing: '-0.01em',
                                         }}
@@ -440,7 +434,7 @@ const App: React.FC = () => {
                                         />
                                     ))}
                                 </div>
-                                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0, letterSpacing: '0.04em' }}>
+                                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.40)', margin: 0, letterSpacing: '0.04em' }}>
                                     {String(personaIndex + 1).padStart(2, '0')} / {String(PERSONAS.length).padStart(2, '0')}
                                 </p>
                             </div>

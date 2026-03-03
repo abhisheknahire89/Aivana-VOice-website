@@ -62,12 +62,8 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
             ? 'Listening…'
             : 'Tap to talk';
 
-    // Per-state animation — oscillation within limited angle, not full 360°
-    const svgAnimation = isSpeaking
-        ? 'petalSpinSpeaking 2.2s ease-in-out infinite'
-        : isListening
-            ? 'petalSpinListening 2.8s ease-in-out infinite'
-            : 'petalSpin 6s ease-in-out infinite';
+    // Petal is fully static — no rotation in any state
+    const svgAnimation = 'none';
 
     return (
         <div
@@ -193,14 +189,10 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
                         </radialGradient>
                     </defs>
 
-                    {/* Petal group — Z-axis spin when listening/speaking */}
+                    {/* Petal group — static, no spin */}
                     <g
                         style={{
-                            animation: isSpeaking
-                                ? 'spin-fast 2s linear infinite'
-                                : isListening
-                                    ? 'spin-med 3.5s linear infinite'
-                                    : 'none',
+                            animation: 'none',
                             transformOrigin: '0 0',
                             transformBox: 'fill-box',
                         }}
