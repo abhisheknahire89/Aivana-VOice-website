@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aivana - AI Voice Agents for Healthcare</title>
+    <meta name="description"
+        content="Cut documentation time by 70%. Let doctors focus on patients, not paperwork with Aivana AI Voice Agents.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C3AED;
+            --primary-hover: #5B21B6;
+            --primary-glow: rgba(108, 58, 237, 0.4);
+            --secondary: #10B981;
+            --bg-dark: #0F0F1A;
+            --bg-card: #1A1A2E;
+            --bg-nav: rgba(15, 15, 26, 0.75);
+            --text-main: #F9FAFB;
+            --text-muted: #9CA3AF;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Utilities */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-primary {
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 28px;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 16px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .btn-ghost {
+            background-color: transparent;
+            color: white;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-ghost:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+            background-color: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .nav-logo {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 160px 0 100px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(ellipse, var(--primary-glow) 0%, transparent 60%);
+            opacity: 0.5;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.25rem);
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        /* Voice Waveform Animation */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 60px;
+            margin: 40px auto 0;
+            opacity: 0.8;
+        }
+
+        .bar {
+            width: 6px;
+            background-color: var(--primary);
+            border-radius: 99px;
+            animation: wave 1.2s ease-in-out infinite alternate;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .bar:nth-child(1) {
+            height: 16px;
+            animation-delay: -1.2s;
+        }
+
+        .bar:nth-child(2) {
+            height: 32px;
+            animation-delay: -1.0s;
+        }
+
+        .bar:nth-child(3) {
+            height: 50px;
+            animation-delay: -0.8s;
+        }
+
+        .bar:nth-child(4) {
+            height: 64px;
+            animation-delay: -0.6s;
+        }
+
+        .bar:nth-child(5) {
+            height: 50px;
+            animation-delay: -0.4s;
+        }
+
+        .bar:nth-child(6) {
+            height: 32px;
+            animation-delay: -0.2s;
+        }
+
+        .bar:nth-child(7) {
+            height: 16px;
+            animation-delay: 0s;
+        }
+
+        @keyframes wave {
+            0% {
+                height: 8px;
+                opacity: 0.4;
+            }
+
+            100% {
+                height: 100%;
+                opacity: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bar {
+                animation: none;
+                height: 24px !important;
+            }
+
+            .fade-in {
+                transition: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        /* Trusted By */
+        .trusted-by {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.01);
+            position: relative;
+        }
+
+        /* Fade edges for marquee */
+        .trusted-by::before,
+        .trusted-by::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 100px;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .trusted-by::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg-dark), transparent);
+        }
+
+        .trusted-by::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg-dark), transparent);
+        }
+
+        .trusted-label {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+        }
+
+        .marquee-wrapper {
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .marquee {
+            display: flex;
+            gap: 80px;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+            flex-wrap: wrap;
+            /* On mobile wrap, on desktop stay flex */
+        }
+
+        .hospital-logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            opacity: 0.6;
+            transition: opacity 0.3s, color 0.3s;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+
+        .hospital-logo:hover {
+            opacity: 1;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .marquee {
+                gap: 40px;
+                justify-content: center;
+            }
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 100px 0 60px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px 24px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-value span {
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Sections General */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 64px;
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Use Cases Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 40px;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(108, 58, 237, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background-color: rgba(108, 58, 237, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            box-shadow: inset 0 0 0 1px rgba(108, 58, 237, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* How It Works - Tri-Step */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .steps {
+                flex-direction: row;
+                gap: 24px;
+            }
+
+            .step:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                top: 32px;
+                left: calc(50% + 40px);
+                width: calc(100% - 80px);
+                height: 2px;
+                background-image: linear-gradient(to right, var(--text-muted) 50%, transparent 50%);
+                background-size: 12px 100%;
+                opacity: 0.2;
+                z-index: 1;
+            }
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: var(--bg-dark);
+            border: 2px solid var(--primary);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            z-index: 2;
+            position: relative;
+            box-shadow: 0 0 20px rgba(108, 58, 237, 0.2);
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .step-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .testimonial-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .testimonial-card {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-subtle);
+            padding: 40px;
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .testimonial-quote-icon {
+            color: rgba(108, 58, 237, 0.2);
+            font-size: 4rem;
+            position: absolute;
+            top: 20px;
+            right: 32px;
+            line-height: 1;
+            font-family: Georgia, serif;
+            pointer-events: none;
+        }
+
+        .quote {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: white;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #8B5CF6);
+            font-size: 1.1rem;
+        }
+
+        .author-info h4 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+            color: var(--text-main);
+        }
+
+        .author-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Final CTA */
+        .final-cta {
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(108, 58, 237, 0.15) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .final-cta .cta-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 80px 0 32px;
+            background-color: var(--bg-dark);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 48px;
+            margin-bottom: 80px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+            }
+        }
+
+        .footer-brand p {
+            color: var(--text-muted);
+            margin-top: 16px;
+            max-width: 320px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .footer-nav h4 {
+            font-size: 0.95rem;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .footer-nav ul {
+            list-style: none;
+        }
+
+        .footer-nav li {
+            margin-bottom: 16px;
+        }
+
+        .footer-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-nav a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding-top: 32px;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-bottom {
+                flex-direction: row;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="nav-logo">
+                <!-- Simple medical cross-inspired tech logo -->
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="10" width="16" height="4" rx="1" fill="var(--primary)" />
+                    <rect x="10" y="4" width="4" height="16" rx="1" fill="var(--primary)" />
+                </svg>
+                Aivana
+            </a>
+            <div class="nav-links">
+                <a href="#platform" class="nav-link">Platform</a>
+                <a href="#use-cases" class="nav-link">Use Cases</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#testimonials" class="nav-link">Testimonials</a>
+            </div>
+            <a href="#demo" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">Book a Demo</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero container fade-in" id="hero">
+            <h1 class="hero-title" style="max-width: 900px; margin-left: auto; margin-right: auto;">AI Voice Agents for
+                <span class="text-primary">Healthcare</span></h1>
+            <p class="hero-subtitle">Cut documentation time by 70%. Let doctors focus on patients, not paperwork while
+                AI handles the charting seamlessly.</p>
+            <div class="hero-ctas">
+                <a href="#demo" class="btn btn-primary">Book a Demo</a>
+                <a href="#how-it-works" class="btn btn-ghost">
+                    <span style="font-size: 1.25rem; line-height: 0; margin-right: 8px; color: var(--primary);">▶</span>
+                    Watch 2-Min Demo
+                </a>
+            </div>
+
+            <!-- Voice Waveform Animation -->
+            <div class="waveform" aria-label="AI listening animation">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </section>
+
+        <!-- Trusted By -->
+        <section class="trusted-by fade-in">
+            <div class="container">
+                <p class="trusted-label">Trusted by leading enterprises</p>
+                <div class="marquee-wrapper">
+                    <div class="marquee">
+                        <span class="hospital-logo">Apollo Hospitals</span>
+                        <span class="hospital-logo">Fortis</span>
+                        <span class="hospital-logo">Manipal</span>
+                        <span class="hospital-logo">Max Healthcare</span>
+                        <span class="hospital-logo">Narayana Health</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="stats container fade-in">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">70<span>%</span></div>
+                    <div class="stat-label">Less Documentation Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">98<span>%</span></div>
+                    <div class="stat-label">Transcription Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10<span>+</span></div>
+                    <div class="stat-label">Indian Languages Supported</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Agent Availability</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section container fade-in" id="use-cases">
+            <div class="section-header">
+                <h2 class="section-title">Built for Modern Practice</h2>
+                <p class="section-subtitle">A suite of specialized HIPAA-compliant voice agents designed specifically to
+                    reduce administrative overhead.</p>
+            </div>
+
+            <div class="cards-grid">
+                <!-- Card 1 -->
+                <div class="card">
+                    <div class="card-icon">📝</div>
+                    <h3 class="card-title">Clinical Documentation</h3>
+                    <p class="card-desc">Auto-generates accurate SOAP notes and transcripts from natural doctor-patient
+                        conversations in real-time. No typing required.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="card">
+                    <div class="card-icon">📞</div>
+                    <h3 class="card-title">Patient Follow-ups</h3>
+                    <p class="card-desc">Automated, empathetic voice calls for post-visit check-ins, medication
+                        reminders, and general care follow-ups natively in local languages.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="card">
+                    <div class="card-icon">📅</div>
+                    <h3 class="card-title">Appointment Scheduling</h3>
+                    <p class="card-desc">AI handles inbound bookings, reschedules, and cancellations 24/7 in 10+ local
+                        Indian languages with zero human intervention needed.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="card">
+                    <div class="card-icon">💳</div>
+                    <h3 class="card-title">Billing & Insurance</h3>
+                    <p class="card-desc">Provides patients with instant voice-based claim status checks, billing query
+                        routing, and secure guided payment assistance over the phone.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="section container fade-in" id="how-it-works">
+            <div class="section-header">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">A seamless ambient experience embedded entirely into your routine.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Connect</h3>
+                    <p class="step-desc">Aivana securely integrates directly with your existing EHR, HMS, and scheduling
+                        software in minutes.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Listen</h3>
+                    <p class="step-desc">The AI securely listens to ambient patient conversations or inbound calls,
+                        capturing all medical context.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Document</h3>
+                    <p class="step-desc">Automatically generates clean clinical notes, prescriptions, summaries, pushing
+                        data directly back to records.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platform / Features -->
+        <section class="section container fade-in" id="platform">
+            <div class="section-header">
+                <h2 class="section-title">Enterprise Infrastructure</h2>
+                <p class="section-subtitle">Secure, compliant, and scalable for independent clinics and massive hospital
+                    networks.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="card-title">Multi-Language Native</h3>
+                    <p class="card-desc">Fluently converse and analyze medical context natively in English, Hindi,
+                        Tamil, Telugu, and 6 more Indian languages.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="card-title">EHR Integration</h3>
+                    <p class="card-desc">Bi-directional standard-compliant integration mapping patient notes exactly to
+                        where they belong in the clinical record.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="card-title">HIPAA Compliant</h3>
+                    <p class="card-desc">Built with end-to-end encryption, routine continuous audits, and a strict
+                        zero-retention policy on patient recordings.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="section testimonials fade-in" id="testimonials">
+            <div class="container">
+                <div class="section-header" style="margin-bottom: 48px;">
+                    <h2 class="section-title">What Doctors Say</h2>
+                    <p class="section-subtitle">Hear from practitioners transforming their workflows.</p>
+                </div>
+
+                <div class="testimonial-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-quote-icon">"</div>
+                        <p class="quote">Aivana has completely eliminated my after-hours charting. I literally just talk
+                            naturally with the patient, and the SOAP note is waiting for my sign-off when they leave.
+                        </p>
+                        <div class="author">
+                            <div class="author-avatar">MS</div>
+                            <div class="author-info">
+                                <h4>Dr. M. Sharma</h4>
+                                <p>Chief of Internal Medicine</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-quote-icon">"</div>
+                        <p class="quote">Our reception staff was drowning in follow-up calls. The AI agent now
+                            proactively handles 80% of our post-op check-ins in fluent Telugu and updates our HMS
+                            instantly.</p>
+                        <div class="author">
+                            <div class="author-avatar">JR</div>
+                            <div class="author-info">
+                                <h4>Dr. J. Reddy</h4>
+                                <p>Orthopedic Surgeon</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="final-cta container fade-in" id="demo">
+            <h2 class="cta-title">Ready to transform your practice?</h2>
+            <p class="section-subtitle" style="margin-bottom: 40px;">Join top tier healthcare providers reducing burnout
+                and improving patient care.</p>
+            <div style="display: flex; justify-content: center; gap: 16px;">
+                <a href="#demo" class="btn btn-primary" style="padding: 16px 36px; font-size: 1.1rem;">Book a Demo
+                    Today</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer fade-in">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="nav-logo" style="margin-bottom: 16px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="4" y="10" width="16" height="4" rx="1" fill="var(--primary)" />
+                            <rect x="10" y="4" width="4" height="16" rx="1" fill="var(--primary)" />
+                        </svg>
+                        Aivana
+                    </a>
+                    <p>AI-powered voice agents designed exclusively for healthcare workflows and clinical documentation.
+                    </p>
+                </div>
+                <div class="footer-nav">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#platform">Platform</a></li>
+                        <li><a href="#use-cases">Use Cases</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#docs">Documentation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                        <li><a href="#hipaa">HIPAA Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Aivana. All rights reserved.</p>
+                <p>Contact: <a href="mailto:hello@aivana.ai"
+                        style="color: var(--primary); text-decoration: none;">hello@aivana.ai</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Minimal JS for Scroll Animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const faders = document.querySelectorAll('.fade-in');
+
+            // Respect prefers-reduced-motion
+            const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+            if (mediaQuery.matches) {
+                faders.forEach(fader => fader.classList.add('appear'));
+                return;
+            }
+
+            const appearOptions = {
+                threshold: 0.15,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const appearOnScroll = new IntersectionObserver(function (entries, observer) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    } else {
+                        entry.target.classList.add('appear');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, appearOptions);
+
+            faders.forEach(fader => {
+                appearOnScroll.observe(fader);
+            });
+        });
+    </script>
+</body>
+
+</html>
