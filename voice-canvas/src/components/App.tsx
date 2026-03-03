@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import '../styles/globals.css';
 import { PERSONAS, type Persona } from '../data/personas';
 import Navbar from './Navbar/Navbar';
-import HeroOrb from './HeroOrb/HeroOrb';
+import HeroOrb, { type OrbState } from './HeroOrb/HeroOrb';
 import FeaturesModal from './FeaturesModal/FeaturesModal';
 import FAQsModal from './FAQsModal/FAQsModal';
 import BookDemoModal from './BookDemoModal/BookDemoModal';
@@ -13,7 +13,7 @@ export type ModalType = 'features' | 'faqs' | 'demo' | null;
 const App: React.FC = () => {
     const [personaIndex, setPersonaIndex] = useState(0);
     const [activeModal, setActiveModal] = useState<ModalType>(null);
-    const [isTalking, setIsTalking] = useState(false);
+    const [orbState, setOrbState] = useState<OrbState>('idle');
     const [transitioning, setTransitioning] = useState(false);
     const scrollCooldown = useRef(false);
     const touchStart = useRef<number | null>(null);
@@ -25,14 +25,14 @@ const App: React.FC = () => {
         setTransitioning(true);
         setTimeout(() => {
             setPersonaIndex(prev => (prev + dir + PERSONAS.length) % PERSONAS.length);
-            setIsTalking(false);
+            setOrbState('idle');
             setTransitioning(false);
-        }, 180);
+        }, 200);
         scrollCooldown.current = true;
-        setTimeout(() => { scrollCooldown.current = false; }, 650);
+        setTimeout(() => { scrollCooldown.current = false; }, 700);
     }, []);
 
-    // ── Arrow keys ────────────────────────────────────────────────────────────
+    // Arrow keys
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (activeModal) return;
@@ -43,12 +43,12 @@ const App: React.FC = () => {
         return () => window.removeEventListener('keydown', onKey);
     }, [activeModal, cyclePersona]);
 
-    // ── Touch swipe ───────────────────────────────────────────────────────────
+    // Touch swipe
     useEffect(() => {
-        const onStart = (e: TouchEvent) => { touchStart.current = e.touches[0].clientY; };
+        const onStart = (e: TouchEvent) => { touchStart.current = e.touches[0].clientX; };
         const onEnd = (e: TouchEvent) => {
             if (touchStart.current === null || activeModal) return;
-            const diff = touchStart.current - e.changedTouches[0].clientY;
+            const diff = touchStart.current - e.changedTouches[0].clientX;
             if (Math.abs(diff) < 44) return;
             cyclePersona(diff > 0 ? 1 : -1);
             touchStart.current = null;
@@ -65,7 +65,11 @@ const App: React.FC = () => {
     const closeModal = useCallback(() => setActiveModal(null), []);
     const handleOrbClick = useCallback(() => {
         if (activeModal) return;
-        setIsTalking(prev => !prev);
+        setOrbState(prev =>
+            prev === 'idle' ? 'listening' :
+                prev === 'listening' ? 'speaking' :
+                    'idle'
+        );
     }, [activeModal]);
 
     const isBlurred = activeModal !== null;
@@ -74,58 +78,29 @@ const App: React.FC = () => {
         <div
             style={{
                 position: 'relative',
-                width: '100%', height: '100%',
+                width: '100%',
+                height: '100%',
                 overflow: 'hidden',
-                background: '#ebebef',
+                background: '#f4f4f6',
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 userSelect: 'none',
                 WebkitFontSmoothing: 'antialiased',
             } as React.CSSProperties}
         >
-            {/* ── 1. Spline 3D background (fully interactive) ─────────────────── */}
+            {/* ── Spline background ──────────────────────────────────────────── */}
             <SplineBackground />
 
-            {/* ── 2. Persona dots — bottom-center, subtle ─────────────────────── */}
-            {!activeModal && (
-                <div
-                    style={{
-                        position: 'absolute', bottom: 32, left: '50%',
-                        transform: 'translateX(-50%)',
-                        zIndex: 20, display: 'flex', gap: 8,
-                        pointerEvents: 'auto',
-                    }}
-                >
-                    {PERSONAS.map((p, i) => (
-                        <div
-                            key={p.id}
-                            onClick={() => {
-                                if (i === personaIndex) return;
-                                setTransitioning(true);
-                                setTimeout(() => { setPersonaIndex(i); setIsTalking(false); setTransitioning(false); }, 180);
-                            }}
-                            title={p.name}
-                            style={{
-                                width: i === personaIndex ? 24 : 7,
-                                height: 7,
-                                borderRadius: 999,
-                                background: i === personaIndex ? activePersona.color : 'rgba(0,0,0,0.18)',
-                                cursor: i === personaIndex ? 'default' : 'pointer',
-                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
-                                boxShadow: i === personaIndex ? `0 0 10px 2px ${activePersona.glowColor}` : 'none',
-                            }}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {/* ── 3. Main content (pointer-events none, children opt-in) ────────── */}
+            {/* ── Main layer ────────────────────────────────────────────────── */}
             <div
                 style={{
-                    position: 'absolute', inset: 0, zIndex: 10,
-                    display: 'flex', flexDirection: 'column',
+                    position: 'absolute',
+                    inset: 0,
+                    zIndex: 10,
+                    display: 'flex',
+                    flexDirection: 'column',
                     filter: isBlurred ? 'blur(10px)' : 'none',
-                    transform: isBlurred ? 'scale(1.025)' : 'scale(1)',
-                    transition: 'filter 0.45s ease, transform 0.45s ease',
+                    transform: isBlurred ? 'scale(1.02)' : 'scale(1)',
+                    transition: 'filter 0.4s ease, transform 0.4s ease',
                     pointerEvents: 'none',
                 }}
             >
@@ -138,210 +113,328 @@ const App: React.FC = () => {
                     />
                 </div>
 
-                {/* ── Hero ────────────────────────────────────────────────────────── */}
+                {/* ── Headline ──────────────────────────────────────────────── */}
+                <div
+                    style={{
+                        textAlign: 'center',
+                        padding: '28px 24px 20px',
+                        animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) both',
+                    }}
+                >
+                    <h1
+                        style={{
+                            fontSize: 'clamp(24px, 3.8vw, 50px)',
+                            fontWeight: 700,
+                            color: '#080808',
+                            letterSpacing: '-0.04em',
+                            lineHeight: 1.08,
+                            margin: 0,
+                        }}
+                    >
+                        AI voice agents for intelligent conversations.
+                    </h1>
+                </div>
+
+                {/* ── Card ──────────────────────────────────────────────────── */}
                 <div
                     style={{
                         flex: 1,
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        paddingTop: 56,
-                        opacity: transitioning ? 0 : 1,
-                        transform: transitioning ? 'translateY(10px) scale(0.99)' : 'translateY(0) scale(1)',
-                        transition: 'opacity 0.18s ease, transform 0.18s ease',
+                        padding: '0 32px 24px',
+                        pointerEvents: 'auto',
                     }}
                 >
-                    {/* Persona eyebrow — just color dot + name, nothing else */}
                     <div
                         style={{
-                            display: 'flex', alignItems: 'center', gap: 7,
-                            marginBottom: 22,
-                            animation: 'fade-in 0.5s ease 0.1s both',
+                            position: 'relative',
+                            width: '100%',
+                            maxWidth: 960,
+                            background: 'rgba(255,255,255,0.88)',
+                            backdropFilter: 'blur(24px)',
+                            WebkitBackdropFilter: 'blur(24px)',
+                            borderRadius: 28,
+                            boxShadow: '0 8px 48px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.9) inset',
+                            border: '1px solid rgba(255,255,255,0.7)',
+                            opacity: transitioning ? 0 : 1,
+                            transform: transitioning ? 'translateY(8px) scale(0.99)' : 'translateY(0) scale(1)',
+                            transition: 'opacity 0.2s ease, transform 0.2s ease',
+                            animation: 'fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+                            display: 'grid',
+                            gridTemplateColumns: '1fr auto 1fr',
+                            minHeight: 380,
                         }}
                     >
-                        <div
-                            style={{
-                                width: 7, height: 7, borderRadius: '50%',
-                                background: activePersona.color,
-                                boxShadow: `0 0 10px 3px ${activePersona.glowColor}`,
-                                transition: 'background 0.6s ease, box-shadow 0.6s ease',
-                            }}
-                        />
-                        <span
-                            style={{
-                                fontSize: 11,
-                                fontWeight: 600,
-                                letterSpacing: '0.12em',
-                                textTransform: 'uppercase',
-                                color: activePersona.color,
-                                transition: 'color 0.6s ease',
-                            }}
-                        >
-                            {activePersona.name} &mdash; {activePersona.role}
-                        </span>
-                    </div>
-
-                    {/* H1 — Jobs would make this BIG and SHORT */}
-                    <h1
-                        style={{
-                            textAlign: 'center',
-                            fontWeight: 700,
-                            fontSize: 'clamp(30px, 5.2vw, 62px)',
-                            color: '#080808',
-                            letterSpacing: '-0.04em',
-                            lineHeight: 1.08,
-                            maxWidth: 700,
-                            margin: '0 auto',
-                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s both',
-                        }}
-                    >
-                        Every customer call,<br />handled by AI.
-                    </h1>
-
-                    {/* Tagline — ONE line, persona-specific, high contrast */}
-                    <p
-                        style={{
-                            marginTop: 14,
-                            fontSize: 'clamp(14px, 1.6vw, 18px)',
-                            color: '#555',
-                            fontWeight: 400,
-                            lineHeight: 1.5,
-                            letterSpacing: '-0.01em',
-                            textAlign: 'center',
-                            maxWidth: 420,
-                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.25s both',
-                        }}
-                    >
-                        {activePersona.tagline}
-                    </p>
-
-                    {/* THE ORB — the hero, unchanged, just bigger breathing room */}
-                    <div
-                        style={{
-                            pointerEvents: 'auto',
-                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.35s both',
-                        }}
-                    >
-                        <HeroOrb
-                            persona={activePersona}
-                            isTalking={isTalking}
-                            onClick={handleOrbClick}
-                        />
-                    </div>
-
-                    {/* CTA — one button, dark pill, no competition */}
-                    <div
-                        style={{
-                            pointerEvents: 'auto',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 8,
-                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.45s both',
-                        }}
-                    >
+                        {/* ── Left Arrow ──────────────────────────────────── */}
                         <button
-                            onClick={() => openModal('demo')}
+                            onClick={() => cyclePersona(-1)}
                             style={{
-                                padding: '14px 36px',
-                                borderRadius: 999,
-                                background: '#0a0a0a',
-                                color: '#fff',
-                                fontSize: 15,
-                                fontWeight: 600,
-                                letterSpacing: '-0.02em',
-                                border: 'none',
+                                position: 'absolute',
+                                left: -20,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                width: 40,
+                                height: 40,
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.95)',
+                                border: '1px solid rgba(0,0,0,0.08)',
+                                boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
                                 cursor: 'pointer',
-                                transition: 'background 0.2s ease, transform 0.18s cubic-bezier(0.16,1,0.3,1)',
-                                fontFamily: 'inherit',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 18,
+                                color: '#444',
+                                zIndex: 2,
+                                transition: 'transform 0.18s ease, box-shadow 0.18s ease',
                             }}
                             onMouseEnter={e => {
-                                (e.currentTarget as HTMLElement).style.background = '#222';
-                                (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)';
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                                e.currentTarget.style.boxShadow = '0 4px 18px rgba(0,0,0,0.15)';
                             }}
                             onMouseLeave={e => {
-                                (e.currentTarget as HTMLElement).style.background = '#0a0a0a';
-                                (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.10)';
                             }}
                         >
-                            Book a demo
+                            ‹
                         </button>
 
-                        <span style={{ fontSize: 11, color: '#aaa', letterSpacing: '0.01em' }}>
-                            {isTalking
-                                ? `Speaking with ${activePersona.name}…`
-                                : 'Live in one day. No engineering needed.'}
-                        </span>
-                    </div>
+                        {/* ── Right Arrow ─────────────────────────────────── */}
+                        <button
+                            onClick={() => cyclePersona(1)}
+                            style={{
+                                position: 'absolute',
+                                right: -20,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                width: 40,
+                                height: 40,
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.95)',
+                                border: '1px solid rgba(0,0,0,0.08)',
+                                boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 18,
+                                color: '#444',
+                                zIndex: 2,
+                                transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                                e.currentTarget.style.boxShadow = '0 4px 18px rgba(0,0,0,0.15)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.10)';
+                            }}
+                        >
+                            ›
+                        </button>
 
-                    {/* Persona switcher — 4 minimal pills, no role subtitle clutter */}
-                    <div
-                        style={{
-                            pointerEvents: 'auto',
-                            display: 'flex',
-                            gap: 6,
-                            marginTop: 28,
-                            padding: '6px',
-                            background: 'rgba(255,255,255,0.55)',
-                            border: '1px solid rgba(0,0,0,0.06)',
-                            borderRadius: 999,
-                            backdropFilter: 'blur(16px)',
-                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s both',
-                        }}
-                    >
-                        {PERSONAS.map((p, i) => {
-                            const isActive = i === personaIndex;
-                            return (
-                                <button
-                                    key={p.id}
-                                    onClick={() => {
-                                        if (!isActive) {
-                                            setTransitioning(true);
-                                            setTimeout(() => { setPersonaIndex(i); setIsTalking(false); setTransitioning(false); }, 180);
-                                        }
-                                    }}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: 6,
-                                        padding: '7px 16px',
-                                        borderRadius: 999,
-                                        background: isActive ? '#fff' : 'transparent',
-                                        border: 'none',
-                                        boxShadow: isActive ? '0 2px 12px rgba(0,0,0,0.1)' : 'none',
-                                        cursor: isActive ? 'default' : 'pointer',
-                                        transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
-                                        fontFamily: 'inherit',
-                                    }}
-                                >
-                                    <div
+                        {/* ── Left Column: Persona Info ────────────────────── */}
+                        <div
+                            style={{
+                                padding: '44px 36px 44px 48px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                gap: 0,
+                            }}
+                        >
+                            <h2
+                                style={{
+                                    fontSize: 'clamp(32px, 3.5vw, 46px)',
+                                    fontWeight: 700,
+                                    color: activePersona.color,
+                                    letterSpacing: '-0.04em',
+                                    lineHeight: 1,
+                                    margin: '0 0 6px',
+                                    transition: 'color 0.4s ease',
+                                }}
+                            >
+                                {activePersona.name}
+                            </h2>
+
+                            <p
+                                style={{
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: activePersona.color,
+                                    letterSpacing: '0.01em',
+                                    margin: '0 0 18px',
+                                    opacity: 0.85,
+                                    transition: 'color 0.4s ease',
+                                }}
+                            >
+                                {activePersona.role}
+                            </p>
+
+                            <p
+                                style={{
+                                    fontSize: 14,
+                                    lineHeight: 1.65,
+                                    color: '#444',
+                                    margin: '0 0 28px',
+                                    maxWidth: 280,
+                                }}
+                            >
+                                {activePersona.description}
+                            </p>
+
+                            <button
+                                onClick={() => openModal('demo')}
+                                style={{
+                                    alignSelf: 'flex-start',
+                                    padding: '12px 26px',
+                                    borderRadius: 999,
+                                    background: '#0a0a0a',
+                                    color: '#fff',
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                    letterSpacing: '-0.01em',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s ease, transform 0.18s ease',
+                                    fontFamily: 'inherit',
+                                }}
+                                onMouseEnter={e => {
+                                    (e.currentTarget as HTMLElement).style.background = '#222';
+                                    (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)';
+                                }}
+                                onMouseLeave={e => {
+                                    (e.currentTarget as HTMLElement).style.background = '#0a0a0a';
+                                    (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                                }}
+                            >
+                                Book a Live Demo
+                            </button>
+                        </div>
+
+                        {/* ── Center Column: Petal Orb ─────────────────────── */}
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '32px 0',
+                            }}
+                        >
+                            <HeroOrb
+                                persona={activePersona}
+                                orbState={orbState}
+                                onClick={handleOrbClick}
+                            />
+                        </div>
+
+                        {/* ── Right Column: Best For ───────────────────────── */}
+                        <div
+                            style={{
+                                padding: '44px 48px 44px 36px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <p
+                                style={{
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    color: '#888',
+                                    letterSpacing: '0.08em',
+                                    textTransform: 'uppercase',
+                                    margin: '0 0 16px',
+                                }}
+                            >
+                                Best for
+                            </p>
+
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                {activePersona.bestFor.map((item, i) => (
+                                    <li
+                                        key={i}
                                         style={{
-                                            width: 7, height: 7,
-                                            borderRadius: '50%',
-                                            background: p.color,
-                                            flexShrink: 0,
-                                            boxShadow: isActive ? `0 0 6px 2px ${p.glowColor}` : 'none',
-                                            transition: 'box-shadow 0.3s ease',
-                                        }}
-                                    />
-                                    <span
-                                        style={{
-                                            fontSize: 13,
-                                            fontWeight: isActive ? 600 : 400,
-                                            color: isActive ? '#0a0a0a' : '#777',
-                                            transition: 'color 0.2s ease, font-weight 0.2s ease',
-                                            whiteSpace: 'nowrap',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 10,
+                                            fontSize: 15,
+                                            color: '#222',
+                                            fontWeight: 400,
+                                            letterSpacing: '-0.01em',
                                         }}
                                     >
-                                        {p.name}
-                                    </span>
-                                </button>
-                            );
-                        })}
+                                        <span
+                                            style={{
+                                                width: 6,
+                                                height: 6,
+                                                borderRadius: '50%',
+                                                background: activePersona.color,
+                                                flexShrink: 0,
+                                                boxShadow: `0 0 6px 2px ${activePersona.glowColor}`,
+                                                transition: 'background 0.4s ease',
+                                            }}
+                                        />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            {/* Persona dot switcher */}
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    gap: 6,
+                                    marginTop: 36,
+                                    alignItems: 'center',
+                                }}
+                            >
+                                {PERSONAS.map((p, i) => (
+                                    <div
+                                        key={p.id}
+                                        onClick={() => {
+                                            if (i === personaIndex) return;
+                                            setTransitioning(true);
+                                            setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
+                                        }}
+                                        title={p.name}
+                                        style={{
+                                            width: i === personaIndex ? 22 : 7,
+                                            height: 7,
+                                            borderRadius: 999,
+                                            background: i === personaIndex ? p.color : 'rgba(0,0,0,0.15)',
+                                            cursor: i === personaIndex ? 'default' : 'pointer',
+                                            transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
+                                            boxShadow: i === personaIndex ? `0 0 8px 2px ${p.glowColor}` : 'none',
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* ── Card footer tip ──────────────────────────────── */}
+                        <div
+                            style={{
+                                gridColumn: '1 / -1',
+                                borderTop: '1px solid rgba(0,0,0,0.05)',
+                                padding: '12px 48px',
+                                textAlign: 'center',
+                                fontSize: 12,
+                                color: '#aaa',
+                                letterSpacing: '0.02em',
+                            }}
+                        >
+                            Tip: Use earphones for the best experience
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* ── 4. Modals ────────────────────────────────────────────────────── */}
+            {/* ── Modals ────────────────────────────────────────────────────── */}
             {activeModal === 'features' && <FeaturesModal persona={activePersona} onClose={closeModal} />}
             {activeModal === 'faqs' && <FAQsModal onClose={closeModal} />}
             {activeModal === 'demo' && <BookDemoModal onClose={closeModal} />}

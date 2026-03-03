@@ -8,6 +8,7 @@ export interface Persona {
     description: string;
     tagline: string;
     prompts: string[];
+    bestFor: string[];
     features: { title: string; body: string }[];
 }
 
@@ -22,6 +23,7 @@ export const PERSONAS: Persona[] = [
         orbGradient: 'radial-gradient(circle at 35% 30%, #c4b5fd 0%, #7C3AED 40%, #4c1d95 75%, #1e1b4b 100%)',
         glowColor: 'rgba(124,58,237,0.35)',
         prompts: ['Track my order', 'I want a refund', 'Speak in Tamil'],
+        bestFor: ['Customer complaints', 'Order tracking', 'Multilingual support', 'Refund processing'],
         features: [
             { title: 'Multilingual', body: 'Speaks 10 Indian languages fluently, switching mid-conversation if needed.' },
             { title: 'Smart Resolution', body: 'Resolves 85% of issues without human escalation using context-aware reasoning.' },
@@ -38,6 +40,7 @@ export const PERSONAS: Persona[] = [
         orbGradient: 'radial-gradient(circle at 35% 30%, #fde68a 0%, #D97706 40%, #92400e 75%, #1c1917 100%)',
         glowColor: 'rgba(217,119,6,0.35)',
         prompts: ['Tell me pricing', 'Book a demo', 'What\'s the ROI?'],
+        bestFor: ['Lead qualification', 'Product explanation', 'Follow-ups', 'Conversion optimization'],
         features: [
             { title: 'Lead Scoring', body: 'Scores inbound leads in real-time and prioritises high-intent prospects.' },
             { title: 'Dynamic Pitch', body: 'Adapts the sales narrative based on industry, role and pain points detected.' },
@@ -54,6 +57,7 @@ export const PERSONAS: Persona[] = [
         orbGradient: 'radial-gradient(circle at 35% 30%, #6ee7b7 0%, #059669 40%, #064e3b 75%, #022c22 100%)',
         glowColor: 'rgba(5,150,105,0.35)',
         prompts: ['Book tomorrow 3 PM', 'Cancel appointment', 'Reschedule to Friday'],
+        bestFor: ['Appointment booking', 'Reminders & follow-ups', 'Rescheduling', 'Calendar sync'],
         features: [
             { title: 'Smart Reminders', body: 'Sends voice + SMS reminders 24 h and 1 h before appointments.' },
             { title: 'Conflict Detection', body: 'Automatically detects calendar conflicts and proposes alternatives.' },
@@ -70,6 +74,7 @@ export const PERSONAS: Persona[] = [
         orbGradient: 'radial-gradient(circle at 35% 30%, #fca5a5 0%, #DC2626 40%, #7f1d1d 75%, #1c0a0a 100%)',
         glowColor: 'rgba(220,38,38,0.35)',
         prompts: ['I have a headache', 'Book OPD', 'Speak in Hindi'],
+        bestFor: ['Symptom triage', 'Patient routing', 'OPD booking', 'EHR integration'],
         features: [
             { title: 'Symptom Intake', body: 'Structured symptom collection following clinically validated triage protocols.' },
             { title: 'Smart Routing', body: 'Routes patients to the right specialist based on urgency and symptoms.' },

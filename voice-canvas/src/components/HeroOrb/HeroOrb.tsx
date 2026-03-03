@@ -1,17 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Persona } from '../../data/personas';
 
+export type OrbState = 'idle' | 'listening' | 'speaking';
+
 interface HeroOrbProps {
     persona: Persona;
-    isTalking: boolean;
+    orbState: OrbState;
     onClick: () => void;
 }
 
-const HeroOrb: React.FC<HeroOrbProps> = ({ persona, isTalking, onClick }) => {
+// ── Petal definition ─────────────────────────────────────────────────────────
+// Each petal is an ellipse rotated around the orb center.
+// n petals, evenly spaced by 360/n degrees.
+const PETAL_COUNT = 8;
+const petals = Array.from({ length: PETAL_COUNT }, (_, i) => i);
+
+const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
     const [hovered, setHovered] = useState(false);
     const glowRef = useRef<HTMLDivElement>(null);
 
-    // Mouse parallax for the glow
+    const isListening = orbState === 'listening';
+    const isSpeaking = orbState === 'speaking';
+
+    // Mouse parallax for the ambient glow
     useEffect(() => {
         const onMove = (e: MouseEvent) => {
             const cx = window.innerWidth / 2;
@@ -26,24 +37,32 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, isTalking, onClick }) => {
         return () => window.removeEventListener('mousemove', onMove);
     }, []);
 
-    const orbSize = window.innerWidth < 640 ? 200 : 280;
-    const wrapSize = orbSize + 120;
+    const orbSize = window.innerWidth < 640 ? 200 : 260;
+    const wrapSize = orbSize + 80;
 
-    // We use CSS sepia + hue-rotate to aggressively recolor the iframe based on the persona
-    const getFilterForPersona = (id: string) => {
-        switch (id) {
-            case 'priya': // Purple
-                return 'sepia(1) hue-rotate(230deg) saturate(2.5) contrast(1.1)';
-            case 'rohan': // Orange
-                return 'sepia(1) hue-rotate(350deg) saturate(3) contrast(1.1)';
-            case 'neha':  // Green
-                return 'sepia(1) hue-rotate(90deg) saturate(2) contrast(1.1)';
-            case 'veda':  // Red
-                return 'sepia(1) hue-rotate(320deg) saturate(3.5) contrast(1.1)';
-            default:
-                return 'none';
-        }
-    };
+    // ── Colors ────────────────────────────────────────────────────────────────
+    const ORANGE = '#FF6B00';
+    const ORANGE_GLOW = 'rgba(255,107,0,0.35)';
+
+    const glowColor = isSpeaking
+        ? ORANGE_GLOW
+        : isListening
+            ? 'rgba(255,107,0,0.22)'
+            : persona.glowColor + '55';
+
+    const outerGlowBox = isSpeaking
+        ? `0 0 80px 30px ${ORANGE_GLOW}, 0 0 140px 50px rgba(255,107,0,0.15)`
+        : isListening
+            ? `0 0 40px 12px rgba(255,107,0,0.18)`
+            : hovered
+                ? `0 0 40px 10px ${persona.glowColor}`
+                : `0 0 18px 4px ${persona.glowColor}`;
+
+    const labelText = isSpeaking
+        ? 'Speaking…'
+        : isListening
+            ? 'Listening…'
+            : 'Tap to talk';
 
     return (
         <div
@@ -54,106 +73,184 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, isTalking, onClick }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '6px auto',
-                // We let pointer events pass through to the iframe so the 3D robot is interactive
-                pointerEvents: 'none',
+                margin: '0 auto',
+                cursor: 'pointer',
             }}
+            onClick={onClick}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            {/* ── Ripple rings (talking state) ───────────────────────────────── */}
-            {isTalking && [0, 1, 2].map(i => (
+            {/* ── Ambient glow disc ─────────────────────────────────────── */}
+            <div
+                ref={glowRef}
+                style={{
+                    position: 'absolute',
+                    width: orbSize + (hovered ? 80 : 40),
+                    height: orbSize + (hovered ? 80 : 40),
+                    borderRadius: '50%',
+                    background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
+                    filter: `blur(${isSpeaking ? 36 : 22}px)`,
+                    opacity: isSpeaking ? 1 : isListening ? 0.85 : hovered ? 0.7 : 0.45,
+                    transition: 'all 0.5s ease',
+                    animation: isSpeaking
+                        ? 'orb-breathe-fast 0.7s ease-in-out infinite'
+                        : isListening
+                            ? 'orb-breathe 1.4s ease-in-out infinite'
+                            : 'float-c 5s ease-in-out infinite',
+                    pointerEvents: 'none',
+                }}
+            />
+
+            {/* ── Outer ripple rings (speaking) ─────────────────────────── */}
+            {isSpeaking && [0, 1, 2].map(i => (
                 <div
                     key={i}
                     style={{
                         position: 'absolute',
-                        width: orbSize - 20,
-                        height: orbSize - 20,
+                        width: orbSize + 20,
+                        height: orbSize + 20,
                         borderRadius: '50%',
-                        border: `1.5px solid ${persona.color}`,
-                        animation: `ripple-out 2.4s ease-out ${i * 0.75}s infinite`,
+                        border: `1.5px solid ${ORANGE}`,
+                        opacity: 0.6,
+                        animation: `ripple-out 1.6s ease-out ${i * 0.5}s infinite`,
                         pointerEvents: 'none',
                     }}
                 />
             ))}
 
-            {/* ── Ambient glow behind the robot ─────────────────────────────── */}
-            <div
-                ref={glowRef}
-                style={{
-                    position: 'absolute',
-                    width: orbSize + (hovered ? 60 : 30),
-                    height: orbSize + (hovered ? 60 : 30),
-                    borderRadius: '50%',
-                    background: `radial-gradient(circle, ${persona.glowColor} 0%, transparent 68%)`,
-                    filter: `blur(${hovered ? 28 : 22}px)`,
-                    opacity: isTalking ? 1 : hovered ? 0.85 : 0.55,
-                    transition: 'width 0.4s ease, height 0.4s ease, opacity 0.4s ease, filter 0.4s ease',
-                    animation: isTalking ? 'orb-connecting 1.1s ease-in-out infinite' : 'float-c 5s ease-in-out infinite',
-                    pointerEvents: 'none',
-                }}
-            />
-
-            {/* ── Spline 3D Robot Iframe ────────────────────────────────────── */}
-            <div
+            {/* ── SVG petal orb ─────────────────────────────────────────── */}
+            <svg
+                width={orbSize}
+                height={orbSize}
+                viewBox="-1 -1 2 2"
                 style={{
                     position: 'relative',
-                    width: orbSize,
-                    height: orbSize,
-                    pointerEvents: 'auto', // Robot is interactive!
-                    filter: getFilterForPersona(persona.id),
-                    transition: 'filter 0.8s ease',
-                    animation: isTalking ? 'orb-breathe 0.9s ease-in-out infinite' : 'none',
-                    borderRadius: '50%', // Helps clip if the scene overflows
-                    overflow: 'hidden',
-                    boxShadow: hovered ? `0 0 30px 10px ${persona.glowColor}` : 'none',
+                    zIndex: 2,
+                    filter: isSpeaking
+                        ? `drop-shadow(0 0 18px ${ORANGE}) drop-shadow(0 0 6px #ffb347)`
+                        : isListening
+                            ? `drop-shadow(0 0 10px ${ORANGE}88)`
+                            : `drop-shadow(0 0 6px ${persona.glowColor})`,
+                    transition: 'filter 0.5s ease',
+                    overflow: 'visible',
                 }}
             >
-                <iframe
-                    src='https://my.spline.design/happyrobotbutton-B0eXZIPruOrnllOWSVKBKEUK/'
-                    frameBorder='0'
-                    style={{ width: '100%', height: '100%' }}
-                    title={`${persona.name} 3D Robot`}
-                />
-            </div>
+                <defs>
+                    {/* Petal gradient - orange when active */}
+                    <radialGradient id="petalGrad" cx="50%" cy="30%" r="70%">
+                        <stop offset="0%" stopColor={isSpeaking ? '#FFD580' : isListening ? '#FFB347' : persona.color} stopOpacity="0.95" />
+                        <stop offset="60%" stopColor={isSpeaking ? ORANGE : isListening ? ORANGE : persona.color} stopOpacity="0.75" />
+                        <stop offset="100%" stopColor={isSpeaking ? '#cc3300' : isListening ? '#cc4400' : persona.glowColor} stopOpacity="0.3" />
+                    </radialGradient>
+                    {/* Core gradient */}
+                    <radialGradient id="coreGrad" cx="40%" cy="38%" r="65%">
+                        <stop offset="0%" stopColor={isSpeaking ? '#FFD580' : isListening ? '#FFB34788' : persona.color + '44'} />
+                        <stop offset="100%" stopColor={isSpeaking ? ORANGE : isListening ? ORANGE + '33' : 'transparent'} stopOpacity="0" />
+                    </radialGradient>
+                    {/* Shimmer highlight */}
+                    <radialGradient id="shimmerGrad" cx="35%" cy="28%" r="45%">
+                        <stop offset="0%" stopColor="white" stopOpacity={isSpeaking ? 0.5 : 0.2} />
+                        <stop offset="100%" stopColor="white" stopOpacity="0" />
+                    </radialGradient>
+                </defs>
 
-            {/* ── Floating "Tap to talk" button overlay ─────────────────────── */}
-            {/* Since the iframe consumes clicks, we provide a dedicated connect button overlapping the bottom */}
-            <button
-                onClick={onClick}
+                {/* Revolving petal group */}
+                <g
+                    style={{
+                        animation: isSpeaking
+                            ? 'spin-fast 2s linear infinite'
+                            : isListening
+                                ? 'spin-med 3.5s linear infinite'
+                                : 'none',
+                        transformOrigin: '0 0',
+                        transformBox: 'fill-box',
+                    }}
+                >
+                    {petals.map(i => {
+                        const angle = (360 / PETAL_COUNT) * i;
+                        const petalR = 0.33;  // distance from center
+                        const petalRx = 0.13;  // petal half-width
+                        const petalRy = 0.265; // petal half-height
+                        return (
+                            <ellipse
+                                key={i}
+                                cx={0}
+                                cy={-petalR}
+                                rx={petalRx}
+                                ry={petalRy}
+                                fill="url(#petalGrad)"
+                                opacity={isSpeaking ? 0.95 : isListening ? 0.88 : 0.6}
+                                transform={`rotate(${angle})`}
+                                style={{
+                                    transition: 'opacity 0.4s ease',
+                                }}
+                            />
+                        );
+                    })}
+                </g>
+
+                {/* Core glow circle */}
+                <circle
+                    cx={0}
+                    cy={0}
+                    r={isSpeaking ? 0.44 : 0.28}
+                    fill="url(#coreGrad)"
+                    style={{ transition: 'r 0.5s ease' }}
+                />
+
+                {/* Highlight shimmer */}
+                <circle
+                    cx={-0.12}
+                    cy={-0.15}
+                    r={0.22}
+                    fill="url(#shimmerGrad)"
+                />
+            </svg>
+
+            {/* ── Label ─────────────────────────────────────────────────── */}
+            <div
                 style={{
                     position: 'absolute',
-                    bottom: '10%',
-                    padding: '8px 20px',
-                    background: isTalking ? persona.color : 'rgba(255,255,255,0.85)',
-                    color: isTalking ? '#fff' : '#0a0a0a',
-                    border: `1px solid ${isTalking ? 'transparent' : 'rgba(0,0,0,0.1)'}`,
+                    bottom: '8%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    padding: '7px 20px',
+                    background: isSpeaking
+                        ? ORANGE
+                        : isListening
+                            ? 'rgba(255,107,0,0.15)'
+                            : 'rgba(255,255,255,0.82)',
+                    color: isSpeaking ? '#fff' : isListening ? ORANGE : '#0a0a0a',
+                    border: `1px solid ${isSpeaking ? 'transparent' : isListening ? ORANGE + '55' : 'rgba(0,0,0,0.08)'}`,
                     borderRadius: 999,
                     fontSize: 13,
                     fontWeight: 600,
-                    cursor: 'pointer',
-                    pointerEvents: 'auto',
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: isTalking ? `0 4px 20px ${persona.glowColor}` : '0 4px 12px rgba(0,0,0,0.08)',
-                    transition: 'all 0.3s ease',
+                    letterSpacing: '0.01em',
+                    backdropFilter: 'blur(12px)',
+                    boxShadow: isSpeaking
+                        ? `0 4px 20px ${ORANGE_GLOW}`
+                        : '0 2px 10px rgba(0,0,0,0.07)',
+                    whiteSpace: 'nowrap',
+                    pointerEvents: 'none',
+                    transition: 'all 0.35s ease',
                     zIndex: 10,
                 }}
-                onMouseEnter={(e) => {
-                    if (!isTalking) {
-                        e.currentTarget.style.background = '#fff';
-                        e.currentTarget.style.transform = 'scale(1.05)';
-                    }
-                }}
-                onMouseLeave={(e) => {
-                    if (!isTalking) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.85)';
-                        e.currentTarget.style.transform = 'scale(1)';
-                    }
-                }}
             >
-                {isTalking ? 'Connecting…' : 'Tap to talk'}
-            </button>
+                {labelText}
+            </div>
 
+            {/* ── Outer glowing box shadow wrapper ──────────────────────── */}
+            <div
+                style={{
+                    position: 'absolute',
+                    width: orbSize,
+                    height: orbSize,
+                    borderRadius: '50%',
+                    boxShadow: outerGlowBox,
+                    pointerEvents: 'none',
+                    transition: 'box-shadow 0.5s ease',
+                }}
+            />
         </div>
     );
 };

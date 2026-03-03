@@ -141,6 +141,40 @@ body,
     }
 }
 
+@keyframes spin-med {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-fast {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes orb-breathe-fast {
+
+    0%,
+    100% {
+        filter: brightness(1) saturate(1.1);
+        transform: scale(1);
+    }
+
+    50% {
+        filter: brightness(1.18) saturate(1.4);
+        transform: scale(1.04);
+    }
+}
+
 @keyframes fade-up {
     from {
         opacity: 0;
