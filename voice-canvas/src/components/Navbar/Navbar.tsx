@@ -15,15 +15,19 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                 left: 0,
                 right: 0,
                 zIndex: 50,
-                height: 64,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 28px',
             }}
         >
-            {/* ── Logo (left) ── */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'default' }}>
+            <div
+                style={{
+                    maxWidth: 1100,
+                    margin: '0 auto',
+                    padding: '28px 40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                }}
+            >
+                {/* ── Logo (left) ── */}
                 <span
                     style={{
                         fontSize: 19,
@@ -35,92 +39,31 @@ const Navbar: React.FC<NavbarProps> = ({ onFeatures, onFAQs, onBookDemo }) => {
                 >
                     Aivana
                 </span>
-            </div>
 
-            {/* ── Pill Nav (right) ── */}
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 0,
-                    background: 'rgba(255,255,255,0.12)',
-                    border: '1px solid rgba(255,255,255,0.18)',
-                    borderRadius: 999,
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    padding: '3px',
-                    flexShrink: 0,
-                }}
-            >
-                {[
-                    { label: 'Features', action: onFeatures },
-                    { label: 'FAQs', action: onFAQs },
-                ].map(({ label, action }) => (
-                    <button
-                        key={label}
-                        onClick={action}
-                        style={{
-                            padding: '7px 16px',
-                            borderRadius: 999,
-                            background: 'transparent',
-                            border: 'none',
-                            fontSize: 13,
-                            fontWeight: 500,
-                            color: '#e5e7eb',
-                            cursor: 'pointer',
-                            fontFamily: "'Inter', sans-serif",
-                            whiteSpace: 'nowrap',
-                            transition: 'background 0.18s ease, color 0.18s ease',
-                        }}
-                        onMouseEnter={e => {
-                            (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)';
-                            (e.currentTarget as HTMLElement).style.color = '#fff';
-                        }}
-                        onMouseLeave={e => {
-                            (e.currentTarget as HTMLElement).style.background = 'transparent';
-                            (e.currentTarget as HTMLElement).style.color = '#e5e7eb';
-                        }}
-                    >
-                        {label}
-                    </button>
-                ))}
-
-                {/* Divider */}
-                <div
-                    style={{
-                        width: 1,
-                        height: 16,
-                        background: 'rgba(255,255,255,0.15)',
-                        margin: '0 3px',
-                        flexShrink: 0,
-                    }}
-                />
-
-                {/* Book a demo */}
+                {/* ── CTA (right) ── */}
                 <button
                     onClick={onBookDemo}
                     style={{
-                        padding: '8px 18px',
+                        padding: '10px 20px',
                         borderRadius: 999,
-                        background: '#0f0f0f',
-                        border: 'none',
+                        background: 'transparent',
+                        border: '1px solid rgba(255,255,255,0.25)',
                         fontSize: 13,
-                        fontWeight: 600,
-                        color: '#fff',
+                        fontWeight: 500,
+                        color: '#f1f1f5',
                         cursor: 'pointer',
                         fontFamily: "'Inter', sans-serif",
                         whiteSpace: 'nowrap',
-                        letterSpacing: '-0.01em',
-                        transition: 'background 0.18s ease, transform 0.15s ease',
+                        letterSpacing: '0.01em',
+                        transition: 'background 0.2s ease, border-color 0.2s ease',
                     }}
                     onMouseEnter={e => {
-                        (e.currentTarget as HTMLElement).style.background = '#333';
-                        (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)';
+                        (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)';
+                        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.4)';
                     }}
                     onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.background = '#0f0f0f';
-                        (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                        (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.25)';
                     }}
                 >
                     Book a demo

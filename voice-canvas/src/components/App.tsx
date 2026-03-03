@@ -116,26 +116,24 @@ const App: React.FC = () => {
                 <div
                     style={{
                         textAlign: 'center',
-                        padding: '28px 24px 20px',
+                        marginTop: 80,
+                        marginBottom: 80,
                         animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) both',
+                        padding: '0 40px',
                     }}
                 >
                     <h1
                         style={{
-                            fontSize: 'clamp(24px, 3.8vw, 50px)',
-                            fontWeight: 700,
-                            color: '#f9fafb',
-                            letterSpacing: '-0.04em',
-                            lineHeight: 1.08,
+                            fontSize: '3.2rem',
+                            fontWeight: 600,
+                            color: '#f1f1f5',
+                            letterSpacing: '-0.02em',
+                            lineHeight: 1.15,
                             margin: 0,
-                            textShadow: '0 8px 24px rgba(0,0,0,0.6)',
                         }}
                     >
                         AI voice agents for{' '}
-                        <span style={{
-                            color: '#a78bfa',
-                            textShadow: '0 6px 28px rgba(139,92,246,0.55)',
-                        }}>
+                        <span style={{ color: '#a78bfa' }}>
                             intelligent conversations
                         </span>.
                     </h1>
@@ -240,33 +238,11 @@ const App: React.FC = () => {
                         {/* ══ LEFT COLUMN — Persona identity + CTA ════════════════ */}
                         <div
                             style={{
-                                padding: '52px 40px 52px 56px',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'center',
-                                borderRight: '1px solid rgba(255,255,255,0.10)',
                             }}
                         >
-                            {/* Role chip */}
-                            <div
-                                style={{
-                                    display: 'inline-flex',
-                                    alignSelf: 'flex-start',
-                                    padding: '4px 12px',
-                                    borderRadius: 999,
-                                    background: activePersona.color + '18',
-                                    border: `1px solid ${activePersona.color}33`,
-                                    fontSize: 10.5,
-                                    fontWeight: 700,
-                                    color: activePersona.color,
-                                    letterSpacing: '0.1em',
-                                    textTransform: 'uppercase' as const,
-                                    marginBottom: 16,
-                                    transition: 'all 0.4s ease',
-                                }}
-                            >
-                                {activePersona.role}
-                            </div>
 
                             {/* Name — monumental */}
                             <h2
@@ -302,29 +278,28 @@ const App: React.FC = () => {
                                 onClick={() => openModal('demo')}
                                 style={{
                                     alignSelf: 'flex-start',
-                                    padding: '11px 24px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 8,
+                                    padding: '14px 28px',
                                     borderRadius: 999,
-                                    background: activePersona.color,
-                                    color: '#fff',
-                                    fontSize: 13.5,
-                                    fontWeight: 600,
-                                    letterSpacing: '-0.01em',
+                                    background: '#7c3aed',
+                                    color: '#ffffff',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 500,
                                     border: 'none',
                                     cursor: 'pointer',
-                                    boxShadow: `0 8px 24px ${activePersona.color}55`,
-                                    transition: 'transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease',
+                                    transition: 'background 0.2s',
                                     fontFamily: 'inherit',
                                 }}
                                 onMouseEnter={e => {
-                                    (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px) scale(1.03)';
-                                    (e.currentTarget as HTMLElement).style.boxShadow = `0 14px 36px ${activePersona.color}77`;
+                                    (e.currentTarget as HTMLElement).style.background = '#6d28d9';
                                 }}
                                 onMouseLeave={e => {
-                                    (e.currentTarget as HTMLElement).style.transform = 'translateY(0) scale(1)';
-                                    (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px ${activePersona.color}55`;
+                                    (e.currentTarget as HTMLElement).style.background = '#7c3aed';
                                 }}
                             >
-                                Book a Live Demo →
+                                Book a Live Demo
                             </button>
                         </div>
 
@@ -334,111 +309,85 @@ const App: React.FC = () => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: '48px 32px',
-                                borderRight: '1px solid rgba(255,255,255,0.10)',
-                                minWidth: 300,
+                                gap: 20,
                             }}
                         >
-                            <HeroOrb
-                                persona={activePersona}
-                                orbState={orbState}
-                                onClick={handleOrbClick}
-                            />
+                            <div style={{ width: 200, height: 200, perspective: 800 }}>
+                                <HeroOrb
+                                    persona={activePersona}
+                                    orbState={orbState}
+                                    onClick={handleOrbClick}
+                                />
+                            </div>
                         </div>
 
                         {/* ══ RIGHT COLUMN — Best for spec ════════════════════════ */}
                         <div
                             style={{
-                                padding: '52px 52px 52px 40px',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'center',
                             }}
                         >
-                            {/* Label */}
-                            <p
-                                style={{
-                                    fontSize: 10,
-                                    fontWeight: 700,
-                                    color: '#cbd5e1',
-                                    letterSpacing: '0.14em',
-                                    textTransform: 'uppercase',
-                                    margin: '0 0 20px',
-                                }}
-                            >
-                                Best for
-                            </p>
-
                             {/* Spec rows */}
-                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
                                 {activePersona.bestFor.map((item, i) => (
                                     <li
                                         key={i}
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: 12,
-                                            fontSize: 14,
-                                            color: 'rgba(255,255,255,0.88)',
-                                            fontWeight: 500,
-                                            letterSpacing: '-0.01em',
+                                            gap: 10,
+                                            fontSize: '0.9rem',
+                                            color: 'rgba(255, 255, 255, 0.65)',
                                         }}
                                     >
-                                        {/* Colored check-dash */}
                                         <span
                                             style={{
-                                                width: 20,
-                                                height: 20,
-                                                borderRadius: 6,
-                                                background: activePersona.color + '18',
-                                                border: `1.5px solid ${activePersona.color}40`,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
+                                                width: 6,
+                                                height: 6,
+                                                borderRadius: '50%',
+                                                background: '#a78bfa',
                                                 flexShrink: 0,
-                                                fontSize: 11,
-                                                color: activePersona.color,
-                                                fontWeight: 700,
-                                                transition: 'all 0.4s ease',
                                             }}
-                                        >
-                                            ✓
-                                        </span>
+                                        />
                                         {item}
                                     </li>
                                 ))}
                             </ul>
-
-                            {/* Persona switcher + counter at bottom */}
-                            <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                                    {PERSONAS.map((p, i) => (
-                                        <div
-                                            key={p.id}
-                                            onClick={() => {
-                                                if (i === personaIndex) return;
-                                                setTransitioning(true);
-                                                setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
-                                            }}
-                                            title={p.name}
-                                            style={{
-                                                width: i === personaIndex ? 20 : 6,
-                                                height: 6,
-                                                borderRadius: 999,
-                                                background: i === personaIndex ? p.color : 'rgba(0,0,0,0.12)',
-                                                cursor: i === personaIndex ? 'default' : 'pointer',
-                                                transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
-                                                boxShadow: i === personaIndex ? `0 0 10px 2px ${p.glowColor}` : 'none',
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.40)', margin: 0, letterSpacing: '0.04em' }}>
-                                    {String(personaIndex + 1).padStart(2, '0')} / {String(PERSONAS.length).padStart(2, '0')}
-                                </p>
-                            </div>
                         </div>
+                    </div>
+
+                    {/* ══ CAROUSEL NAV ═══════════════════════════════════════════ */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: 6,
+                            marginTop: 60,
+                        }}
+                    >
+                        {PERSONAS.map((p, i) => (
+                            <button
+                                key={p.id}
+                                onClick={() => {
+                                    if (i === personaIndex) return;
+                                    setTransitioning(true);
+                                    setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
+                                }}
+                                style={{
+                                    width: i === personaIndex ? 24 : 6,
+                                    height: 6,
+                                    borderRadius: i === personaIndex ? 999 : '50%',
+                                    background: i === personaIndex ? '#a78bfa' : 'rgba(255, 255, 255, 0.2)',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s',
+                                    padding: 0,
+                                }}
+                                aria-label={`Select persona ${p.name}`}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>

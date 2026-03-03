@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { Persona } from '../../data/personas';
 
 export type OrbState = 'idle' | 'listening' | 'speaking';
@@ -14,7 +14,6 @@ const PETAL_COUNT = 8;
 const petals = Array.from({ length: PETAL_COUNT }, (_, i) => i);
 
 const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
-    const [hovered, setHovered] = useState(false);
     const glowRef = useRef<HTMLDivElement>(null);
 
     const isListening = orbState === 'listening';
@@ -40,21 +39,6 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
 
     // ── Colors ──────────────────────────────────────────────────────────────
     const ORANGE = '#FF6B00';
-    const ORANGE_GLOW = 'rgba(255,107,0,0.35)';
-
-    const glowColor = isSpeaking
-        ? ORANGE_GLOW
-        : isListening
-            ? 'rgba(255,107,0,0.22)'
-            : persona.glowColor + '55';
-
-    const outerGlowBox = isSpeaking
-        ? `0 0 80px 30px ${ORANGE_GLOW}, 0 0 140px 50px rgba(255,107,0,0.15)`
-        : isListening
-            ? `0 0 40px 12px rgba(255,107,0,0.18)`
-            : hovered
-                ? `0 0 40px 10px ${persona.glowColor}`
-                : `0 0 18px 4px ${persona.glowColor}`;
 
     const labelText = isSpeaking
         ? 'Speaking…'
@@ -78,66 +62,7 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
                 cursor: 'pointer',
             }}
             onClick={onClick}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
         >
-            {/* ── Ambient glow disc ─────────────────────────────────────── */}
-            <div
-                ref={glowRef}
-                style={{
-                    position: 'absolute',
-                    width: orbSize + (hovered ? 80 : 40),
-                    height: orbSize + (hovered ? 80 : 40),
-                    borderRadius: '50%',
-                    background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
-                    filter: `blur(${isSpeaking ? 36 : 22}px)`,
-                    opacity: isSpeaking ? 1 : isListening ? 0.85 : hovered ? 0.7 : 0.45,
-                    transition: 'all 0.5s ease',
-                    animation: isSpeaking
-                        ? 'orb-breathe-fast 0.7s ease-in-out infinite'
-                        : isListening
-                            ? 'orb-breathe 1.4s ease-in-out infinite'
-                            : 'float-c 5s ease-in-out infinite',
-                    pointerEvents: 'none',
-                }}
-            />
-
-            {/* ── Ripple rings (speaking) ────────────────────────────────── */}
-            {isSpeaking && [0, 1, 2].map(i => (
-                <div
-                    key={i}
-                    style={{
-                        position: 'absolute',
-                        width: orbSize + 20,
-                        height: orbSize + 20,
-                        borderRadius: '50%',
-                        border: `1.5px solid ${ORANGE}`,
-                        opacity: 0.6,
-                        animation: `ripple-out 1.6s ease-out ${i * 0.5}s infinite`,
-                        pointerEvents: 'none',
-                    }}
-                />
-            ))}
-
-            {/* ── Pulse ring — interactive trigger cue ─────────────────────── */}
-            {/* Idle: 1 slow ring; Listening: 1 fast ring; Speaking: 2 rings */}
-            {[0, ...(isSpeaking ? [1] : [])].map(i => (
-                <div
-                    key={`pulse-${i}`}
-                    style={{
-                        position: 'absolute',
-                        width: orbSize + 20,
-                        height: orbSize + 20,
-                        borderRadius: '50%',
-                        border: `2px solid ${isSpeaking ? ORANGE : isListening ? ORANGE : persona.color}`,
-                        opacity: isSpeaking ? 0.7 : isListening ? 0.6 : 0.45,
-                        animation: `pulseRing ${isSpeaking ? '1.2s' : isListening ? '1.6s' : '2.4s'} ease-out ${i * 0.6}s infinite`,
-                        pointerEvents: 'none',
-                        zIndex: 1,
-                    }}
-                />
-            ))}
-
             {/* ── SVG petal orb inside perspective wrapper ───────────────── */}
             {/* perspective on the container gives rotateY a true 3D coin-flip depth */}
             <div
@@ -233,50 +158,24 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
             </div>
             {/* ── end perspective wrapper ───────────────────────────────────── */}
 
-            {/* ── Label pill ────────────────────────────────────────────────── */}
+            {/* ── Label pill -> quiet text ─────────────────────────────────────── */}
             <div
                 style={{
                     position: 'absolute',
-                    bottom: '8%',
+                    bottom: '-40px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    padding: '7px 20px',
-                    background: isSpeaking
-                        ? ORANGE
-                        : isListening
-                            ? 'rgba(255,107,0,0.15)'
-                            : 'rgba(255,255,255,0.82)',
-                    color: isSpeaking ? '#fff' : isListening ? ORANGE : '#0a0a0a',
-                    border: `1px solid ${isSpeaking ? 'transparent' : isListening ? ORANGE + '55' : 'rgba(0,0,0,0.08)'}`,
-                    borderRadius: 999,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    letterSpacing: '0.01em',
-                    backdropFilter: 'blur(12px)',
-                    boxShadow: isSpeaking
-                        ? `0 4px 20px ${ORANGE_GLOW}`
-                        : '0 2px 10px rgba(0,0,0,0.07)',
+                    fontSize: '0.8rem',
+                    color: isSpeaking || isListening ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.4)',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
                     whiteSpace: 'nowrap',
                     pointerEvents: 'none',
-                    transition: 'all 0.35s ease',
-                    zIndex: 10,
+                    transition: 'color 0.3s ease',
                 }}
             >
                 {labelText}
             </div>
-
-            {/* ── Outer glow ring ───────────────────────────────────────────── */}
-            <div
-                style={{
-                    position: 'absolute',
-                    width: orbSize,
-                    height: orbSize,
-                    borderRadius: '50%',
-                    boxShadow: outerGlowBox,
-                    pointerEvents: 'none',
-                    transition: 'box-shadow 0.5s ease',
-                }}
-            />
         </div>
     );
 };
