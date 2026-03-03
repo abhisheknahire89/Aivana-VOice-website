@@ -62,8 +62,12 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
             ? 'Listening…'
             : 'Tap to talk';
 
-    // Y-axis spin speed changes by state
-    const spinDuration = isSpeaking ? '3s' : isListening ? '6s' : '10s';
+    // Per-state animation — each uses its own keyframe so scale differs too
+    const svgAnimation = isSpeaking
+        ? 'petalSpinSpeaking 5.5s linear infinite'   // 5.5s + scale 0.95→1.08
+        : isListening
+            ? 'petalSpinListening 3.5s linear infinite' // 3.5s + scale 1.0→1.05
+            : 'petalSpin 11s linear infinite';           // 11s, no scale
 
     return (
         <div
@@ -145,8 +149,8 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
                                 ? `drop-shadow(0 0 10px ${ORANGE}88)`
                                 : `drop-shadow(0 0 6px ${persona.glowColor})`,
                         transition: 'filter 0.5s ease',
-                        // ── Y-axis rotation — the key 3D turntable effect ──
-                        animation: `petalSpin ${spinDuration} linear infinite`,
+                        // ── Y-axis rotation — speed & scale differ per state ──
+                        animation: svgAnimation,
                     }}
                 >
                     <defs>

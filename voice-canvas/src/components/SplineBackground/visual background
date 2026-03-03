@@ -1,0 +1,221 @@
+1. Water & Boat visuals
+Goal: Keep the paper‑boat Spline as the main ambient element, but add a fluid, watery feel and gentle motion.
+
+1.1 Animated mesh‑style gradient behind the boat
+Add a slow animated gradient layer behind the Spline iframe to suggest water, without overpowering the content.
+
+css
+.hero-section {
+position: relative;
+overflow: hidden;
+width: 100%;
+min-height: 100vh;
+background: radial-gradient(circle at 20% 20%, #eef1ff 0, #ffffff 45%, #f4f7ff 100%);
+}
+
+/* Mesh-like animated gradient */
+.hero-section::before {
+content: '';
+position: absolute;
+inset: -20%;
+background:
+radial-gradient(circle at 10% 20%, rgba(120, 132, 255, 0.28), transparent 55%),
+radial-gradient(circle at 80% 10%, rgba(130, 220, 255, 0.24), transparent 55%),
+radial-gradient(circle at 50% 90%, rgba(180, 150, 255, 0.25), transparent 55%);
+animation: meshDrift 30s ease-in-out infinite alternate;
+z-index: 0;
+pointer-events: none;
+}
+@keyframes meshDrift {
+0% { transform: translate3d(0, 0, 0); }
+50% { transform: translate3d(-40px, 20px, 0); }
+100% { transform: translate3d(30px, -30px, 0); }
+}
+This sits under your cards and under (or behind) the Spline boat, giving a slow liquid feel.
+​
+
+1.2 Paper boat float + parallax
+Wrap the Spline iframe in a boat-layer that floats up/down and reacts slightly to mouse movement on desktop.
+
+xml
+<div class="spline-background">
+    <div class="boat-layer">
+        <iframe src="https://my.spline.design/animatedpaperboat-jeJTnCRZkUeZW3jf48yUoDEa/" frameborder="0" width="100%"
+            height="100%">
+        </iframe>
+    </div>
+</div>
+css
+.boat-layer {
+position: absolute;
+inset: 0;
+animation: boatFloat 8s ease-in-out infinite alternate;
+will-change: transform;
+}
+@keyframes boatFloat {
+0% { transform: translateY(0px); }
+100% { transform: translateY(-10px); } /* 5–10px gentle bob */
+}
+javascript
+// Subtle parallax on desktop
+const boatLayer = document.querySelector('.boat-layer');
+window.addEventListener('mousemove', (e) => {
+const x = (e.clientX / window.innerWidth - 0.5) * 10; // -5 to +5
+const y = (e.clientY / window.innerHeight - 0.5) * 6; // -3 to +3
+boatLayer.style.transform = `translate3d(${x}px, ${y - 5}px, 0)`; // keep float offset
+});
+For mobile, you can skip the mouse parallax and rely only on boatFloat.
+
+1.3 Refraction / reflection feel
+When the central card overlaps the water/boat area, simulate subtle reflection / glass.
+
+css
+.agent-card {
+backdrop-filter: blur(6px);
+background: rgba(255, 255, 255, 0.9);
+}
+
+/* Soft reflection under boat region (optional) */
+.boat-reflection {
+position: absolute;
+bottom: 12%;
+left: 50%;
+width: 40%;
+height: 40px;
+transform: translateX(-50%);
+background: radial-gradient(ellipse at center,
+rgba(120, 132, 255, 0.25), transparent 70%);
+filter: blur(6px);
+opacity: 0.4;
+}
+2. Visual hierarchy & depth
+2.1 Headline emphasis
+Make “intelligent conversations” the key phrase.
+
+css
+.hero-title {
+font-size: 3rem;
+font-weight: 700;
+color: #111111;
+}
+.hero-title span.highlight {
+color: #6b4bff; /* signature purple */
+text-shadow: 0 6px 18px rgba(107, 75, 255, 0.22);
+}
+xml
+<h1 class="hero-title">
+    AI voice agents for <span class="highlight">intelligent conversations</span>
+</h1>
+2.2 Stronger floating card shadow
+css
+.agent-card {
+background: #ffffff;
+border-radius: 32px;
+box-shadow:
+0 18px 60px rgba(15, 23, 42, 0.08),
+0 0 0 1px rgba(148, 163, 184, 0.18);
+}
+3. “Tap to talk” pulsing ring
+Turn the central flower into a clear interactive trigger with a soft pulse ring.
+
+xml
+<button class="tap-to-talk">
+    <span class="pulse-ring"></span>
+    <span class="inner-circle">
+        <!-- flower/petal element goes here -->
+    </span>
+</button>
+css
+.tap-to-talk {
+position: relative;
+border: none;
+background: transparent;
+cursor: pointer;
+}
+.tap-to-talk .inner-circle {
+position: relative;
+z-index: 2;
+width: 80px;
+height: 80px;
+border-radius: 50%;
+background: #ffffff;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.tap-to-talk .pulse-ring {
+position: absolute;
+inset: -10px;
+border-radius: 50%;
+border: 2px solid rgba(107, 75, 255, 0.5); /* purple */
+animation: pulseRing 2s ease-out infinite;
+z-index: 1;
+}
+@keyframes pulseRing {
+0% {
+transform: scale(0.8);
+opacity: 0.8;
+}
+100% {
+transform: scale(1.4);
+opacity: 0;
+}
+}
+You can further tie the ring intensity to the states:
+
+Idle: slow, low‑opacity pulse.
+
+Listening: faster pulse.
+
+Speaking: thicker border or dual rings.
+
+4. Layout, nav, and carousel tweaks
+4.1 Narrower header container
+css
+.header {
+max-width: 1120px;
+margin: 0 auto;
+padding: 24px 32px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+This pulls logo and “Book a demo” closer together, reducing eye travel.
+
+4.2 Carousel dots and counter
+xml
+<div class="carousel-meta">
+    <div class="carousel-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
+    <div class="carousel-count">01 / 03</div>
+</div>
+css
+.carousel-meta {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+.carousel-dots .dot {
+width: 8px;
+height: 8px;
+border-radius: 999px;
+background: #e2e8f0;
+}
+.carousel-dots .dot.active {
+width: 18px;
+background: #6b4bff;
+}
+.carousel-count {
+font-size: 0.78rem;
+color: #64748b;
+}
+4.3 Typographic tweaks
+css
+.agent-name {
+font-weight: 700; /* heavier for names like Priya */
+}
+.hero-title { font-weight: 700; }
+.agent-description { font-weight: 400; color: #4b5563; }

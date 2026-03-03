@@ -161,7 +161,7 @@ body,
     }
 }
 
-/* 3D Y-axis turntable spin for the petal SVG */
+/* 3D Y-axis turntable — idle: slow, no scale */
 @keyframes petalSpin {
     from {
         transform: rotateY(0deg);
@@ -169,6 +169,56 @@ body,
 
     to {
         transform: rotateY(360deg);
+    }
+}
+
+/* Listening: faster spin + tiny scale pulse 1.0 → 1.05 */
+@keyframes petalSpinListening {
+    0% {
+        transform: rotateY(0deg) scale(1.00);
+    }
+
+    25% {
+        transform: rotateY(90deg) scale(1.05);
+    }
+
+    50% {
+        transform: rotateY(180deg) scale(1.00);
+    }
+
+    75% {
+        transform: rotateY(270deg) scale(1.05);
+    }
+
+    100% {
+        transform: rotateY(360deg) scale(1.00);
+    }
+}
+
+/* Speaking: medium-fast + stronger oscillation 0.95 → 1.08 */
+@keyframes petalSpinSpeaking {
+    0% {
+        transform: rotateY(0deg) scale(1.00);
+    }
+
+    20% {
+        transform: rotateY(72deg) scale(1.08);
+    }
+
+    40% {
+        transform: rotateY(144deg) scale(0.95);
+    }
+
+    60% {
+        transform: rotateY(216deg) scale(1.08);
+    }
+
+    80% {
+        transform: rotateY(288deg) scale(0.95);
+    }
+
+    100% {
+        transform: rotateY(360deg) scale(1.00);
     }
 }
 
