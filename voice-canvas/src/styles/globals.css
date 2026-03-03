@@ -161,6 +161,17 @@ body,
     }
 }
 
+/* 3D Y-axis turntable spin for the petal SVG */
+@keyframes petalSpin {
+    from {
+        transform: rotateY(0deg);
+    }
+
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
 @keyframes orb-breathe-fast {
 
     0%,

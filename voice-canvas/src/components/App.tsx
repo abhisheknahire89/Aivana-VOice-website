@@ -6,7 +6,6 @@ import HeroOrb, { type OrbState } from './HeroOrb/HeroOrb';
 import FeaturesModal from './FeaturesModal/FeaturesModal';
 import FAQsModal from './FAQsModal/FAQsModal';
 import BookDemoModal from './BookDemoModal/BookDemoModal';
-import SplineBackground from './SplineBackground/SplineBackground';
 
 export type ModalType = 'features' | 'faqs' | 'demo' | null;
 
@@ -87,9 +86,6 @@ const App: React.FC = () => {
                 WebkitFontSmoothing: 'antialiased',
             } as React.CSSProperties}
         >
-            {/* ── Spline background ──────────────────────────────────────────── */}
-            <SplineBackground />
-
             {/* ── Main layer ────────────────────────────────────────────────── */}
             <div
                 style={{

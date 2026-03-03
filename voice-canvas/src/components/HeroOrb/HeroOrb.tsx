@@ -9,9 +9,7 @@ interface HeroOrbProps {
     onClick: () => void;
 }
 
-// ── Petal definition ─────────────────────────────────────────────────────────
-// Each petal is an ellipse rotated around the orb center.
-// n petals, evenly spaced by 360/n degrees.
+// 8 petals evenly spaced around the center
 const PETAL_COUNT = 8;
 const petals = Array.from({ length: PETAL_COUNT }, (_, i) => i);
 
@@ -22,7 +20,7 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
     const isListening = orbState === 'listening';
     const isSpeaking = orbState === 'speaking';
 
-    // Mouse parallax for the ambient glow
+    // Mouse parallax — ambient glow follows cursor
     useEffect(() => {
         const onMove = (e: MouseEvent) => {
             const cx = window.innerWidth / 2;
@@ -40,7 +38,7 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
     const orbSize = window.innerWidth < 640 ? 200 : 260;
     const wrapSize = orbSize + 80;
 
-    // ── Colors ────────────────────────────────────────────────────────────────
+    // ── Colors ──────────────────────────────────────────────────────────────
     const ORANGE = '#FF6B00';
     const ORANGE_GLOW = 'rgba(255,107,0,0.35)';
 
@@ -63,6 +61,9 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
         : isListening
             ? 'Listening…'
             : 'Tap to talk';
+
+    // Y-axis spin speed changes by state
+    const spinDuration = isSpeaking ? '3s' : isListening ? '6s' : '10s';
 
     return (
         <div
@@ -101,7 +102,7 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
                 }}
             />
 
-            {/* ── Outer ripple rings (speaking) ─────────────────────────── */}
+            {/* ── Ripple rings (speaking) ────────────────────────────────── */}
             {isSpeaking && [0, 1, 2].map(i => (
                 <div
                     key={i}
@@ -118,96 +119,106 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
                 />
             ))}
 
-            {/* ── SVG petal orb ─────────────────────────────────────────── */}
-            <svg
-                width={orbSize}
-                height={orbSize}
-                viewBox="-1 -1 2 2"
+            {/* ── SVG petal orb inside perspective wrapper ───────────────── */}
+            {/* perspective on the container gives rotateY a true 3D coin-flip depth */}
+            <div
                 style={{
                     position: 'relative',
                     zIndex: 2,
-                    filter: isSpeaking
-                        ? `drop-shadow(0 0 18px ${ORANGE}) drop-shadow(0 0 6px #ffb347)`
-                        : isListening
-                            ? `drop-shadow(0 0 10px ${ORANGE}88)`
-                            : `drop-shadow(0 0 6px ${persona.glowColor})`,
-                    transition: 'filter 0.5s ease',
-                    overflow: 'visible',
+                    perspective: 900,
+                    perspectiveOrigin: '50% 50%',
+                    width: orbSize,
+                    height: orbSize,
                 }}
             >
-                <defs>
-                    {/* Petal gradient - orange when active */}
-                    <radialGradient id="petalGrad" cx="50%" cy="30%" r="70%">
-                        <stop offset="0%" stopColor={isSpeaking ? '#FFD580' : isListening ? '#FFB347' : persona.color} stopOpacity="0.95" />
-                        <stop offset="60%" stopColor={isSpeaking ? ORANGE : isListening ? ORANGE : persona.color} stopOpacity="0.75" />
-                        <stop offset="100%" stopColor={isSpeaking ? '#cc3300' : isListening ? '#cc4400' : persona.glowColor} stopOpacity="0.3" />
-                    </radialGradient>
-                    {/* Core gradient */}
-                    <radialGradient id="coreGrad" cx="40%" cy="38%" r="65%">
-                        <stop offset="0%" stopColor={isSpeaking ? '#FFD580' : isListening ? '#FFB34788' : persona.color + '44'} />
-                        <stop offset="100%" stopColor={isSpeaking ? ORANGE : isListening ? ORANGE + '33' : 'transparent'} stopOpacity="0" />
-                    </radialGradient>
-                    {/* Shimmer highlight */}
-                    <radialGradient id="shimmerGrad" cx="35%" cy="28%" r="45%">
-                        <stop offset="0%" stopColor="white" stopOpacity={isSpeaking ? 0.5 : 0.2} />
-                        <stop offset="100%" stopColor="white" stopOpacity="0" />
-                    </radialGradient>
-                </defs>
-
-                {/* Revolving petal group */}
-                <g
+                <svg
+                    width={orbSize}
+                    height={orbSize}
+                    viewBox="-1 -1 2 2"
                     style={{
-                        animation: isSpeaking
-                            ? 'spin-fast 2s linear infinite'
+                        display: 'block',
+                        overflow: 'visible',
+                        transformStyle: 'preserve-3d',
+                        filter: isSpeaking
+                            ? `drop-shadow(0 0 18px ${ORANGE}) drop-shadow(0 0 6px #ffb347)`
                             : isListening
-                                ? 'spin-med 3.5s linear infinite'
-                                : 'none',
-                        transformOrigin: '0 0',
-                        transformBox: 'fill-box',
+                                ? `drop-shadow(0 0 10px ${ORANGE}88)`
+                                : `drop-shadow(0 0 6px ${persona.glowColor})`,
+                        transition: 'filter 0.5s ease',
+                        // ── Y-axis rotation — the key 3D turntable effect ──
+                        animation: `petalSpin ${spinDuration} linear infinite`,
                     }}
                 >
-                    {petals.map(i => {
-                        const angle = (360 / PETAL_COUNT) * i;
-                        const petalR = 0.33;  // distance from center
-                        const petalRx = 0.13;  // petal half-width
-                        const petalRy = 0.265; // petal half-height
-                        return (
-                            <ellipse
-                                key={i}
-                                cx={0}
-                                cy={-petalR}
-                                rx={petalRx}
-                                ry={petalRy}
-                                fill="url(#petalGrad)"
-                                opacity={isSpeaking ? 0.95 : isListening ? 0.88 : 0.6}
-                                transform={`rotate(${angle})`}
-                                style={{
-                                    transition: 'opacity 0.4s ease',
-                                }}
-                            />
-                        );
-                    })}
-                </g>
+                    <defs>
+                        {/* Petal gradient — orange when active, persona color when idle */}
+                        <radialGradient id="petalGrad" cx="50%" cy="30%" r="70%">
+                            <stop offset="0%" stopColor={isSpeaking ? '#FFD580' : isListening ? '#FFB347' : persona.color} stopOpacity="0.95" />
+                            <stop offset="60%" stopColor={isSpeaking ? ORANGE : isListening ? ORANGE : persona.color} stopOpacity="0.75" />
+                            <stop offset="100%" stopColor={isSpeaking ? '#cc3300' : isListening ? '#cc4400' : persona.glowColor} stopOpacity="0.3" />
+                        </radialGradient>
 
-                {/* Core glow circle */}
-                <circle
-                    cx={0}
-                    cy={0}
-                    r={isSpeaking ? 0.44 : 0.28}
-                    fill="url(#coreGrad)"
-                    style={{ transition: 'r 0.5s ease' }}
-                />
+                        {/* Core gradient */}
+                        <radialGradient id="coreGrad" cx="40%" cy="38%" r="65%">
+                            <stop offset="0%" stopColor={isSpeaking ? '#FFD580' : isListening ? '#FFB34788' : persona.color + '44'} />
+                            <stop offset="100%" stopColor={isSpeaking ? ORANGE : isListening ? ORANGE + '33' : 'transparent'} stopOpacity="0" />
+                        </radialGradient>
 
-                {/* Highlight shimmer */}
-                <circle
-                    cx={-0.12}
-                    cy={-0.15}
-                    r={0.22}
-                    fill="url(#shimmerGrad)"
-                />
-            </svg>
+                        {/* Shimmer highlight */}
+                        <radialGradient id="shimmerGrad" cx="35%" cy="28%" r="45%">
+                            <stop offset="0%" stopColor="white" stopOpacity={isSpeaking ? 0.5 : 0.2} />
+                            <stop offset="100%" stopColor="white" stopOpacity="0" />
+                        </radialGradient>
+                    </defs>
 
-            {/* ── Label ─────────────────────────────────────────────────── */}
+                    {/* Petal group — Z-axis spin when listening/speaking */}
+                    <g
+                        style={{
+                            animation: isSpeaking
+                                ? 'spin-fast 2s linear infinite'
+                                : isListening
+                                    ? 'spin-med 3.5s linear infinite'
+                                    : 'none',
+                            transformOrigin: '0 0',
+                            transformBox: 'fill-box',
+                        }}
+                    >
+                        {petals.map(i => {
+                            const angle = (360 / PETAL_COUNT) * i;
+                            const petalR = 0.33;
+                            const petalRx = 0.13;
+                            const petalRy = 0.265;
+                            return (
+                                <ellipse
+                                    key={i}
+                                    cx={0}
+                                    cy={-petalR}
+                                    rx={petalRx}
+                                    ry={petalRy}
+                                    fill="url(#petalGrad)"
+                                    opacity={isSpeaking ? 0.95 : isListening ? 0.88 : 0.6}
+                                    transform={`rotate(${angle})`}
+                                    style={{ transition: 'opacity 0.4s ease' }}
+                                />
+                            );
+                        })}
+                    </g>
+
+                    {/* Core glow circle */}
+                    <circle
+                        cx={0}
+                        cy={0}
+                        r={isSpeaking ? 0.44 : 0.28}
+                        fill="url(#coreGrad)"
+                        style={{ transition: 'r 0.5s ease' }}
+                    />
+
+                    {/* Shimmer highlight */}
+                    <circle cx={-0.12} cy={-0.15} r={0.22} fill="url(#shimmerGrad)" />
+                </svg>
+            </div>
+            {/* ── end perspective wrapper ───────────────────────────────────── */}
+
+            {/* ── Label pill ────────────────────────────────────────────────── */}
             <div
                 style={{
                     position: 'absolute',
@@ -239,7 +250,7 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick }) => {
                 {labelText}
             </div>
 
-            {/* ── Outer glowing box shadow wrapper ──────────────────────── */}
+            {/* ── Outer glow ring ───────────────────────────────────────────── */}
             <div
                 style={{
                     position: 'absolute',
