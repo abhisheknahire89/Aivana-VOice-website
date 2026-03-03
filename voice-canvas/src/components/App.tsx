@@ -140,7 +140,7 @@ const App: React.FC = () => {
                             fontFamily: "'Satoshi', 'General Sans', sans-serif"
                         }}
                     >
-                        Cut documentation time by <span style={{ color: '#a78bfa' }}>70%</span>.
+                        Automate your voice support with <span style={{ color: '#a78bfa' }}>AI</span>.
                     </h1>
                     <p
                         style={{
@@ -151,7 +151,7 @@ const App: React.FC = () => {
                             lineHeight: 1.6,
                         }}
                     >
-                        Let doctors focus on patients, not paperwork.
+                        Resolve customer issues instantly, 24/7, across any language.
                     </p>
 
                     {/* CTAs */}
@@ -217,13 +217,13 @@ const App: React.FC = () => {
                             flexWrap: 'wrap',
                         }}
                     >
-                        <span>Trusted by IHH Healthcare</span>
+                        <span>Trusted by leading enterprises</span>
                         <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-                        <span>Fortis</span>
+                        <span>1M+ Conversations</span>
                         <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-                        <span>371+ Consultations</span>
+                        <span>98% Accuracy</span>
                         <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-                        <span>91% Diagnostic Accuracy</span>
+                        <span>24/7 Availability</span>
                     </div>
                 </div>
 
@@ -492,17 +492,17 @@ const App: React.FC = () => {
                 {/* 1. Problem Statement */}
                 <section style={{ textAlign: 'center', marginBottom: 160 }}>
                     <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, margin: '0 0 20px', fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
-                        Indian doctors spend <span style={{ color: '#ef4444' }}>3+ hours daily</span> on documentation.
+                        Support teams spend <span style={{ color: '#ef4444' }}>70% of their day</span> on repetitive queries.
                     </h2>
                     <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', maxWidth: 600, margin: '0 auto' }}>
-                        Patients wait. Burnout rises. The system is broken.
+                        Customers wait. Costs rise. CSAT drops. The traditional contact center is broken.
                     </p>
                 </section>
 
                 {/* 2. Solution Demo */}
                 <section style={{ marginBottom: 160, textAlign: 'center' }}>
                     <div style={{ width: '100%', maxWidth: 800, aspectRatio: '16/9', background: 'rgba(255,255,255,0.03)', borderRadius: 24, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1.2rem' }}>[ 15-second Ambient Documentation Demo Go Here ]</span>
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1.2rem' }}>[ 15-second Agent Interaction Demo Go Here ]</span>
                     </div>
                 </section>
 
@@ -514,18 +514,18 @@ const App: React.FC = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 40, textAlign: 'center' }}>
                         <div>
                             <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>1</div>
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Speak Naturally</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Doctor converses with the patient naturally in English, Hindi, or Hinglish.</p>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Connect Channels</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Deploy our voice agent over phone, web, or app with a single line of code.</p>
                         </div>
                         <div>
                             <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>2</div>
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>AI Captures Context</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Our models process the conversation, separating medical facts from chit-chat.</p>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Train Instant AI</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Aivana instantly learns your knowledge base, CRM data, and business logic.</p>
                         </div>
                         <div>
                             <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>3</div>
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Structured Notes</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Prefilled SOAP notes appear in seconds, ready for review and EHR push.</p>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Resolve Queries</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Aivana resolves level-1 and level-2 queries autonomously, 24/7/365.</p>
                         </div>
                     </div>
                 </section>
@@ -533,13 +533,13 @@ const App: React.FC = () => {
                 {/* 4. Social Proof / Quote */}
                 <section style={{ marginBottom: 160, textAlign: 'center', padding: '60px 40px', background: 'rgba(255,255,255,0.02)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.05)' }}>
                     <p style={{ fontSize: '1.4rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', maxWidth: 800, margin: '0 auto 30px', lineHeight: 1.6 }}>
-                        "Aivana has completely transformed my practice. It's like having a highly trained medical scribe in the room, but without the cost or training overhead."
+                        "Aivana has completely transformed our contact center. It's like instantly scaling our best human agent to handle 10,000 simultaneous calls."
                     </p>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
                         <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#444' }}></div>
                         <div style={{ textAlign: 'left' }}>
-                            <div style={{ fontWeight: 600 }}>Dr. Anil Sharma</div>
-                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>Cardiologist, Fortis Hospital</div>
+                            <div style={{ fontWeight: 600 }}>Sarah Jenkins</div>
+                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>VP of Operations, Global Retail</div>
                         </div>
                     </div>
                 </section>
@@ -548,7 +548,7 @@ const App: React.FC = () => {
                 <section style={{ marginBottom: 160, textAlign: 'center' }}>
                     <h2 style={{ fontSize: '2.4rem', fontWeight: 700, marginBottom: 20, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>Simple, Transparent Pricing</h2>
                     <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)', marginBottom: 40 }}>
-                        Plans starting at <span style={{ color: '#fff', fontWeight: 600 }}>₹X/month</span> per OPD.
+                        Plans starting at <span style={{ color: '#fff', fontWeight: 600 }}>$X/month</span> depending on volume.
                     </p>
                     <button onClick={() => openModal('demo')} style={{ padding: '12px 24px', borderRadius: 999, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 500 }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
                         View Pricing Details
@@ -560,12 +560,12 @@ const App: React.FC = () => {
                     <h2 style={{ fontSize: '2.4rem', fontWeight: 700, textAlign: 'center', marginBottom: 60, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>Frequently Asked Questions</h2>
                     <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
                         <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Is my patient data secure?</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>Yes. Aivana is fully HIPAA and ABDM compliant. Audio is processed statelessly and we do not store PII on our servers.</p>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Is my customer data secure?</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>Yes. Aivana is SOC2 and enterprise compliant. Audio is processed statelessly and we do not train foundational models on your PII.</p>
                         </div>
                         <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Does it work with my existing EHR?</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>We integrate directly with Epic, Cerner, Bahmni, and most modern Indian EHRs via API or bulk export.</p>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Does it work with my existing CRM?</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>We integrate seamlessly with Salesforce, Zendesk, HubSpot, and custom internal tools via native API webhooks.</p>
                         </div>
                     </div>
                 </section>
@@ -573,7 +573,7 @@ const App: React.FC = () => {
                 {/* 7. Final CTA */}
                 <section style={{ textAlign: 'center', padding: '80px 40px', background: 'linear-gradient(180deg, rgba(124, 58, 237, 0.1) 0%, transparent 100%)', borderRadius: 32, border: '1px solid rgba(124, 58, 237, 0.2)' }}>
                     <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, margin: '0 0 24px', fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
-                        Ready to give your doctors <br />2 hours back every day?
+                        Ready to supercharge <br />your customer experience?
                     </h2>
                     <button onClick={() => openModal('demo')} style={{ padding: '16px 32px', borderRadius: 999, background: '#7c3aed', color: '#fff', fontSize: '1.1rem', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background 0.2s', boxShadow: '0 8px 32px rgba(124, 58, 237, 0.3)' }} onMouseEnter={e => e.currentTarget.style.background = '#6d28d9'} onMouseLeave={e => e.currentTarget.style.background = '#7c3aed'}>
                         Get Started Today

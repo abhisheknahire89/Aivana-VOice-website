@@ -39,7 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBookDemo }) => {
                         Aivana
                     </span>
                     <span style={{ fontSize: 11, color: '#a78bfa', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                        Voice AI for Healthcare
+                        Voice AI Agents
                     </span>
                 </div>
 
@@ -49,13 +49,13 @@ const Navbar: React.FC<NavbarProps> = ({ onBookDemo }) => {
                         style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}
                         onMouseEnter={e => e.currentTarget.style.color = '#fff'}
                         onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
-                        For Hospitals
+                        Platform
                     </a>
                     <a href="#"
                         style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s' }}
                         onMouseEnter={e => e.currentTarget.style.color = '#fff'}
                         onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
-                        For Clinics
+                        Use Cases
                     </a>
                 </div>
 
