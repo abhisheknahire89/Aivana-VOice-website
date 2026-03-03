@@ -129,7 +129,9 @@ const App: React.FC = () => {
                         marginTop: 80,
                         marginBottom: 80,
                         animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) both',
-                        padding: '0 40px',
+                        maxWidth: 900,
+                        margin: '80px auto',
+                        padding: '0 80px',
                     }}
                 >
                     <h1
@@ -335,6 +337,10 @@ const App: React.FC = () => {
                     bottom: 30,
                     left: 0,
                     right: 0,
+                    width: '100%',
+                    maxWidth: 900,
+                    margin: '0 auto',
+                    padding: '0 80px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

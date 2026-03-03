@@ -457,11 +457,11 @@ body,
 }
 
 .carousel-arrow.left {
-    left: -60px;
+    left: 10px;
 }
 
 .carousel-arrow.right {
-    right: -60px;
+    right: 10px;
 }
 
 .agent-section-wrapper {
