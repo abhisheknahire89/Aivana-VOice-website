@@ -87,13 +87,16 @@ const App: React.FC = () => {
     return (
         <div
             style={{
-                position: 'relative',
+                position: 'absolute',
+                inset: 0,
                 width: '100%',
-                minHeight: '100vh',
+                height: '100vh',
+                overflow: 'hidden',
                 background: 'transparent',
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 userSelect: 'none',
                 WebkitFontSmoothing: 'antialiased',
+                pointerEvents: isBlurred ? 'none' : 'auto',
             } as React.CSSProperties}
         >
             {/* ── New Spline background (animated paper boat scene) ─────────── */}
@@ -101,8 +104,8 @@ const App: React.FC = () => {
             {/* ── Main layer ────────────────────────────────────────────────── */}
             <div
                 style={{
-                    position: 'relative',
-                    minHeight: '100vh',
+                    position: 'absolute',
+                    inset: 0,
                     zIndex: 10,
                     display: 'flex',
                     flexDirection: 'column',
@@ -202,29 +205,7 @@ const App: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Trust Indicators */}
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 24,
-                            fontSize: '0.85rem',
-                            color: 'rgba(255,255,255,0.5)',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            fontWeight: 600,
-                            flexWrap: 'wrap',
-                        }}
-                    >
-                        <span>Trusted by leading enterprises</span>
-                        <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-                        <span>1M+ Conversations</span>
-                        <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-                        <span>98% Accuracy</span>
-                        <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
-                        <span>24/7 Availability</span>
-                    </div>
+                    {/* Trust Indicators moved to absolute bottom */}
                 </div>
 
                 {/* ── Content grid — no card, floats on background ─────────── */}
@@ -486,99 +467,34 @@ const App: React.FC = () => {
                 </div>
             </div>
 
-            {/* ── Conversion Optimization Sections ──────────────────────────── */}
-            <div style={{ position: 'relative', zIndex: 10, padding: '120px 20px', maxWidth: 1100, margin: '0 auto', color: '#fff' }}>
-
-                {/* 1. Problem Statement */}
-                <section style={{ textAlign: 'center', marginBottom: 160 }}>
-                    <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, margin: '0 0 20px', fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
-                        Support teams spend <span style={{ color: '#ef4444' }}>70% of their day</span> on repetitive queries.
-                    </h2>
-                    <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)', maxWidth: 600, margin: '0 auto' }}>
-                        Customers wait. Costs rise. CSAT drops. The traditional contact center is broken.
-                    </p>
-                </section>
-
-                {/* 2. Solution Demo */}
-                <section style={{ marginBottom: 160, textAlign: 'center' }}>
-                    <div style={{ width: '100%', maxWidth: 800, aspectRatio: '16/9', background: 'rgba(255,255,255,0.03)', borderRadius: 24, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1.2rem' }}>[ 15-second Agent Interaction Demo Go Here ]</span>
-                    </div>
-                </section>
-
-                {/* 3. How It Works */}
-                <section style={{ marginBottom: 160 }}>
-                    <h2 style={{ fontSize: '2.4rem', fontWeight: 700, textAlign: 'center', marginBottom: 60, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
-                        How It Works
-                    </h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 40, textAlign: 'center' }}>
-                        <div>
-                            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>1</div>
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Connect Channels</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Deploy our voice agent over phone, web, or app with a single line of code.</p>
-                        </div>
-                        <div>
-                            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>2</div>
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Train Instant AI</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Aivana instantly learns your knowledge base, CRM data, and business logic.</p>
-                        </div>
-                        <div>
-                            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(167, 139, 250, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#a78bfa', fontSize: 24, fontWeight: 700 }}>3</div>
-                            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 12 }}>Resolve Queries</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Aivana resolves level-1 and level-2 queries autonomously, 24/7/365.</p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* 4. Social Proof / Quote */}
-                <section style={{ marginBottom: 160, textAlign: 'center', padding: '60px 40px', background: 'rgba(255,255,255,0.02)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <p style={{ fontSize: '1.4rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', maxWidth: 800, margin: '0 auto 30px', lineHeight: 1.6 }}>
-                        "Aivana has completely transformed our contact center. It's like instantly scaling our best human agent to handle 10,000 simultaneous calls."
-                    </p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-                        <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#444' }}></div>
-                        <div style={{ textAlign: 'left' }}>
-                            <div style={{ fontWeight: 600 }}>Sarah Jenkins</div>
-                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>VP of Operations, Global Retail</div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* 5. Pricing Teaser */}
-                <section style={{ marginBottom: 160, textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '2.4rem', fontWeight: 700, marginBottom: 20, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>Simple, Transparent Pricing</h2>
-                    <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)', marginBottom: 40 }}>
-                        Plans starting at <span style={{ color: '#fff', fontWeight: 600 }}>$X/month</span> depending on volume.
-                    </p>
-                    <button onClick={() => openModal('demo')} style={{ padding: '12px 24px', borderRadius: 999, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 500 }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
-                        View Pricing Details
-                    </button>
-                </section>
-
-                {/* 6. FAQ Section */}
-                <section style={{ marginBottom: 160 }}>
-                    <h2 style={{ fontSize: '2.4rem', fontWeight: 700, textAlign: 'center', marginBottom: 60, fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>Frequently Asked Questions</h2>
-                    <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
-                        <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Is my customer data secure?</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>Yes. Aivana is SOC2 and enterprise compliant. Audio is processed statelessly and we do not train foundational models on your PII.</p>
-                        </div>
-                        <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 10 }}>Does it work with my existing CRM?</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', lineHeight: 1.5 }}>We integrate seamlessly with Salesforce, Zendesk, HubSpot, and custom internal tools via native API webhooks.</p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* 7. Final CTA */}
-                <section style={{ textAlign: 'center', padding: '80px 40px', background: 'linear-gradient(180deg, rgba(124, 58, 237, 0.1) 0%, transparent 100%)', borderRadius: 32, border: '1px solid rgba(124, 58, 237, 0.2)' }}>
-                    <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, margin: '0 0 24px', fontFamily: "'Satoshi', 'General Sans', sans-serif" }}>
-                        Ready to supercharge <br />your customer experience?
-                    </h2>
-                    <button onClick={() => openModal('demo')} style={{ padding: '16px 32px', borderRadius: 999, background: '#7c3aed', color: '#fff', fontSize: '1.1rem', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background 0.2s', boxShadow: '0 8px 32px rgba(124, 58, 237, 0.3)' }} onMouseEnter={e => e.currentTarget.style.background = '#6d28d9'} onMouseLeave={e => e.currentTarget.style.background = '#7c3aed'}>
-                        Get Started Today
-                    </button>
-                </section>
+            {/* ── Absolute Bottom: Trust Indicators ───────────────────── */}
+            <div
+                style={{
+                    position: 'absolute',
+                    bottom: 30,
+                    left: 0,
+                    right: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 24,
+                    fontSize: '0.85rem',
+                    color: 'rgba(255,255,255,0.5)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontWeight: 600,
+                    flexWrap: 'wrap',
+                    zIndex: 20,
+                    pointerEvents: 'auto',
+                }}
+            >
+                <span>Trusted by leading enterprises</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+                <span>1M+ Conversations</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+                <span>98% Accuracy</span>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+                <span>24/7 Availability</span>
             </div>
 
             {/* ── Modals ────────────────────────────────────────────────────── */}
