@@ -5,8 +5,10 @@ const SplineBackground: React.FC = () => {
     return (
         <div
             style={{
-                position: 'absolute',
+                position: 'fixed',
                 inset: 0,
+                width: '100vw',
+                height: '100vh',
                 zIndex: 0,
                 overflow: 'hidden',
                 pointerEvents: 'none',

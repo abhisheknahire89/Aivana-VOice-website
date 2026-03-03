@@ -89,8 +89,7 @@ const App: React.FC = () => {
             style={{
                 position: 'relative',
                 width: '100%',
-                height: '100%',
-                overflow: 'hidden',
+                minHeight: '100vh',
                 background: 'transparent',
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 userSelect: 'none',
@@ -102,8 +101,8 @@ const App: React.FC = () => {
             {/* ── Main layer ────────────────────────────────────────────────── */}
             <div
                 style={{
-                    position: 'absolute',
-                    inset: 0,
+                    position: 'relative',
+                    minHeight: '100vh',
                     zIndex: 10,
                     display: 'flex',
                     flexDirection: 'column',
