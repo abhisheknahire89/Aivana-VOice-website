@@ -12,7 +12,7 @@ const SplineBackground: React.FC = () => {
                 background: 'radial-gradient(circle at 20% 20%, #eef1ff 0%, #ffffff 45%, #f4f7ff 100%)',
             }}
         >
-            {/* ── Animated mesh gradient — slow liquid drift ───────────── */}
+            {/* ── Animated mesh gradient ───────────────────────────────── */}
             <div
                 style={{
                     position: 'absolute',
@@ -27,19 +27,34 @@ const SplineBackground: React.FC = () => {
                 }}
             />
 
-            {/* ── Soft reflection glow below card area ─────────────────── */}
+            {/* ── Spline paper boat — subtle ambient layer ─────────────── */}
+            <iframe
+                src="https://my.spline.design/animatedpaperboat-jeJTnCRZkUeZW3jf48yUoDEa/"
+                frameBorder="0"
+                width="100%"
+                height="100%"
+                title="Aivana Background"
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    border: 'none',
+                    display: 'block',
+                    pointerEvents: 'none',
+                    filter: 'brightness(1.3) saturate(0.35) opacity(0.25)',
+                }}
+            />
+
+            {/* ── White radial overlay — keeps text readable ────────────── */}
             <div
                 style={{
                     position: 'absolute',
-                    bottom: '12%',
-                    left: '50%',
-                    width: '40%',
-                    height: 40,
-                    transform: 'translateX(-50%)',
-                    background: 'radial-gradient(ellipse at center, rgba(120,132,255,0.25), transparent 70%)',
-                    filter: 'blur(6px)',
-                    opacity: 0.4,
+                    inset: 0,
+                    background: `radial-gradient(ellipse at center,
+                        rgba(255,255,255,0.15) 0%,
+                        rgba(255,255,255,0.65) 60%,
+                        rgba(255,255,255,0.92) 100%)`,
                     pointerEvents: 'none',
+                    zIndex: 1,
                 }}
             />
         </div>
