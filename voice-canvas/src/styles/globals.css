@@ -471,6 +471,38 @@ body,
     margin: 0 auto;
     padding: 0 80px;
     align-self: center;
+    --accent: #a78bfa;
+    --accent-glow: rgba(167, 139, 250, 0.3);
+    --accent-muted: rgba(167, 139, 250, 0.6);
+    transition: --accent 0.6s ease, --accent-glow 0.6s ease;
+}
+
+/* Per persona overrides */
+.agent-section-wrapper[data-agent="priya"] {
+    --accent: #a78bfa;
+    --accent-glow: rgba(167, 139, 250, 0.3);
+    --accent-muted: rgba(167, 139, 250, 0.6);
+}
+
+.agent-section-wrapper[data-agent="rohan"] {
+    --accent: #d97706;
+    /* using #d97706 to match Rohan's source data */
+    --accent-glow: rgba(217, 119, 6, 0.3);
+    --accent-muted: rgba(217, 119, 6, 0.6);
+}
+
+.agent-section-wrapper[data-agent="neha"] {
+    --accent: #059669;
+    /* using #059669 to match Neha's source data */
+    --accent-glow: rgba(5, 150, 105, 0.3);
+    --accent-muted: rgba(5, 150, 105, 0.6);
+}
+
+.agent-section-wrapper[data-agent="veda"] {
+    --accent: #dc2626;
+    /* using #dc2626 to match Veda's source data */
+    --accent-glow: rgba(220, 38, 38, 0.3);
+    --accent-muted: rgba(220, 38, 38, 0.6);
 }
 
 .agent-section {
@@ -522,6 +554,11 @@ body,
     color: rgba(255, 255, 255, 0.8);
 }
 
+.tap-to-talk-btn:hover svg {
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+    color: var(--accent) !important;
+}
+
 .agent-info {
     text-align: left;
     max-width: 280px;
@@ -531,8 +568,9 @@ body,
 .agent-name {
     font-size: 2.2rem;
     font-weight: 600;
-    color: #a78bfa;
+    color: var(--accent);
     margin-bottom: 12px;
+    transition: color 0.5s ease;
 }
 
 .agent-description {
@@ -542,12 +580,24 @@ body,
     margin-bottom: 24px;
 }
 
+.cta-button {
+    background: var(--accent);
+    transition: background 0.5s ease, filter 0.2s;
+}
+
+.cta-button:hover {
+    filter: brightness(1.15) saturate(1.1);
+}
+
 .petal-wrapper {
     width: 320px;
     height: 320px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 0 60px var(--accent-glow), 0 0 120px var(--accent-glow);
+    border-radius: 50%;
+    transition: box-shadow 0.6s ease;
 }
 
 .capabilities-list {
@@ -583,7 +633,8 @@ body,
 }
 
 .agent-tab.active {
-    color: #ffffff;
-    background: rgba(167, 139, 250, 0.2);
-    border: 1px solid rgba(167, 139, 250, 0.4);
+    color: var(--accent);
+    background: var(--accent-glow);
+    border-color: var(--accent-muted);
+    transition: all 0.4s ease;
 }

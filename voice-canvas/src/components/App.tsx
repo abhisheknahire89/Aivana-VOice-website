@@ -230,7 +230,7 @@ const App: React.FC = () => {
                             width: '100%',
                         }}
                     >
-                        <section className="agent-section-wrapper">
+                        <section className="agent-section-wrapper" data-agent={activePersona.id}>
 
                             {/* ── Left Arrow ──────────────────────────────────── */}
                             <button
@@ -271,16 +271,13 @@ const App: React.FC = () => {
                                         style={{
                                             padding: '12px 28px',
                                             borderRadius: 999,
-                                            background: '#7c3aed',
                                             color: '#ffffff',
                                             fontSize: '0.9rem',
                                             fontWeight: 500,
                                             border: 'none',
                                             cursor: 'pointer',
-                                            transition: 'background 0.2s',
+                                            transition: 'filter 0.2s',
                                         }}
-                                        onMouseEnter={e => e.currentTarget.style.background = '#6d28d9'}
-                                        onMouseLeave={e => e.currentTarget.style.background = '#7c3aed'}
                                     >
                                         Book a Demo
                                     </button>
@@ -315,7 +312,8 @@ const App: React.FC = () => {
                                 {/* ══ RIGHT COLUMN — Capabilities List ═══════════ */}
                                 <ul className="capabilities-list">
                                     {activePersona.bestFor.map((item, i) => (
-                                        <li key={i}>
+                                        <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ color: 'var(--accent)', fontSize: '1.2em', transition: 'color 0.5s ease' }}>•</span>
                                             {item}
                                         </li>
                                     ))}
