@@ -116,216 +116,215 @@ const App: React.FC = () => {
                 }}
             >
                 {/* Navbar */}
-                <div style={{ pointerEvents: 'auto' }}>
+                <div style={{ pointerEvents: 'auto', flexShrink: 0 }}>
                     <Navbar
                         onBookDemo={() => openModal('demo')}
                     />
                 </div>
 
-                {/* ── Headline ──────────────────────────────────────────────── */}
-                <div
-                    style={{
-                        textAlign: 'center',
-                        marginTop: 80,
-                        marginBottom: 80,
-                        animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) both',
-                        padding: '0 40px',
-                    }}
-                >
-                    <h1
+                {/* Vertical Center Wrapper for entire content */}
+                <div style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    paddingBottom: '40px'
+                }}>
+
+                    {/* ── Headline ──────────────────────────────────────────────── */}
+                    <div
                         style={{
-                            fontSize: '4.2rem',
-                            fontWeight: 700,
-                            color: '#f1f1f5',
-                            letterSpacing: '-0.03em',
-                            lineHeight: 1.1,
-                            margin: '0 0 20px',
-                            fontFamily: "'Satoshi', 'General Sans', sans-serif"
+                            textAlign: 'center',
+                            marginBottom: 40,
+                            animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) both',
+                            padding: '0 40px',
+                            width: '100%',
                         }}
                     >
-                        Automate your voice support with <span style={{ color: '#a78bfa' }}>AI</span>.
-                    </h1>
-                    <p
-                        style={{
-                            fontSize: '1.2rem',
-                            color: 'rgba(255, 255, 255, 0.65)',
-                            maxWidth: 600,
-                            margin: '0 auto 40px',
-                            lineHeight: 1.6,
-                        }}
-                    >
-                        Resolve customer issues instantly, 24/7, across any language.
-                    </p>
-
-                    {/* CTAs */}
-                    <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 60 }}>
-                        <button
-                            onClick={() => openModal('demo')}
+                        <h1
                             style={{
-                                padding: '14px 28px',
-                                borderRadius: 999,
-                                background: '#7c3aed',
-                                color: '#ffffff',
-                                fontSize: '1rem',
-                                fontWeight: 500,
-                                border: 'none',
-                                cursor: 'pointer',
-                                transition: 'background 0.2s',
+                                fontSize: '4.2rem',
+                                fontWeight: 700,
+                                color: '#f1f1f5',
+                                letterSpacing: '-0.03em',
+                                lineHeight: 1.1,
+                                margin: '0 0 20px',
+                                fontFamily: "'Satoshi', 'General Sans', sans-serif"
                             }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#6d28d9')}
-                            onMouseLeave={e => (e.currentTarget.style.background = '#7c3aed')}
                         >
-                            Book a Demo
-                        </button>
-                        <button
+                            Automate your voice support with <span style={{ color: '#a78bfa' }}>AI</span>.
+                        </h1>
+                        <p
                             style={{
-                                padding: '14px 28px',
-                                borderRadius: 999,
-                                background: 'transparent',
-                                color: '#ffffff',
-                                fontSize: '1rem',
-                                fontWeight: 500,
-                                border: '1px solid rgba(255,255,255,0.2)',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 8,
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                                fontSize: '1.2rem',
+                                color: 'rgba(255, 255, 255, 0.65)',
+                                maxWidth: 600,
+                                margin: '0 auto 40px',
+                                lineHeight: 1.6,
                             }}
                         >
-                            <span style={{ fontSize: '1.2em' }}>▶</span> See it in Action
-                        </button>
-                    </div>
+                            Resolve customer issues instantly, 24/7, across any language.
+                        </p>
 
-                    {/* Trust Indicators moved to absolute bottom */}
-                </div>
-
-                {/* ── Content grid — no card, floats on background ─────────── */}
-                <div
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                    style={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'stretch',
-                        justifyContent: 'center',
-                        padding: '0 0 24px',
-                        pointerEvents: 'auto',
-                        width: '100%',
-                    }}
-                >
-                    <section className="agent-section-wrapper">
-
-                        {/* ── Left Arrow ──────────────────────────────────── */}
-                        <button
-                            className="carousel-arrow left"
-                            onClick={() => cyclePersona(-1)}
-                        >
-                            ‹
-                        </button>
-
-                        {/* ── Right Arrow ─────────────────────────────────── */}
-                        <button
-                            className="carousel-arrow right"
-                            onClick={() => cyclePersona(1)}
-                        >
-                            ›
-                        </button>
-
-                        <div
-                            className="agent-section"
-                            style={{
-                                opacity: transitioning ? 0 : 1,
-                                transform: transitioning ? 'translateY(8px)' : 'translateY(0)',
-                                transition: 'opacity 0.2s ease, transform 0.2s ease',
-                                animation: 'fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both',
-                            }}
-                        >
-                            {/* ══ LEFT COLUMN — Persona identity + CTA ════════ */}
-                            <div className="agent-info">
-                                <h2 className="agent-name">
-                                    {activePersona.name}
-                                </h2>
-                                <p className="agent-description">
-                                    {activePersona.description}
-                                </p>
-                                <button
-                                    className="cta-button"
-                                    onClick={() => openModal('demo')}
-                                    style={{
-                                        padding: '12px 24px',
-                                        borderRadius: 999,
-                                        background: '#7c3aed',
-                                        color: '#ffffff',
-                                        fontSize: '0.9rem',
-                                        fontWeight: 500,
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        transition: 'background 0.2s',
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.background = '#6d28d9'}
-                                    onMouseLeave={e => e.currentTarget.style.background = '#7c3aed'}
-                                >
-                                    Book a Live Demo
-                                </button>
-                            </div>
-
-                            {/* ══ CENTER COLUMN — Petal orb hero + Mic ════════ */}
-                            <div className="petal-area">
-                                <div className="petal-wrapper">
-                                    <HeroOrb
-                                        persona={activePersona}
-                                        orbState={orbState}
-                                        onClick={handleOrbClick}
-                                    />
-                                </div>
-                                <button
-                                    className="tap-to-talk-btn"
-                                    onClick={handleOrbClick}
-                                >
-                                    <span className="mic-emoji">🎙️</span>
-                                    <span className="tap-label">Tap to talk</span>
-                                </button>
-                            </div>
-
-                            {/* ══ RIGHT COLUMN — Capabilities List ═══════════ */}
-                            <ul className="capabilities-list">
-                                {activePersona.bestFor.map((item, i) => (
-                                    <li key={i}>
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </section> {/* End Agent Section Wrapper */}
-
-                    {/* ══ CAROUSEL TABS (Centered Below) ════════════════════ */}
-                    <div className="agent-tabs">
-                        {PERSONAS.map((p, i) => (
+                        {/* CTAs */}
+                        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 0 }}>
                             <button
-                                key={p.id}
-                                className={i === personaIndex ? 'agent-tab active' : 'agent-tab'}
-                                onClick={() => {
-                                    if (i === personaIndex) return;
-                                    setTransitioning(true);
-                                    setTimeout(() => { setPersonaIndex(i); setOrbState('idle'); setTransitioning(false); }, 200);
+                                onClick={() => openModal('demo')}
+                                style={{
+                                    padding: '14px 28px',
+                                    borderRadius: 999,
+                                    background: '#7c3aed',
+                                    color: '#ffffff',
+                                    fontSize: '1rem',
+                                    fontWeight: 500,
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
                                 }}
-                                aria-label={`Select persona ${p.name}`}
+                                onMouseEnter={e => (e.currentTarget.style.background = '#6d28d9')}
+                                onMouseLeave={e => (e.currentTarget.style.background = '#7c3aed')}
                             >
-                                {p.name}
+                                Book a Demo
                             </button>
-                        ))}
+                            <button
+                                style={{
+                                    padding: '14px 28px',
+                                    borderRadius: 999,
+                                    background: 'transparent',
+                                    color: '#ffffff',
+                                    fontSize: '1rem',
+                                    fontWeight: 500,
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 8,
+                                }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                                }}
+                            >
+                                <span style={{ fontSize: '1.2em' }}>▶</span> See it in Action
+                            </button>
+                        </div>
+
                     </div>
-                </div>
+
+                    {/* ── Content grid — no card, floats on background ─────────── */}
+                    <div
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'stretch',
+                            pointerEvents: 'auto',
+                            width: '100%',
+                        }}
+                    >
+                        <section className="agent-section-wrapper">
+
+                            {/* ── Left Arrow ──────────────────────────────────── */}
+                            <button
+                                className="carousel-arrow left"
+                                onClick={() => cyclePersona(-1)}
+                            >
+                                ‹
+                            </button>
+
+                            {/* ── Right Arrow ─────────────────────────────────── */}
+                            <button
+                                className="carousel-arrow right"
+                                onClick={() => cyclePersona(1)}
+                            >
+                                ›
+                            </button>
+
+                            <div
+                                className="agent-section"
+                                style={{
+                                    opacity: transitioning ? 0 : 1,
+                                    transform: transitioning ? 'translateY(8px)' : 'translateY(0)',
+                                    transition: 'opacity 0.2s ease, transform 0.2s ease',
+                                    animation: 'fade-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both',
+                                }}
+                            >
+                                {/* ══ LEFT COLUMN — Persona identity + CTA ════════ */}
+                                <div className="agent-info">
+                                    <h2 className="agent-name">
+                                        {activePersona.name}
+                                    </h2>
+                                    <p className="agent-description">
+                                        {activePersona.description}
+                                    </p>
+                                    <button
+                                        className="cta-button"
+                                        onClick={() => openModal('demo')}
+                                        style={{
+                                            padding: '12px 28px',
+                                            borderRadius: 999,
+                                            background: '#7c3aed',
+                                            color: '#ffffff',
+                                            fontSize: '0.9rem',
+                                            fontWeight: 500,
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            transition: 'background 0.2s',
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.background = '#6d28d9'}
+                                        onMouseLeave={e => e.currentTarget.style.background = '#7c3aed'}
+                                    >
+                                        Book a Demo
+                                    </button>
+                                </div>
+
+                                {/* ══ CENTER COLUMN — Petal orb hero + Mic ════════ */}
+                                <div className="petal-area">
+                                    <div className="petal-wrapper">
+                                        <HeroOrb
+                                            persona={activePersona}
+                                            orbState={orbState}
+                                            onClick={handleOrbClick}
+                                        />
+                                    </div>
+                                    <button
+                                        className="tap-to-talk-btn"
+                                        onClick={handleOrbClick}
+                                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7, transition: 'opacity 0.2s' }}
+                                        onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                                        onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+                                    >
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "rgba(255,255,255,0.7)" }}>
+                                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                            <line x1="12" y1="19" x2="12" y2="22"></line>
+                                            <line x1="8" y1="22" x2="16" y2="22"></line>
+                                        </svg>
+                                        <span className="tap-label" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>TAP TO TALK</span>
+                                    </button>
+                                </div>
+
+                                {/* ══ RIGHT COLUMN — Capabilities List ═══════════ */}
+                                <ul className="capabilities-list">
+                                    {activePersona.bestFor.map((item, i) => (
+                                        <li key={i}>
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </section> {/* End Agent Section Wrapper */}
+                    </div>
+
+                </div> {/* End Vertical Center Wrapper */}
             </div>
 
             {/* ── Absolute Bottom: Trust Indicators ───────────────────── */}
@@ -362,7 +361,7 @@ const App: React.FC = () => {
             {activeModal === 'features' && <FeaturesModal persona={activePersona} onClose={closeModal} />}
             {activeModal === 'faqs' && <FAQsModal onClose={closeModal} />}
             {activeModal === 'demo' && <BookDemoModal onClose={closeModal} />}
-        </div>
+        </div >
     );
 };
 

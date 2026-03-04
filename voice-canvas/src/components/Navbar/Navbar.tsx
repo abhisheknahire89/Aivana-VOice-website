@@ -27,18 +27,28 @@ const Navbar: React.FC<NavbarProps> = ({ onBookDemo }) => {
             >
                 {/* ── Logo + Tagline (left) ── */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2, cursor: 'pointer' }}>
-                    <span
-                        style={{
-                            fontSize: 22,
-                            fontWeight: 700,
-                            color: '#f9fafb',
-                            letterSpacing: '-0.03em',
-                            fontFamily: "'Satoshi', 'General Sans', sans-serif",
-                        }}
-                    >
-                        Aivana
-                    </span>
-                    <span style={{ fontSize: 11, color: '#a78bfa', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {/* Logo Icon */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'min-content min-content', gap: '2px' }}>
+                            <div style={{ width: '6px', height: '6px', background: '#f9fafb', borderRadius: '1px' }}></div>
+                            <div style={{ width: '6px', height: '6px', background: '#f9fafb', borderRadius: '1px' }}></div>
+                            <div style={{ width: '6px', height: '6px', background: '#f9fafb', borderRadius: '1px' }}></div>
+                            <div style={{ width: '6px', height: '6px', background: '#a78bfa', borderRadius: '1px' }}></div>
+                        </div>
+                        <span
+                            style={{
+                                fontSize: 22,
+                                fontWeight: 700,
+                                color: '#f9fafb',
+                                letterSpacing: '-0.03em',
+                                fontFamily: "'Satoshi', 'General Sans', sans-serif",
+                                lineHeight: 1,
+                            }}
+                        >
+                            Aivana
+                        </span>
+                    </div>
+                    <span style={{ fontSize: 10, color: '#a78bfa', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                         Voice AI Agents
                     </span>
                 </div>

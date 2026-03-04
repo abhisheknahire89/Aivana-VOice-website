@@ -6,7 +6,10 @@ interface BookDemoModalProps {
 
 const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
     const [submitted, setSubmitted] = useState(false);
-    const [form, setForm] = useState({ name: '', company: '', email: '', phone: '' });
+    const [form, setForm] = useState({
+        name: '', email: '', contactPhone: '',
+        company: '', website: '', companyPhone: ''
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -16,53 +19,67 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
     const inputStyle: React.CSSProperties = {
         width: '100%',
         padding: '12px 16px',
-        borderRadius: 12,
-        border: '1.5px solid rgba(0,0,0,0.1)',
-        background: 'rgba(255,255,255,0.8)',
-        fontSize: 14,
-        color: '#0f0f0f',
+        borderRadius: 6,
+        border: '1px solid transparent',
+        background: '#232135',
+        fontSize: '0.9rem',
+        color: '#fff',
         outline: 'none',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: "'Inter', sans-serif",
         transition: 'border-color 0.2s ease',
     };
 
     return (
         <div
-            className="absolute inset-0 z-50 flex items-center justify-center"
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '16px',
+                background: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(4px)'
+            }}
             onClick={e => { if (e.target === e.currentTarget) onClose(); }}
         >
             <div
                 className="animate-modal-in"
                 style={{
-                    background: 'rgba(255,255,255,0.82)',
-                    border: '1px solid rgba(255,255,255,0.9)',
-                    borderRadius: 24,
-                    backdropFilter: 'blur(32px)',
-                    padding: '36px 36px 28px',
-                    maxWidth: 440,
-                    width: '90%',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 4px 20px rgba(0,0,0,0.06)',
+                    background: '#6b5898', // Muted purple border effect
+                    borderRadius: 32,
+                    padding: '16px 16px 20px 16px',
+                    maxWidth: 580,
+                    width: '100%',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                 }}
             >
                 {submitted ? (
-                    <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                    <div style={{ background: '#110f18', borderRadius: 24, padding: '48px', width: '100%', textAlign: 'center' }}>
                         <div style={{ fontSize: 40, marginBottom: 16 }}>✓</div>
-                        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0f0f0f', letterSpacing: '-0.03em', marginBottom: 8 }}>
+                        <h2 style={{ fontSize: 24, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', marginBottom: 8 }}>
                             You're on the list!
                         </h2>
-                        <p style={{ fontSize: 14, color: '#666', lineHeight: 1.6, marginBottom: 24 }}>
+                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 24 }}>
                             Our team will reach out within 24 hours to schedule your personalized demo.
                         </p>
                         <button
                             onClick={onClose}
                             style={{
-                                padding: '10px 28px',
+                                padding: '10px 32px',
                                 borderRadius: 999,
-                                background: '#0f0f0f',
-                                border: 'none',
-                                color: '#fff',
+                                background: '#fff',
+                                color: '#000',
                                 fontSize: 14,
                                 fontWeight: 600,
+                                border: 'none',
                                 cursor: 'pointer',
                             }}
                         >
@@ -71,92 +88,109 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                     </div>
                 ) : (
                     <>
-                        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#0f0f0f', letterSpacing: '-0.03em', marginBottom: 6 }}>
-                            Book a demo
-                        </h2>
-                        <p style={{ fontSize: 14, color: '#666', marginBottom: 24, lineHeight: 1.6 }}>
-                            See Aivana live — customized for your industry and use case.
-                        </p>
+                        <div style={{ background: '#110f18', borderRadius: 24, padding: '40px', width: '100%', textAlign: 'left' }}>
+                            <h2 style={{ fontSize: 28, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', marginBottom: 32 }}>
+                                Book a Live Demo
+                            </h2>
 
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <input
-                                required
-                                placeholder="Your name"
-                                value={form.name}
-                                onChange={e => setForm({ ...form, name: e.target.value })}
-                                style={inputStyle}
-                                onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
-                                onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(0,0,0,0.1)'; }}
-                            />
-                            <input
-                                required
-                                placeholder="Company name"
-                                value={form.company}
-                                onChange={e => setForm({ ...form, company: e.target.value })}
-                                style={inputStyle}
-                                onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
-                                onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(0,0,0,0.1)'; }}
-                            />
-                            <input
-                                required
-                                type="email"
-                                placeholder="Work email"
-                                value={form.email}
-                                onChange={e => setForm({ ...form, email: e.target.value })}
-                                style={inputStyle}
-                                onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
-                                onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(0,0,0,0.1)'; }}
-                            />
-                            <input
-                                placeholder="Phone (optional)"
-                                value={form.phone}
-                                onChange={e => setForm({ ...form, phone: e.target.value })}
-                                style={inputStyle}
-                                onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
-                                onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(0,0,0,0.1)'; }}
-                            />
+                            <form id="demo-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+                                {/* Contact Info Section */}
+                                <h3 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
+                                    CONTACT INFORMATION
+                                </h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
+                                    <input
+                                        required
+                                        placeholder="Full Name*"
+                                        value={form.name}
+                                        onChange={e => setForm({ ...form, name: e.target.value })}
+                                        style={inputStyle}
+                                        onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
+                                        onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'transparent'; }}
+                                    />
+                                    <input
+                                        required
+                                        type="email"
+                                        placeholder="Work Email*"
+                                        value={form.email}
+                                        onChange={e => setForm({ ...form, email: e.target.value })}
+                                        style={inputStyle}
+                                        onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
+                                        onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'transparent'; }}
+                                    />
+                                    <input
+                                        required
+                                        placeholder="Phone Number*"
+                                        value={form.contactPhone}
+                                        onChange={e => setForm({ ...form, contactPhone: e.target.value })}
+                                        style={inputStyle}
+                                        onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
+                                        onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'transparent'; }}
+                                    />
+                                </div>
 
+                                {/* Company Info Section */}
+                                <h3 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
+                                    COMPANY INFORMATION
+                                </h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, paddingBottom: 16 }}>
+                                    <input
+                                        required
+                                        placeholder="Company Name*"
+                                        value={form.company}
+                                        onChange={e => setForm({ ...form, company: e.target.value })}
+                                        style={inputStyle}
+                                        onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
+                                        onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'transparent'; }}
+                                    />
+                                    <input
+                                        required
+                                        placeholder="Company Website*"
+                                        value={form.website}
+                                        onChange={e => setForm({ ...form, website: e.target.value })}
+                                        style={inputStyle}
+                                        onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
+                                        onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'transparent'; }}
+                                    />
+                                    <input
+                                        required
+                                        placeholder="Phone Number*"
+                                        value={form.companyPhone}
+                                        onChange={e => setForm({ ...form, companyPhone: e.target.value })}
+                                        style={inputStyle}
+                                        onFocus={e => { (e.target as HTMLInputElement).style.borderColor = '#7C3AED'; }}
+                                        onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'transparent'; }}
+                                    />
+                                </div>
+                            </form>
+                        </div>
+
+                        <div style={{ marginTop: -20, zIndex: 10 }}>
                             <button
                                 type="submit"
+                                form="demo-form"
                                 style={{
-                                    marginTop: 4,
-                                    padding: '14px',
-                                    borderRadius: 12,
-                                    background: '#0f0f0f',
+                                    padding: '12px 32px',
+                                    borderRadius: 999,
+                                    background: '#efebfc',
                                     border: 'none',
-                                    color: '#fff',
-                                    fontSize: 14,
-                                    fontWeight: 600,
+                                    color: '#0f0f12',
+                                    fontSize: '0.95rem',
+                                    fontWeight: 700,
                                     cursor: 'pointer',
                                     letterSpacing: '-0.01em',
-                                    transition: 'background 0.2s ease',
+                                    transition: 'background 0.2s',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
                                 }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#333'; }}
-                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#0f0f0f'; }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#ffffff'; }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#efebfc'; }}
                             >
-                                Request demo →
+                                Schedule My Demo
                             </button>
-                        </form>
+                        </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
-                            <button
-                                onClick={onClose}
-                                style={{
-                                    padding: '8px 28px',
-                                    borderRadius: 999,
-                                    background: 'transparent',
-                                    border: '1.5px solid rgba(220,38,38,0.35)',
-                                    color: '#DC2626',
-                                    fontSize: 13,
-                                    fontWeight: 500,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(220,38,38,0.06)'; }}
-                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                            >
-                                Close
-                            </button>
+                        <div style={{ marginTop: 12, fontSize: '0.8rem', color: '#e0dcf8', opacity: 0.9 }}>
+                            Our team will confirm your slot within 24 hours.
                         </div>
                     </>
                 )}
