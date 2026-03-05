@@ -1,13 +1,28 @@
 /**
- * Single voice path: Speech Recognition → Gemini REST → Speech Synthesis.
- * One env var: VITE_GEMINI_API_KEY (set in Vercel or voice-canvas/.env).
+ * Voice: Gemini Live (WebSocket) when URL is set, else REST + TTS.
+ * Env: VITE_GEMINI_API_KEY (required for REST). For Live: VITE_VOICE_WS_URL or VITE_VOICEBOT_WS_URL, or default ws://localhost:3001/voice.
  */
 
 import { useState, useRef, useCallback } from 'react';
 import { getSystemPrompt, OPENING_LINES } from '../data/prompts';
+import { useLiveVoice } from './useLiveVoice';
 
 const GEMINI_API_KEY = (import.meta as unknown as { env: { VITE_GEMINI_API_KEY?: string } }).env?.VITE_GEMINI_API_KEY?.trim() ?? '';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+const env = (import.meta as unknown as { env: { VITE_VOICEBOT_WS_URL?: string; VITE_VOICE_WS_URL?: string }; DEV?: boolean }).env;
+const VOICE_WS_URL = (
+  env?.VITE_VOICEBOT_WS_URL?.trim() ||
+  env?.VITE_VOICE_WS_URL?.trim() ||
+  (import.meta.env.DEV ? 'ws://localhost:3001/voice' : '')
+).trim();
+
+export function useVoice() {
+  const live = useLiveVoice(VOICE_WS_URL);
+  const rest = useVoiceGeminiRestImpl();
+  if (VOICE_WS_URL) return live;
+  return rest;
+}
 
 function parseGeminiError(errText: string, status: number): string {
   if (status === 401) return 'Invalid API key. Get or renew a key at aistudio.google.com/app/apikey and add VITE_GEMINI_API_KEY to .env.';
@@ -35,7 +50,7 @@ function activePersonaName(personaId: string): string {
   return names[personaId] ?? 'Assistant';
 }
 
-export function useVoice() {
+function useVoiceGeminiRestImpl() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
