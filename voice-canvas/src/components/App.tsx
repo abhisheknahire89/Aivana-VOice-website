@@ -21,14 +21,14 @@ const App: React.FC = () => {
     const touchStart = useRef<number | null>(null);
     const lastVoiceStartRef = useRef(0);
 
-    const { isListening, isSpeaking, transcript, error: voiceError, startListening, stopListening } = useVoice();
-    const orbState: OrbState = isSpeaking ? 'speaking' : isListening ? 'listening' : 'idle';
+    const { isConnecting, isListening, isSpeaking, transcript, error: voiceError, startListening, stopListening } = useVoice();
+    const orbState: OrbState = isConnecting ? 'connecting' : isSpeaking ? 'speaking' : isListening ? 'listening' : 'idle';
 
     const activePersona: Persona = PERSONAS[personaIndex];
 
     const cyclePersona = useCallback((dir: 1 | -1) => {
         if (scrollCooldown.current) return;
-        if (isListening || isSpeaking) return;
+        if (isConnecting || isListening || isSpeaking) return;
         setTransitioning(true);
         setTimeout(() => {
             setPersonaIndex(prev => (prev + dir + PERSONAS.length) % PERSONAS.length);
@@ -36,7 +36,7 @@ const App: React.FC = () => {
         }, 200);
         scrollCooldown.current = true;
         setTimeout(() => { scrollCooldown.current = false; }, 700);
-    }, [isListening, isSpeaking]);
+    }, [isConnecting, isListening, isSpeaking]);
 
     // Arrow keys
     useEffect(() => {
@@ -51,12 +51,12 @@ const App: React.FC = () => {
 
     // Auto-rotate every 5s (paused during voice conversation)
     useEffect(() => {
-        if (activeModal || isPaused || isListening || isSpeaking) return;
+        if (activeModal || isPaused || isConnecting || isListening || isSpeaking) return;
         const timer = setInterval(() => {
             cyclePersona(1);
         }, 5000);
         return () => clearInterval(timer);
-    }, [activeModal, isPaused, isListening, isSpeaking, cyclePersona]);
+    }, [activeModal, isPaused, isConnecting, isListening, isSpeaking, cyclePersona]);
 
     // Touch swipe
     useEffect(() => {
@@ -82,7 +82,7 @@ const App: React.FC = () => {
     const handleOrbClick = useCallback(() => {
         if (activeModal) return;
         setEnvPulseKey(prev => prev + 1);
-        if (isListening || isSpeaking) {
+        if (isConnecting || isListening || isSpeaking) {
             stopListening();
             return;
         }
@@ -90,7 +90,7 @@ const App: React.FC = () => {
         if (now - lastVoiceStartRef.current < 1500) return;
         lastVoiceStartRef.current = now;
         startListening(activePersona.id);
-    }, [activeModal, isListening, isSpeaking, stopListening, startListening, activePersona.id]);
+    }, [activeModal, isConnecting, isListening, isSpeaking, stopListening, startListening, activePersona.id]);
 
     const isBlurred = activeModal !== null;
 
@@ -247,10 +247,10 @@ const App: React.FC = () => {
                             <button
                                 className="carousel-arrow left"
                                 onClick={() => cyclePersona(-1)}
-                                aria-disabled={isListening || isSpeaking}
+                                aria-disabled={isConnecting || isListening || isSpeaking}
                                 style={{
-                                    opacity: isListening || isSpeaking ? 0.35 : 1,
-                                    pointerEvents: isListening || isSpeaking ? 'none' : 'auto',
+                                    opacity: isConnecting || isListening || isSpeaking ? 0.35 : 1,
+                                    pointerEvents: isConnecting || isListening || isSpeaking ? 'none' : 'auto',
                                 }}
                             >
                                 ‹
@@ -260,10 +260,10 @@ const App: React.FC = () => {
                             <button
                                 className="carousel-arrow right"
                                 onClick={() => cyclePersona(1)}
-                                aria-disabled={isListening || isSpeaking}
+                                aria-disabled={isConnecting || isListening || isSpeaking}
                                 style={{
-                                    opacity: isListening || isSpeaking ? 0.35 : 1,
-                                    pointerEvents: isListening || isSpeaking ? 'none' : 'auto',
+                                    opacity: isConnecting || isListening || isSpeaking ? 0.35 : 1,
+                                    pointerEvents: isConnecting || isListening || isSpeaking ? 'none' : 'auto',
                                 }}
                             >
                                 ›
@@ -314,7 +314,7 @@ const App: React.FC = () => {
                                         />
                                     </div>
                                     <p style={{ marginTop: 8, fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
-                                        {isListening ? 'Listening…' : isSpeaking ? 'Speaking…' : 'Tap to talk'}
+                                        {isConnecting ? 'Connecting…' : isListening ? 'Listening…' : isSpeaking ? 'Speaking…' : 'Tap to talk'}
                                     </p>
                                     {voiceError && (
                                         <p style={{ marginTop: 6, fontSize: '0.75rem', color: 'rgba(248,113,113,0.9)' }}>

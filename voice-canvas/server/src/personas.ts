@@ -14,7 +14,7 @@ export const LANGUAGE_INSTRUCTIONS: Record<string, string> = {
 };
 
 const CONVERSATION_RULES =
-  'This is a natural phone call. One person speaks at a time. Keep your replies short (1–3 sentences). After you finish speaking, pause and listen—let the user respond. Do not talk over them. If they start speaking while you are talking, stop and listen. Speak like a real person: natural pace, occasional "um" or "okay", slight variation. Do not sound robotic or scripted.';
+  'This is a natural phone call. One person speaks at a time. Keep your replies short (1–3 sentences). Respond once per user turn; do not send a greeting and then a separate follow-up in a second turn—one short reply, then wait. After you finish speaking, pause and listen—let the user respond. Do not talk over them. If they start speaking while you are talking, stop and listen. Speak like a real person: natural pace, occasional "um" or "okay", slight variation. Do not sound robotic or scripted.';
 
 const SPEECH_NATURALNESS =
   'Vary your pitch and energy—do not speak in a monotone. Vary your pace; include brief natural pauses. Sound like a real person on a call: subtle hesitations when thinking, brief pause before answering. Match the flow of a normal conversation—no long monologues, no rushing.';

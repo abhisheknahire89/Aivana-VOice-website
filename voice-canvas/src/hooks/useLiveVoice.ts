@@ -19,12 +19,16 @@ const RESAMPLE_RATIO = 48000 / 16000;
 const NEW_PHRASE_GAP_MS = 400;
 const MAX_SCHEDULE_AHEAD_MS = 1500;
 
+/** Only one WebSocket active app-wide. */
+let appWideActiveWs: WebSocket | null = null;
+
 function activePersonaName(personaId: string): string {
   const names: Record<string, string> = { priya: 'Priya', rohan: 'Rohan', neha: 'Neha', veda: 'Veda' };
   return names[personaId] ?? 'Assistant';
 }
 
 export function useLiveVoice(wsUrl: string) {
+  const [isConnecting, setIsConnecting] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -40,10 +44,14 @@ export function useLiveVoice(wsUrl: string) {
   const activeSourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
   const closedRef = useRef(false);
   const sendIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const connectionIdRef = useRef(0);
 
   const startListening = useCallback(
     async (personaId: string) => {
       if (!wsUrl) return;
+
+      setIsConnecting(true);
+      setError(null);
 
       activeSourcesRef.current.forEach((s) => {
         try {
@@ -54,6 +62,22 @@ export function useLiveVoice(wsUrl: string) {
       if (sendIntervalRef.current) {
         clearInterval(sendIntervalRef.current);
         sendIntervalRef.current = null;
+      }
+      if (appWideActiveWs) {
+        const toClose = appWideActiveWs;
+        appWideActiveWs = null;
+        await new Promise<void>((resolve) => {
+          const done = () => resolve();
+          toClose.onclose = done;
+          toClose.onerror = done;
+          try {
+            toClose.close();
+          } catch (_) {
+            done();
+          }
+          setTimeout(done, 2500);
+        });
+        await new Promise((r) => setTimeout(r, 300));
       }
       if (wsRef.current) {
         try {
@@ -76,12 +100,15 @@ export function useLiveVoice(wsUrl: string) {
 
       const voicebotPersona = PERSONA_TO_VOICEBOT[personaId] ?? 'Ananya';
       try {
-        setError(null);
         setTranscript('');
         closedRef.current = false;
 
+        connectionIdRef.current += 1;
+        const thisConnectionId = connectionIdRef.current;
+
         const ws = new WebSocket(wsUrl);
         wsRef.current = ws;
+        appWideActiveWs = ws;
 
         const CONNECT_TIMEOUT_MS = 12000;
         await Promise.race([
@@ -98,6 +125,7 @@ export function useLiveVoice(wsUrl: string) {
             };
             ws.onerror = () => reject(new Error('WebSocket connection failed'));
             ws.onclose = (ev) => {
+              setIsConnecting(false);
               if (!closedRef.current) {
                 setError(ev.code === 1006 ? 'Cannot reach voice server. Start it with: npm run dev:server' : 'Connection closed');
                 setIsListening(false);
@@ -109,6 +137,8 @@ export function useLiveVoice(wsUrl: string) {
             setTimeout(() => reject(new Error('Connection timed out. Start the voice server with: npm run dev:server')), CONNECT_TIMEOUT_MS)
           ),
         ]).catch((err) => {
+          setIsConnecting(false);
+          if (appWideActiveWs === ws) appWideActiveWs = null;
           try {
             ws.close();
           } catch (_) {}
@@ -117,6 +147,7 @@ export function useLiveVoice(wsUrl: string) {
         });
 
         ws.onmessage = (event: MessageEvent) => {
+          if (connectionIdRef.current !== thisConnectionId || wsRef.current !== ws) return;
           try {
             const data = typeof event.data === 'string' ? event.data : '';
             if (!data.startsWith('{')) return;
@@ -174,6 +205,7 @@ export function useLiveVoice(wsUrl: string) {
             } else if (msg.type === 'error' && msg.message) {
               setError(msg.message);
             } else if (msg.type === 'ready') {
+              setIsConnecting(false);
               setIsListening(true);
             }
           } catch (_) {}
@@ -181,6 +213,8 @@ export function useLiveVoice(wsUrl: string) {
 
         ws.onerror = () => setError('WebSocket error');
         ws.onclose = () => {
+          if (appWideActiveWs === ws) appWideActiveWs = null;
+          setIsConnecting(false);
           if (sendIntervalRef.current) {
             clearInterval(sendIntervalRef.current);
             sendIntervalRef.current = null;
@@ -230,6 +264,7 @@ export function useLiveVoice(wsUrl: string) {
         source.connect(processor);
         processor.connect(ctx.destination);
       } catch (err) {
+        setIsConnecting(false);
         setError(err instanceof Error ? err.message : 'Failed to start');
         setIsListening(false);
       }
@@ -240,6 +275,7 @@ export function useLiveVoice(wsUrl: string) {
   useEffect(() => {
     return () => {
       if (wsRef.current) {
+        if (appWideActiveWs === wsRef.current) appWideActiveWs = null;
         try {
           wsRef.current.close();
         } catch (_) {}
@@ -264,6 +300,8 @@ export function useLiveVoice(wsUrl: string) {
 
   const stopListening = useCallback(() => {
     closedRef.current = true;
+    setIsConnecting(false);
+    if (wsRef.current && appWideActiveWs === wsRef.current) appWideActiveWs = null;
     activeSourcesRef.current.forEach((s) => {
       try {
         s.stop();
@@ -298,6 +336,7 @@ export function useLiveVoice(wsUrl: string) {
 
   return useMemo(
     () => ({
+      isConnecting,
       isListening,
       isSpeaking,
       transcript,
@@ -306,6 +345,6 @@ export function useLiveVoice(wsUrl: string) {
       stopListening,
       isConfigured: !!wsUrl,
     }),
-    [isListening, isSpeaking, transcript, error, startListening, stopListening, wsUrl]
+    [isConnecting, isListening, isSpeaking, transcript, error, startListening, stopListening, wsUrl]
   );
 }

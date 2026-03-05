@@ -51,6 +51,7 @@ function activePersonaName(personaId: string): string {
 }
 
 function useVoiceGeminiRestImpl() {
+  const [isConnecting, setIsConnecting] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -114,6 +115,7 @@ function useVoiceGeminiRestImpl() {
         return;
       }
       stoppedRef.current = false;
+      setIsConnecting(true);
       try {
         setError(null);
         setTranscript('');
@@ -125,6 +127,7 @@ function useVoiceGeminiRestImpl() {
         const SR = (window as unknown as { SpeechRecognition?: new () => unknown; webkitSpeechRecognition?: new () => unknown }).SpeechRecognition
           || (window as unknown as { webkitSpeechRecognition?: new () => unknown }).webkitSpeechRecognition;
         if (!SR) {
+          setIsConnecting(false);
           setError('Speech recognition not supported in this browser');
           return;
         }
@@ -187,11 +190,13 @@ function useVoiceGeminiRestImpl() {
         const opening = OPENING_LINES[personaId] ?? OPENING_LINES.veda;
         speak(opening, () => {
           if (stoppedRef.current) return;
+          setIsConnecting(false);
           setTranscript((prev) => (prev ? `${prev}\n${activePersonaName(personaId)}: ${opening}` : `${activePersonaName(personaId)}: ${opening}`));
           recognition.start();
           setIsListening(true);
         });
       } catch (err) {
+        setIsConnecting(false);
         setError(err instanceof Error ? err.message : 'Failed to start');
         setIsListening(false);
       }
@@ -201,6 +206,7 @@ function useVoiceGeminiRestImpl() {
 
   const stopListening = useCallback(() => {
     stoppedRef.current = true;
+    setIsConnecting(false);
     pendingRequestRef.current = false;
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
@@ -216,6 +222,7 @@ function useVoiceGeminiRestImpl() {
   }, []);
 
   return {
+    isConnecting,
     isListening,
     isSpeaking,
     transcript,

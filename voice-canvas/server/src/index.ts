@@ -1,6 +1,6 @@
 /**
- * Standalone Gemini Live voice server for voice-canvas.
- * Browser connects via WebSocket /voice; sends PCM 16kHz base64, receives μ-law 8kHz base64.
+ * Standalone Gemini Live voice server — ONE session globally.
+ * New connection takes over: previous session is closed first.
  */
 
 import dotenv from 'dotenv';
@@ -41,9 +41,36 @@ server.on('upgrade', (request, socket, head) => {
   socket.destroy();
 });
 
+type Session = Awaited<ReturnType<typeof createGeminiSession>>;
+
+let globalSession: Session | null = null;
+let globalWs: import('ws').WebSocket | null = null;
+
+const RESPONSE_GAP_MS = 1100;
+const SUPPRESS_SECOND_MS = 3000;
+
+function takeDownPrevious(): void {
+  const prevWs = globalWs;
+  const prevSession = globalSession;
+  globalWs = null;
+  globalSession = null;
+  if (prevSession) {
+    try {
+      prevSession.close();
+    } catch (_) {}
+  }
+  if (prevWs && prevWs.readyState === prevWs.OPEN) {
+    try {
+      prevWs.close(1000, 'Replaced');
+    } catch (_) {}
+  }
+}
+
 wss.on('connection', (ws: import('ws').WebSocket) => {
-  let session: Awaited<ReturnType<typeof createGeminiSession>> | null = null;
+  let session: Session | null = null;
   let initialized = false;
+  let lastForwardedTime = 0;
+  let suppressUntil = 0;
 
   function send(msg: object) {
     if (ws.readyState === ws.OPEN) {
@@ -59,11 +86,18 @@ wss.on('connection', (ws: import('ws').WebSocket) => {
       if (!raw.startsWith('{')) return;
       const msg = JSON.parse(raw) as { type?: string; persona?: string; language?: string; data?: string };
 
+      if (msg.type === 'audio' && msg.data) {
+        lastForwardedTime = 0;
+        suppressUntil = 0;
+      }
+
       if (msg.type === 'init') {
         if (initialized) {
           send({ type: 'error', message: 'Already initialized' });
           return;
         }
+        takeDownPrevious();
+
         const persona = (msg.persona ?? 'Ananya').trim();
         const language = (msg.language ?? 'en-IN').trim();
 
@@ -73,24 +107,35 @@ wss.on('connection', (ws: import('ws').WebSocket) => {
           language,
           {
             onAudioChunk(b64) {
+              if (globalWs !== ws) return;
+              const now = Date.now();
+              if (now < suppressUntil) return;
+              if (lastForwardedTime > 0 && now - lastForwardedTime > RESPONSE_GAP_MS) {
+                suppressUntil = now + SUPPRESS_SECOND_MS;
+                return;
+              }
+              lastForwardedTime = now;
               send({ type: 'audio', data: b64 });
             },
             onTranscript(role, text) {
+              if (globalWs !== ws) return;
               send({ type: 'transcript', role, text });
             },
             onError(err) {
-              send({ type: 'error', message: err.message });
+              if (globalWs === ws) send({ type: 'error', message: err.message });
             },
             onClose() {},
           },
           'Start'
         );
         initialized = true;
+        globalSession = session;
+        globalWs = ws;
         send({ type: 'ready', persona, language });
         return;
       }
 
-      if (msg.type === 'audio' && msg.data && session) {
+      if (msg.type === 'audio' && msg.data && session && globalWs === ws) {
         const buffer = Buffer.from(msg.data, 'base64');
         if (buffer.length > 0) session.sendPcm(buffer);
       }
@@ -106,6 +151,10 @@ wss.on('connection', (ws: import('ws').WebSocket) => {
       } catch (_) {}
       session = null;
     }
+    if (globalWs === ws) {
+      globalWs = null;
+      globalSession = null;
+    }
   });
 
   ws.on('error', () => {
@@ -114,6 +163,10 @@ wss.on('connection', (ws: import('ws').WebSocket) => {
         session.close();
       } catch (_) {}
       session = null;
+    }
+    if (globalWs === ws) {
+      globalWs = null;
+      globalSession = null;
     }
   });
 });

@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import * as THREE from 'three';
 import type { Persona } from '../../data/personas';
 
-export type OrbState = 'idle' | 'listening' | 'speaking';
+export type OrbState = 'idle' | 'connecting' | 'listening' | 'speaking';
 
 /** Lighten a hex color by blending with white (0–1). */
 function lightenHex(hex: string, amount: number): string {
@@ -640,7 +640,7 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
             sample(analyser);
         };
 
-        if (presentation || reducedMotion || orbState === 'idle') {
+        if (presentation || reducedMotion || orbState === 'idle' || orbState === 'connecting') {
             setAudioLevel(0);
             return () => {
                 cleanup().catch(() => undefined);
@@ -687,11 +687,13 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
         const c = new THREE.Color(persona.color);
         return `${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(c.b * 255)}`;
     })();
-    const tapTextColor = orbState === 'listening'
-        ? 'rgba(125, 211, 252, 0.95)'
-        : orbState === 'speaking'
-            ? `rgba(${accentRgb}, 0.95)`
-            : 'rgba(255,255,255,0.72)';
+    const tapTextColor = orbState === 'connecting'
+        ? 'rgba(255,255,255,0.6)'
+        : orbState === 'listening'
+            ? 'rgba(125, 211, 252, 0.95)'
+            : orbState === 'speaking'
+                ? `rgba(${accentRgb}, 0.95)`
+                : 'rgba(255,255,255,0.72)';
 
     const hoverBoost = presentation ? 0.2 : 0;
 
@@ -750,9 +752,12 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                             margin: 'auto',
                             width: 96,
                             height: 96,
+                            transform: 'translateY(6px)',
                             borderRadius: '50%',
-                            border: `1px solid ${orbState === 'listening' ? 'rgba(56,189,248,0.68)' : `${persona.color}66`}`,
-                            background: orbState === 'listening'
+                            border: `1px solid ${orbState === 'connecting' ? 'rgba(255,255,255,0.2)' : orbState === 'listening' ? 'rgba(56,189,248,0.68)' : `${persona.color}66`}`,
+                            background: orbState === 'connecting'
+                                ? 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), rgba(255,255,255,0.04) 100%)'
+                                : orbState === 'listening'
                                 ? 'radial-gradient(circle at 50% 50%, rgba(125,211,252,0.28), rgba(56,189,248,0.12) 52%, rgba(14,116,144,0.06) 100%)'
                                 : `radial-gradient(circle at 50% 50%, ${persona.color}30, ${persona.color}22 52%, ${persona.color}14 100%)`,
                             boxShadow: `0 0 8px ${persona.color}40, inset 0 0 8px rgba(255,255,255,0.05)`,
