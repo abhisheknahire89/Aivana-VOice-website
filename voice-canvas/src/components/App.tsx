@@ -7,31 +7,35 @@ import FeaturesModal from './FeaturesModal/FeaturesModal';
 import FAQsModal from './FAQsModal/FAQsModal';
 import BookDemoModal from './BookDemoModal/BookDemoModal';
 import SplineBackground from './SplineBackground/SplineBackground';
+import { useVoice } from '../hooks/useVoice';
 
 export type ModalType = 'features' | 'faqs' | 'demo' | null;
 
 const App: React.FC = () => {
     const [personaIndex, setPersonaIndex] = useState(0);
     const [activeModal, setActiveModal] = useState<ModalType>(null);
-    const [orbState, setOrbState] = useState<OrbState>('idle');
     const [transitioning, setTransitioning] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [envPulseKey, setEnvPulseKey] = useState(0);
     const scrollCooldown = useRef(false);
     const touchStart = useRef<number | null>(null);
+
+    const { isListening, isSpeaking, transcript, error: voiceError, startListening, stopListening } = useVoice();
+    const orbState: OrbState = isSpeaking ? 'speaking' : isListening ? 'listening' : 'idle';
 
     const activePersona: Persona = PERSONAS[personaIndex];
 
     const cyclePersona = useCallback((dir: 1 | -1) => {
         if (scrollCooldown.current) return;
+        if (isListening) stopListening();
         setTransitioning(true);
         setTimeout(() => {
             setPersonaIndex(prev => (prev + dir + PERSONAS.length) % PERSONAS.length);
-            setOrbState('idle');
             setTransitioning(false);
         }, 200);
         scrollCooldown.current = true;
         setTimeout(() => { scrollCooldown.current = false; }, 700);
-    }, []);
+    }, [isListening, stopListening]);
 
     // Arrow keys
     useEffect(() => {
@@ -73,14 +77,13 @@ const App: React.FC = () => {
 
     const openModal = useCallback((m: ModalType) => setActiveModal(m), []);
     const closeModal = useCallback(() => setActiveModal(null), []);
+
     const handleOrbClick = useCallback(() => {
         if (activeModal) return;
-        setOrbState(prev =>
-            prev === 'idle' ? 'listening' :
-                prev === 'listening' ? 'speaking' :
-                    'idle'
-        );
-    }, [activeModal]);
+        setEnvPulseKey(prev => prev + 1);
+        if (isListening) stopListening();
+        else startListening(activePersona.id);
+    }, [activeModal, isListening, stopListening, startListening, activePersona.id]);
 
     const isBlurred = activeModal !== null;
 
@@ -100,7 +103,7 @@ const App: React.FC = () => {
             } as React.CSSProperties}
         >
             {/* ── New Spline background (animated paper boat scene) ─────────── */}
-            <SplineBackground />
+            <SplineBackground orbState={orbState} pulseKey={envPulseKey} />
             {/* ── Main layer ────────────────────────────────────────────────── */}
             <div
                 style={{
@@ -109,9 +112,10 @@ const App: React.FC = () => {
                     zIndex: 10,
                     display: 'flex',
                     flexDirection: 'column',
+                    opacity: 1,
+                    transform: 'translateY(0)',
+                    transition: 'opacity 0.8s ease, transform 0.8s ease, filter 0.4s ease',
                     filter: isBlurred ? 'blur(10px)' : 'none',
-                    transform: isBlurred ? 'scale(1.02)' : 'scale(1)',
-                    transition: 'filter 0.4s ease, transform 0.4s ease',
                     pointerEvents: 'none',
                 }}
             >
@@ -292,21 +296,19 @@ const App: React.FC = () => {
                                             onClick={handleOrbClick}
                                         />
                                     </div>
-                                    <button
-                                        className="tap-to-talk-btn"
-                                        onClick={handleOrbClick}
-                                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7, transition: 'opacity 0.2s' }}
-                                        onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                                        onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
-                                    >
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "rgba(255,255,255,0.7)" }}>
-                                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
-                                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                                            <line x1="12" y1="19" x2="12" y2="22"></line>
-                                            <line x1="8" y1="22" x2="16" y2="22"></line>
-                                        </svg>
-                                        <span className="tap-label" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>TAP TO TALK</span>
-                                    </button>
+                                    <p style={{ marginTop: 8, fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
+                                        {isListening ? 'Listening…' : isSpeaking ? 'Speaking…' : 'Tap to talk'}
+                                    </p>
+                                    {voiceError && (
+                                        <p style={{ marginTop: 6, fontSize: '0.75rem', color: 'rgba(248,113,113,0.9)' }}>
+                                            {voiceError}
+                                        </p>
+                                    )}
+                                    {transcript && (
+                                        <p style={{ marginTop: 12, maxWidth: 360, fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>
+                                            {transcript}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* ══ RIGHT COLUMN — Capabilities List ═══════════ */}

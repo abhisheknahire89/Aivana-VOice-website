@@ -590,12 +590,12 @@ body,
 }
 
 .petal-wrapper {
-    width: 320px;
-    height: 320px;
+    width: clamp(300px, 38vw, 460px);
+    height: clamp(300px, 38vw, 460px);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 60px var(--accent-glow), 0 0 120px var(--accent-glow);
+    box-shadow: 0 0 56px var(--accent-glow), 0 0 140px var(--accent-glow);
     border-radius: 50%;
     transition: box-shadow 0.6s ease;
 }
@@ -637,4 +637,214 @@ body,
     background: var(--accent-glow);
     border-color: var(--accent-muted);
     transition: all 0.4s ease;
+}
+
+.awakening-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    background: radial-gradient(circle at 50% 45%, rgba(35, 22, 76, 0.22) 0%, rgba(7, 8, 20, 0.92) 48%, #070814 100%);
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+}
+
+.phase-merge.awakening-overlay {
+    opacity: 0;
+}
+
+.awakening-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.awakening-particles {
+    position: absolute;
+    inset: 0;
+}
+
+.awakening-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.94) 0%, rgba(56, 189, 248, 0.44) 45%, rgba(56, 189, 248, 0) 100%);
+    opacity: 0;
+}
+
+.phase-particles .awakening-particle,
+.phase-bloom .awakening-particle,
+.phase-meet .awakening-particle,
+.phase-merge .awakening-particle {
+    animation: awake-particle linear infinite;
+}
+
+.phase-bloom .awakening-particle,
+.phase-meet .awakening-particle,
+.phase-merge .awakening-particle {
+    animation-name: awake-converge;
+}
+
+.awakening-hero-orb-wrapper {
+    position: relative;
+    width: clamp(300px, 38vw, 460px);
+    height: clamp(300px, 38vw, 460px);
+    transform: scale(0.18);
+    opacity: 0;
+    transition: transform 1.05s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+    pointer-events: none;
+    filter: drop-shadow(0 0 26px rgba(167, 139, 250, 0.34));
+}
+
+.phase-bloom .awakening-hero-orb-wrapper,
+.phase-meet .awakening-hero-orb-wrapper,
+.phase-merge .awakening-hero-orb-wrapper {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.awakening-hero-orb-wrapper--merge {
+    transform: scale(0.96);
+    opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+}
+
+.awakening-meet {
+    position: absolute;
+    top: calc(50% + min(22vw, 190px));
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: clamp(1rem, 2.2vw, 1.45rem);
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    opacity: 0;
+}
+
+.phase-meet .awakening-meet {
+    animation: awake-meet 0.9s ease forwards;
+}
+
+.phase-merge .awakening-meet {
+    animation: awake-meet-out 0.45s ease forwards;
+}
+
+@keyframes awake-particle {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(0);
+    }
+
+    25% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.2) translateY(-34px);
+    }
+}
+
+@keyframes awake-converge {
+    0% {
+        opacity: 0.78;
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate3d(calc(50vw - 50%), calc(50vh - 50%), 0) scale(0.4);
+    }
+}
+
+@keyframes awake-seed {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+
+    35% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(2.8);
+        opacity: 0.72;
+    }
+}
+
+@keyframes awake-meet {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes awake-meet-out {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+    }
+}
+
+@media (max-width: 1080px) {
+    .agent-section-wrapper {
+        padding: 0 24px;
+    }
+
+    .agent-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .agent-info {
+        justify-self: center;
+        max-width: 560px;
+        text-align: center;
+    }
+
+    .capabilities-list {
+        justify-self: center;
+        width: min(90vw, 540px);
+    }
+
+    .carousel-arrow {
+        top: auto;
+        bottom: -56px;
+        transform: none;
+    }
+
+    .carousel-arrow.left {
+        left: calc(50% - 52px);
+    }
+
+    .carousel-arrow.right {
+        right: calc(50% - 52px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .awakening-overlay {
+        transition: none;
+    }
+
+    .awakening-particle,
+    .awakening-meet {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }
