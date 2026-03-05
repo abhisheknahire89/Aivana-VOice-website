@@ -1,3 +1,5 @@
+# Deploy from this directory: railway link && railway up
+# Set GEMINI_API_KEY (or VITE_GEMINI_API_KEY) in Railway project variables.
 [build]
 builder = "nixpacks"
 
