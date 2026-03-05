@@ -148,8 +148,8 @@ const EnvironmentScene: React.FC<{
         };
     }, [auraTexture, rippleTexture]);
 
-    useFrame((state, delta) => {
-        const t = state.clock.elapsedTime;
+    useFrame((_state, delta) => {
+        const t = performance.now() * 0.001;
 
         if (clickPulse.current > 0) {
             clickPulse.current = Math.max(0, clickPulse.current - delta * (reducedMotion ? 2.5 : 1.5));

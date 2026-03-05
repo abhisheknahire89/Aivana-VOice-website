@@ -19,6 +19,7 @@ const App: React.FC = () => {
     const [envPulseKey, setEnvPulseKey] = useState(0);
     const scrollCooldown = useRef(false);
     const touchStart = useRef<number | null>(null);
+    const lastVoiceStartRef = useRef(0);
 
     const { isListening, isSpeaking, transcript, error: voiceError, startListening, stopListening } = useVoice();
     const orbState: OrbState = isSpeaking ? 'speaking' : isListening ? 'listening' : 'idle';
@@ -27,7 +28,7 @@ const App: React.FC = () => {
 
     const cyclePersona = useCallback((dir: 1 | -1) => {
         if (scrollCooldown.current) return;
-        if (isListening) stopListening();
+        if (isListening || isSpeaking) return;
         setTransitioning(true);
         setTimeout(() => {
             setPersonaIndex(prev => (prev + dir + PERSONAS.length) % PERSONAS.length);
@@ -35,7 +36,7 @@ const App: React.FC = () => {
         }, 200);
         scrollCooldown.current = true;
         setTimeout(() => { scrollCooldown.current = false; }, 700);
-    }, [isListening, stopListening]);
+    }, [isListening, isSpeaking]);
 
     // Arrow keys
     useEffect(() => {
@@ -48,14 +49,14 @@ const App: React.FC = () => {
         return () => window.removeEventListener('keydown', onKey);
     }, [activeModal, cyclePersona]);
 
-    // Auto-rotate every 5s
+    // Auto-rotate every 5s (paused during voice conversation)
     useEffect(() => {
-        if (activeModal || isPaused) return;
+        if (activeModal || isPaused || isListening || isSpeaking) return;
         const timer = setInterval(() => {
             cyclePersona(1);
         }, 5000);
         return () => clearInterval(timer);
-    }, [activeModal, isPaused, cyclePersona]);
+    }, [activeModal, isPaused, isListening, isSpeaking, cyclePersona]);
 
     // Touch swipe
     useEffect(() => {
@@ -81,9 +82,15 @@ const App: React.FC = () => {
     const handleOrbClick = useCallback(() => {
         if (activeModal) return;
         setEnvPulseKey(prev => prev + 1);
-        if (isListening) stopListening();
-        else startListening(activePersona.id);
-    }, [activeModal, isListening, stopListening, startListening, activePersona.id]);
+        if (isListening || isSpeaking) {
+            stopListening();
+            return;
+        }
+        const now = Date.now();
+        if (now - lastVoiceStartRef.current < 1500) return;
+        lastVoiceStartRef.current = now;
+        startListening(activePersona.id);
+    }, [activeModal, isListening, isSpeaking, stopListening, startListening, activePersona.id]);
 
     const isBlurred = activeModal !== null;
 
@@ -236,18 +243,28 @@ const App: React.FC = () => {
                     >
                         <section className="agent-section-wrapper" data-agent={activePersona.id}>
 
-                            {/* ── Left Arrow ──────────────────────────────────── */}
+                            {/* ── Left Arrow (disabled during voice call) ─────── */}
                             <button
                                 className="carousel-arrow left"
                                 onClick={() => cyclePersona(-1)}
+                                aria-disabled={isListening || isSpeaking}
+                                style={{
+                                    opacity: isListening || isSpeaking ? 0.35 : 1,
+                                    pointerEvents: isListening || isSpeaking ? 'none' : 'auto',
+                                }}
                             >
                                 ‹
                             </button>
 
-                            {/* ── Right Arrow ─────────────────────────────────── */}
+                            {/* ── Right Arrow (disabled during voice call) ─────── */}
                             <button
                                 className="carousel-arrow right"
                                 onClick={() => cyclePersona(1)}
+                                aria-disabled={isListening || isSpeaking}
+                                style={{
+                                    opacity: isListening || isSpeaking ? 0.35 : 1,
+                                    pointerEvents: isListening || isSpeaking ? 'none' : 'auto',
+                                }}
                             >
                                 ›
                             </button>

@@ -1,4 +1,19 @@
-# React + TypeScript + Vite
+# Voice Canvas
+
+React + TypeScript + Vite. Voice uses browser Speech Recognition, Gemini REST, and Speech Synthesis. One env var required.
+
+## Setup
+
+- **Local:** Copy `.env.example` to `.env` and set `VITE_GEMINI_API_KEY` (get a key at [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)).
+- **Vercel:** Add `VITE_GEMINI_API_KEY` in Project → Settings → Environment Variables. No other setup.
+
+```bash
+npm install
+npm run dev    # local
+npm run build # production
+```
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

@@ -318,8 +318,8 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
         };
     }, [outerMat, innerMat]);
 
-    useFrame((state, delta) => {
-        const time = state.clock.elapsedTime;
+    useFrame((_state, delta) => {
+        const time = performance.now() * 0.001;
         const pulse = orbState === 'speaking' ? 1 : orbState === 'listening' ? 0.7 : 0.42;
         const intensity = THREE.MathUtils.lerp(pulse, pulse + audioLevel * 0.95 + hoverBoost * 0.06, 0.7);
 
@@ -365,7 +365,7 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
         if (waveRef.current) {
             waveRef.current.visible = orbState === 'listening';
             waveRef.current.scale.setScalar(1.05 + audioLevel * 1.15);
-            waveRef.current.rotation.z += delta * 0.34;
+            waveRef.current.rotation.z = 0;
             (waveRef.current.material as THREE.MeshBasicMaterial).color.copy(currentMainColor.current);
         }
 
@@ -482,14 +482,15 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
                     </mesh>
                 )}
 
-                <mesh ref={waveRef} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+                {/* Rings centered around flower: same group origin, no Z rotation so they stay aligned */}
+                <mesh ref={waveRef} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
                     <ringGeometry args={[0.52, 0.62, 64]} />
-                    <meshBasicMaterial color={persona.color} transparent opacity={0.4} blending={THREE.AdditiveBlending} />
+                    <meshBasicMaterial color={persona.color} transparent opacity={0.4} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} />
                 </mesh>
 
-                <mesh ref={rippleRef} rotation={[-Math.PI / 2, 0, 0]}>
+                <mesh ref={rippleRef} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
                     <ringGeometry args={[0.66, 0.75, 64]} />
-                    <meshBasicMaterial color={lightenHex(persona.color, 0.35)} transparent opacity={0} blending={THREE.AdditiveBlending} />
+                    <meshBasicMaterial color={lightenHex(persona.color, 0.35)} transparent opacity={0} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} />
                 </mesh>
 
                 <points ref={pointsRef}>
@@ -745,16 +746,15 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                         onClick={triggerClick}
                         style={{
                             position: 'absolute',
-                            left: '50%',
-                            top: '50%',
-                            transform: 'translate(-50%, -50%)',
+                            inset: 0,
+                            margin: 'auto',
                             width: 96,
                             height: 96,
                             borderRadius: '50%',
                             border: `1px solid ${orbState === 'listening' ? 'rgba(56,189,248,0.68)' : `${persona.color}66`}`,
                             background: orbState === 'listening'
-                                ? 'radial-gradient(circle at 35% 35%, rgba(125,211,252,0.28), rgba(56,189,248,0.12) 52%, rgba(14,116,144,0.06) 100%)'
-                                : `radial-gradient(circle at 35% 35%, ${persona.color}30, ${persona.color}22 52%, ${persona.color}14 100%)`,
+                                ? 'radial-gradient(circle at 50% 50%, rgba(125,211,252,0.28), rgba(56,189,248,0.12) 52%, rgba(14,116,144,0.06) 100%)'
+                                : `radial-gradient(circle at 50% 50%, ${persona.color}30, ${persona.color}22 52%, ${persona.color}14 100%)`,
                             boxShadow: `0 0 8px ${persona.color}40, inset 0 0 8px rgba(255,255,255,0.05)`,
                             display: 'grid',
                             placeItems: 'center',
