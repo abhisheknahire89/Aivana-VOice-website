@@ -590,8 +590,8 @@ body,
 }
 
 .petal-wrapper {
-    width: clamp(300px, 38vw, 460px);
-    height: clamp(300px, 38vw, 460px);
+    width: clamp(240px, 72vw, 460px);
+    height: clamp(240px, 72vw, 460px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -689,8 +689,8 @@ body,
 
 .awakening-hero-orb-wrapper {
     position: relative;
-    width: clamp(300px, 38vw, 460px);
-    height: clamp(300px, 38vw, 460px);
+    width: clamp(240px, 72vw, 460px);
+    height: clamp(240px, 72vw, 460px);
     transform: scale(0.18);
     opacity: 0;
     transition: transform 1.05s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
@@ -846,5 +846,59 @@ body,
     .awakening-meet {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .agent-section-wrapper {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 14px;
+    }
+
+    .agent-section {
+        gap: 14px;
+    }
+
+    .agent-name {
+        font-size: 1.55rem;
+        margin-bottom: 8px;
+    }
+
+    .agent-description {
+        font-size: 0.84rem;
+        margin-bottom: 14px;
+    }
+
+    .petal-wrapper {
+        width: min(86vw, 360px);
+        height: min(86vw, 360px);
+        box-shadow: 0 0 34px var(--accent-glow), 0 0 90px var(--accent-glow);
+    }
+
+    .capabilities-list {
+        width: 100%;
+        max-width: 340px;
+        gap: 10px;
+    }
+
+    .capabilities-list li {
+        font-size: 0.8rem;
+    }
+
+    .carousel-arrow {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .petal-wrapper {
+        width: min(88vw, 320px);
+        height: min(88vw, 320px);
+    }
+
+    .capabilities-list {
+        display: none;
     }
 }

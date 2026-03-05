@@ -20,8 +20,9 @@ const App: React.FC = () => {
     const scrollCooldown = useRef(false);
     const touchStart = useRef<number | null>(null);
     const lastVoiceStartRef = useRef(0);
+    const currentVoicePersonaRef = useRef<string | null>(null);
 
-    const { isConnecting, isListening, isSpeaking, transcript, error: voiceError, startListening, stopListening } = useVoice();
+    const { isConnecting, isListening, isSpeaking, error: voiceError, startListening, stopListening } = useVoice();
     const orbState: OrbState = isConnecting ? 'connecting' : isSpeaking ? 'speaking' : isListening ? 'listening' : 'idle';
 
     const activePersona: Persona = PERSONAS[personaIndex];
@@ -82,15 +83,43 @@ const App: React.FC = () => {
     const handleOrbClick = useCallback(() => {
         if (activeModal) return;
         setEnvPulseKey(prev => prev + 1);
-        if (isConnecting || isListening || isSpeaking) {
+        if (isConnecting) {
+            return;
+        }
+        if (isListening || isSpeaking) {
+            const switchingPersona = currentVoicePersonaRef.current !== null && currentVoicePersonaRef.current !== activePersona.id;
             stopListening();
+            if (switchingPersona) {
+                const now = Date.now();
+                if (now - lastVoiceStartRef.current < 500) return;
+                lastVoiceStartRef.current = now;
+                window.setTimeout(() => {
+                    startListening(activePersona.id);
+                    currentVoicePersonaRef.current = activePersona.id;
+                }, 160);
+            }
             return;
         }
         const now = Date.now();
         if (now - lastVoiceStartRef.current < 1500) return;
         lastVoiceStartRef.current = now;
         startListening(activePersona.id);
+        currentVoicePersonaRef.current = activePersona.id;
     }, [activeModal, isConnecting, isListening, isSpeaking, stopListening, startListening, activePersona.id]);
+
+    useEffect(() => {
+        if (!isConnecting && !isListening && !isSpeaking) {
+            currentVoicePersonaRef.current = null;
+        }
+    }, [isConnecting, isListening, isSpeaking]);
+
+    useEffect(() => {
+        const activeVoicePersona = currentVoicePersonaRef.current;
+        if (!activeVoicePersona) return;
+        if (activeVoicePersona !== activePersona.id && (isConnecting || isListening || isSpeaking)) {
+            stopListening();
+        }
+    }, [activePersona.id, isConnecting, isListening, isSpeaking, stopListening]);
 
     const isBlurred = activeModal !== null;
 
@@ -150,13 +179,13 @@ const App: React.FC = () => {
                             textAlign: 'center',
                             marginBottom: 40,
                             animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) both',
-                            padding: '0 40px',
+                            padding: '0 clamp(12px, 4vw, 40px)',
                             width: '100%',
                         }}
                     >
                         <h1
                             style={{
-                                fontSize: '4.2rem',
+                                fontSize: 'clamp(2rem, 7vw, 4.2rem)',
                                 fontWeight: 700,
                                 color: '#f1f1f5',
                                 letterSpacing: '-0.03em',
@@ -169,7 +198,7 @@ const App: React.FC = () => {
                         </h1>
                         <p
                             style={{
-                                fontSize: '1.2rem',
+                                fontSize: 'clamp(0.95rem, 3.5vw, 1.2rem)',
                                 color: 'rgba(255, 255, 255, 0.65)',
                                 maxWidth: 600,
                                 margin: '0 auto 40px',
@@ -180,7 +209,7 @@ const App: React.FC = () => {
                         </p>
 
                         {/* CTAs */}
-                        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 0 }}>
+                        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 0 }}>
                             <button
                                 onClick={() => openModal('demo')}
                                 style={{
@@ -313,17 +342,23 @@ const App: React.FC = () => {
                                             onClick={handleOrbClick}
                                         />
                                     </div>
-                                    <p style={{ marginTop: 8, fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
-                                        {isConnecting ? 'Connecting…' : isListening ? 'Listening…' : isSpeaking ? 'Speaking…' : 'Tap to talk'}
+                                    <p style={{
+                                        marginTop: 10,
+                                        fontSize: isConnecting ? '0.9rem' : '0.75rem',
+                                        fontWeight: isConnecting ? 700 : 500,
+                                        letterSpacing: isConnecting ? '0.02em' : 'normal',
+                                        color: isConnecting ? '#facc15' : 'rgba(255,255,255,0.6)',
+                                        textShadow: isConnecting ? '0 0 12px rgba(250,204,21,0.6)' : 'none',
+                                        padding: isConnecting ? '6px 12px' : '0',
+                                        borderRadius: isConnecting ? 999 : 0,
+                                        background: isConnecting ? 'rgba(250,204,21,0.16)' : 'transparent',
+                                        border: isConnecting ? '1px solid rgba(250,204,21,0.45)' : 'none'
+                                    }}>
+                                        {isConnecting ? 'Connecting… please wait' : isListening ? 'Listening…' : isSpeaking ? 'Speaking…' : 'Tap to talk'}
                                     </p>
                                     {voiceError && (
                                         <p style={{ marginTop: 6, fontSize: '0.75rem', color: 'rgba(248,113,113,0.9)' }}>
                                             {voiceError}
-                                        </p>
-                                    )}
-                                    {transcript && (
-                                        <p style={{ marginTop: 12, maxWidth: 360, fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>
-                                            {transcript}
                                         </p>
                                     )}
                                 </div>

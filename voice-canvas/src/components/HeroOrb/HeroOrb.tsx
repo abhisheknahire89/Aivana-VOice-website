@@ -342,8 +342,9 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
         interactionUniforms.uTime.value = time;
 
         if (rootRef.current) {
-            const tiltX = reducedMotion ? 0 : pointer.current.y * 0.14;
-            const tiltY = reducedMotion ? 0 : pointer.current.x * 0.18;
+            const allowTilt = !presentation && orbState === 'idle';
+            const tiltX = !allowTilt || reducedMotion ? 0 : pointer.current.y * 0.14;
+            const tiltY = !allowTilt || reducedMotion ? 0 : pointer.current.x * 0.18;
             rootRef.current.rotation.x = THREE.MathUtils.lerp(rootRef.current.rotation.x, tiltX, 0.06);
             rootRef.current.rotation.y = THREE.MathUtils.lerp(rootRef.current.rotation.y, tiltY, 0.06);
             const baseScale = presentation ? 1.8 : 1;
@@ -745,14 +746,14 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                 <>
                     <button
                         aria-label={`Tap to talk with ${persona.name}`}
-                        onClick={triggerClick}
+                        onClick={orbState === 'connecting' ? undefined : triggerClick}
                         style={{
                             position: 'absolute',
                             inset: 0,
                             margin: 'auto',
                             width: 96,
                             height: 96,
-                            transform: 'translateY(6px)',
+                            transform: 'translateY(0px)',
                             borderRadius: '50%',
                             border: `1px solid ${orbState === 'connecting' ? 'rgba(255,255,255,0.2)' : orbState === 'listening' ? 'rgba(56,189,248,0.68)' : `${persona.color}66`}`,
                             background: orbState === 'connecting'
@@ -763,7 +764,8 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                             boxShadow: `0 0 8px ${persona.color}40, inset 0 0 8px rgba(255,255,255,0.05)`,
                             display: 'grid',
                             placeItems: 'center',
-                            cursor: 'pointer',
+                            cursor: orbState === 'connecting' ? 'not-allowed' : 'pointer',
+                            pointerEvents: orbState === 'connecting' ? 'none' : 'auto',
                             zIndex: 3,
                             transition: 'all 200ms ease',
                         }}

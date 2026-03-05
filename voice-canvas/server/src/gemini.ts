@@ -1,3 +1,7 @@
+/**
+ * Single Gemini Live session. One connection, one stream.
+ */
+
 import { GoogleGenAI, Modality, ActivityHandling } from '@google/genai';
 import type { LiveServerMessage } from '@google/genai';
 import { getSystemInstruction, getPersonaVoiceName } from './personas.js';
@@ -18,6 +22,7 @@ export type GeminiSessionCallbacks = {
 
 export interface GeminiSession {
   sendPcm(pcm16kBuffer: Buffer): void;
+  endTurn(): void;
   close(): void;
 }
 
@@ -64,7 +69,6 @@ export async function createGeminiSession(
               const sc = (msg.serverContent ?? raw.server_content) as Record<string, unknown> | undefined;
               const mt = (sc?.modelTurn ?? sc?.model_turn ?? sc?.content) as { parts?: Array<Record<string, unknown>> } | undefined;
               const parts: Array<Record<string, unknown>> = (mt?.parts as Array<Record<string, unknown>>) ?? [];
-              let sentAudio = false;
 
               for (const part of parts) {
                 const inline = (part.inlineData ?? part.inline_data) as { mimeType?: string; mime_type?: string; data?: string } | undefined;
@@ -76,23 +80,16 @@ export async function createGeminiSession(
                     try {
                       const pcmBuffer = Buffer.from(data, 'base64');
                       if (pcmBuffer.length >= 2) {
-                        callbacks.onAudioChunk(geminiToMulawBase64(pcmBuffer));
-                        sentAudio = true;
+                        const mulawB64 = geminiToMulawBase64(pcmBuffer);
+                        callbacks.onAudioChunk(mulawB64);
                       }
-                    } catch (_) {}
+                    } catch { /* noop */ }
                   }
                 }
                 const text = part.text as string | undefined;
                 if (text) callbacks.onTranscript?.('assistant', text);
               }
-              if (!sentAudio && typeof (raw.data ?? (msg as unknown as { data?: string }).data) === 'string') {
-                const b64 = (raw.data ?? (msg as unknown as { data?: string }).data) as string;
-                try {
-                  const pcmBuffer = Buffer.from(b64, 'base64');
-                  if (pcmBuffer.length > 0) callbacks.onAudioChunk(geminiToMulawBase64(pcmBuffer));
-                } catch (_) {}
-              }
-            } catch (_) {}
+            } catch { /* noop */ }
           },
           onerror: (event: { error?: Error }) => {
             callbacks.onError(event.error ?? new Error('Unknown Gemini error'));
@@ -112,8 +109,8 @@ export async function createGeminiSession(
               turns: [{ role: 'user', parts: [{ text: startPrompt.trim() || 'Start' }] }],
               turnComplete: true,
             });
-          } catch (_) {}
-        }, 300);
+          } catch { /* noop */ }
+        }, 80);
       });
 
       return {
@@ -129,10 +126,15 @@ export async function createGeminiSession(
             callbacks.onError(e instanceof Error ? e : new Error(String(e)));
           }
         },
+        endTurn() {
+          try {
+            session.sendClientContent({ turns: [], turnComplete: true });
+          } catch { /* noop */ }
+        },
         close() {
           try {
             session.conn?.close();
-          } catch (_) {}
+          } catch { /* noop */ }
         },
       };
     } catch (e) {
