@@ -43,6 +43,7 @@ export function useLiveVoice(wsUrl: string) {
   const suppressMicUntilRef = useRef(0);
   const speechHangoverUntilRef = useRef(0);
   const lastUserSpeechTimeRef = useRef(0);
+  const activeServerPersonaRef = useRef<string | null>(null);
 
   const startListening = useCallback(
     async (personaId: string) => {
@@ -87,6 +88,7 @@ export function useLiveVoice(wsUrl: string) {
       }
 
       const voicebotPersona = PERSONA_TO_SERVER[personaId] ?? 'Veda';
+      activeServerPersonaRef.current = voicebotPersona;
       closedRef.current = false;
 
       const ws = new WebSocket(wsUrl);
@@ -138,6 +140,7 @@ export function useLiveVoice(wsUrl: string) {
             role?: string;
             text?: string;
             message?: string;
+            persona?: string;
           };
           if (msg.type === 'audio' && msg.data) {
             suppressMicUntilRef.current = performance.now() + 500;
@@ -179,6 +182,14 @@ export function useLiveVoice(wsUrl: string) {
           } else if (msg.type === 'error' && msg.message) {
             setError(msg.message);
           } else if (msg.type === 'ready') {
+            if (msg.persona && activeServerPersonaRef.current && msg.persona !== activeServerPersonaRef.current) {
+              setError(`Persona mismatch. Requested ${activeServerPersonaRef.current}, got ${msg.persona}.`);
+              setIsConnecting(false);
+              try {
+                ws.close();
+              } catch { /* noop */ }
+              return;
+            }
             setIsConnecting(false);
             setIsListening(true);
           }
@@ -318,6 +329,7 @@ const stopListening = useCallback(() => {
   }
   suppressMicUntilRef.current = 0;
   speechHangoverUntilRef.current = 0;
+  activeServerPersonaRef.current = null;
   if (wsRef.current) {
     try {
       wsRef.current.close();

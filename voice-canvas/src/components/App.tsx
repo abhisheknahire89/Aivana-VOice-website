@@ -312,6 +312,18 @@ const App: React.FC = () => {
                                     <h2 className="agent-name">
                                         {activePersona.name}
                                     </h2>
+                                    <p
+                                        style={{
+                                            marginTop: 6,
+                                            marginBottom: 14,
+                                            fontSize: '0.8rem',
+                                            letterSpacing: '0.08em',
+                                            textTransform: 'uppercase',
+                                            color: 'rgba(255,255,255,0.62)',
+                                        }}
+                                    >
+                                        {activePersona.role} · {activePersona.gender} Voice
+                                    </p>
                                     <p className="agent-description">
                                         {activePersona.description}
                                     </p>

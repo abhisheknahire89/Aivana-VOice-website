@@ -205,8 +205,6 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
     const outerRef = useRef<THREE.Group>(null);
     const innerRef = useRef<THREE.Group>(null);
     const coreRef = useRef<THREE.Mesh>(null);
-    const waveRef = useRef<THREE.Mesh>(null);
-    const rippleRef = useRef<THREE.Mesh>(null);
     const pointsRef = useRef<THREE.Points>(null);
     const pointLightRef = useRef<THREE.PointLight>(null);
     const interactionRef = useRef<THREE.Mesh>(null);
@@ -363,20 +361,6 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
             innerRef.current.scale.setScalar(bloom);
         }
 
-        if (waveRef.current) {
-            waveRef.current.visible = orbState === 'listening';
-            waveRef.current.scale.setScalar(1.05 + audioLevel * 1.15);
-            waveRef.current.rotation.z = 0;
-            (waveRef.current.material as THREE.MeshBasicMaterial).color.copy(currentMainColor.current);
-        }
-
-        if (rippleRef.current) {
-            rippleRef.current.scale.setScalar(1 + burst.current * 2.6);
-            const material = rippleRef.current.material as THREE.MeshBasicMaterial;
-            material.opacity = 0.2 * burst.current;
-            material.color.copy(currentLightColor.current);
-        }
-
         if (pointsRef.current) {
             (pointsRef.current.material as THREE.PointsMaterial).color.copy(currentMainColor.current);
             const attr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
@@ -482,17 +466,6 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
                         />
                     </mesh>
                 )}
-
-                {/* Rings centered around flower: same group origin, no Z rotation so they stay aligned */}
-                <mesh ref={waveRef} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
-                    <ringGeometry args={[0.52, 0.62, 64]} />
-                    <meshBasicMaterial color={persona.color} transparent opacity={0.4} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} />
-                </mesh>
-
-                <mesh ref={rippleRef} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[0.66, 0.75, 64]} />
-                    <meshBasicMaterial color={lightenHex(persona.color, 0.35)} transparent opacity={0} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} />
-                </mesh>
 
                 <points ref={pointsRef}>
                     <bufferGeometry>

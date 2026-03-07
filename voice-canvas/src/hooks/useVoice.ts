@@ -50,6 +50,21 @@ function activePersonaName(personaId: string): string {
   return names[personaId] ?? 'Assistant';
 }
 
+function pickBrowserVoice(personaId: string): SpeechSynthesisVoice | null {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const wantsMale = personaId === 'rohan';
+  const lowered = (value: string) => value.toLowerCase();
+  const sameLocale = voices.filter((v) => lowered(v.lang).includes('en-in') || lowered(v.lang).startsWith('en'));
+  const pool = sameLocale.length ? sameLocale : voices;
+  const maleHints = ['male', 'daniel', 'david', 'alex', 'fred', 'google uk english male'];
+  const femaleHints = ['female', 'samantha', 'karen', 'zira', 'google uk english female'];
+  const hints = wantsMale ? maleHints : femaleHints;
+  const matched = pool.find((v) => hints.some((h) => lowered(v.name).includes(h)));
+  return matched ?? pool[0] ?? null;
+}
+
 function useVoiceGeminiRestImpl() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -92,13 +107,15 @@ function useVoiceGeminiRestImpl() {
     return text;
   }, []);
 
-  const speak = useCallback((text: string, onDone?: () => void) => {
+  const speak = useCallback((personaId: string, text: string, onDone?: () => void) => {
     if (!('speechSynthesis' in window)) {
       onDone?.();
       return;
     }
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
+    const chosenVoice = pickBrowserVoice(personaId);
+    if (chosenVoice) u.voice = chosenVoice;
     u.rate = 0.95;
     u.onstart = () => setIsSpeaking(true);
     u.onend = () => {
@@ -162,7 +179,7 @@ function useVoiceGeminiRestImpl() {
             const reply = await callGemini(personaId, userText);
             if (stoppedRef.current) return;
             setTranscript((prev) => (prev ? `${prev}\n${activePersonaName(personaId)}: ${reply}` : `${activePersonaName(personaId)}: ${reply}`));
-            speak(reply, () => {
+            speak(personaId, reply, () => {
               pendingRequestRef.current = false;
               if (stoppedRef.current || !recognitionRef.current || !streamRef.current) return;
               recognitionRef.current.start();
@@ -188,7 +205,7 @@ function useVoiceGeminiRestImpl() {
         };
 
         const opening = OPENING_LINES[personaId] ?? OPENING_LINES.veda;
-        speak(opening, () => {
+        speak(personaId, opening, () => {
           if (stoppedRef.current) return;
           setIsConnecting(false);
           setTranscript((prev) => (prev ? `${prev}\n${activePersonaName(personaId)}: ${opening}` : `${activePersonaName(personaId)}: ${opening}`));

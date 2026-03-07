@@ -13,6 +13,13 @@ export const LANGUAGE_INSTRUCTIONS: Record<string, string> = {
     'Respond in Hindi (हिंदी). Use clear, polite language suitable for phone conversation; use "आप" for formal "you" and keep tone respectful. You may mix common English terms where natural.',
 };
 
+export const PERSONA_GENDER_MAP: Record<string, 'Female' | 'Male'> = {
+  Priya: 'Female',
+  Rohan: 'Male',
+  Neha: 'Female',
+  Veda: 'Female',
+};
+
 const CONVERSATION_RULES =
   'This is a natural phone call. One person speaks at a time. Keep your replies short (1-3 sentences). Respond once per user turn, then wait for the user. Do not talk over them. If they start speaking while you are talking, stop and listen. Speak naturally and avoid sounding robotic or scripted.';
 
@@ -23,7 +30,7 @@ const SPEECH_NATURALNESS =
 export const PERSONA_VOICE_MAP: Record<string, string> = {
   Priya: 'Aoede',
   Rohan: 'Zephyr',
-  Neha: 'Puck',
+  Neha: 'Kore',
   Veda: 'Kore',
 };
 
@@ -33,8 +40,10 @@ export function getSystemInstruction(persona: string, language: string): string 
   const key = VALID_PERSONAS.includes(persona) ? persona : 'Veda';
   const prompt = PERSONA_PROMPTS[key] ?? PERSONA_PROMPTS.Veda;
   const lang = LANGUAGE_INSTRUCTIONS[language] ?? LANGUAGE_INSTRUCTIONS['en-IN'];
+  const gender = PERSONA_GENDER_MAP[key] ?? 'Female';
   return [
     prompt,
+    `Identity lock: You are ${key}. Your persona gender is ${gender}. Do not change your name, role, or persona.`,
     lang,
     CONVERSATION_RULES,
     SPEECH_NATURALNESS,

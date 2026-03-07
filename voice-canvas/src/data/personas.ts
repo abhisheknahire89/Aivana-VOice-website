@@ -1,6 +1,7 @@
 export interface Persona {
     id: string;
     name: string;
+    gender: 'Female' | 'Male';
     role: string;
     color: string;         // main orb colour
     orbGradient: string;   // CSS radial gradient for the CSS orb shell
@@ -16,6 +17,7 @@ export const PERSONAS: Persona[] = [
     {
         id: 'priya',
         name: 'Priya',
+        gender: 'Female',
         role: 'Customer Support Specialist',
         tagline: 'Empathetic, calm, and solution-focused.',
         description: 'Handles complaints, order tracking, refunds, and general support across many Indian languages, 24/7.',
@@ -38,6 +40,7 @@ export const PERSONAS: Persona[] = [
     {
         id: 'rohan',
         name: 'Rohan',
+        gender: 'Male',
         role: 'Sales/SDR Agent',
         tagline: 'Confident, proactive, and value-driven.',
         description: 'Qualifies inbound leads, explains pricing and ROI, delivers short pitches, and books demos or follow-ups.',
@@ -60,6 +63,7 @@ export const PERSONAS: Persona[] = [
     {
         id: 'neha',
         name: 'Neha',
+        gender: 'Female',
         role: 'Scheduling/Coordination Assistant',
         tagline: 'Friendly, organized, and frictionless.',
         description: 'Books, reschedules, and confirms appointments, sends reminders, and keeps calendars in sync.',
@@ -82,6 +86,7 @@ export const PERSONAS: Persona[] = [
     {
         id: 'veda',
         name: 'Veda',
+        gender: 'Female',
         role: 'L1/L2 IT Helpdesk Agent',
         tagline: 'Direct, technical, and reassuring.',
         description: 'Troubleshoots software issues, performs tasks like password resets, updates IT tickets, and routes complex issues to humans.',
