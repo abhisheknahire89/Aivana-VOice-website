@@ -464,6 +464,10 @@ body,
     right: 10px;
 }
 
+.main-navbar-links {
+    display: flex;
+}
+
 .agent-section-wrapper {
     position: relative;
     width: 100vw;
@@ -595,9 +599,13 @@ body,
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 56px var(--accent-glow), 0 0 140px var(--accent-glow);
+    box-shadow: 0 0 20px var(--accent-glow), 0 0 46px var(--accent-glow);
     border-radius: 50%;
     transition: box-shadow 0.6s ease;
+}
+
+.trust-strip {
+    text-align: center;
 }
 
 .capabilities-list {
@@ -800,6 +808,18 @@ body,
 }
 
 @media (max-width: 1080px) {
+    .main-navbar-inner {
+        max-width: 100% !important;
+    }
+
+    .main-navbar-links {
+        display: none !important;
+    }
+
+    .main-navbar-tagline {
+        font-size: 9px !important;
+    }
+
     .agent-section-wrapper {
         padding: 0 24px;
     }
@@ -820,6 +840,13 @@ body,
     .capabilities-list {
         justify-self: center;
         width: min(90vw, 540px);
+    }
+
+    .trust-strip {
+        position: static !important;
+        gap: 12px !important;
+        padding: 10px 14px 18px !important;
+        font-size: 0.72rem !important;
     }
 
     .carousel-arrow {
@@ -851,6 +878,18 @@ body,
 
 
 @media (max-width: 768px) {
+    .main-navbar-inner {
+        padding: 12px 14px !important;
+    }
+
+    .main-navbar-brand {
+        max-width: 58vw;
+    }
+
+    .main-navbar-cta {
+        min-height: 36px;
+    }
+
     .agent-section-wrapper {
         width: 100%;
         max-width: 100%;
@@ -872,8 +911,8 @@ body,
     }
 
     .petal-wrapper {
-        width: min(86vw, 360px);
-        height: min(86vw, 360px);
+        width: min(84vw, 340px);
+        height: min(84vw, 340px);
         box-shadow: 0 0 34px var(--accent-glow), 0 0 90px var(--accent-glow);
     }
 
@@ -893,12 +932,38 @@ body,
 }
 
 @media (max-width: 480px) {
+    .main-navbar-tagline {
+        display: none;
+    }
+
     .petal-wrapper {
-        width: min(88vw, 320px);
-        height: min(88vw, 320px);
+        width: min(86vw, 300px);
+        height: min(86vw, 300px);
     }
 
     .capabilities-list {
         display: none;
+    }
+}
+
+@media (max-height: 760px) {
+    .agent-section-wrapper {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .agent-section {
+        gap: 14px;
+    }
+
+    .petal-wrapper {
+        width: min(62vh, 320px);
+        height: min(62vh, 320px);
+    }
+
+    .trust-strip {
+        font-size: 0.7rem !important;
+        gap: 10px !important;
+        padding-bottom: 12px !important;
     }
 }

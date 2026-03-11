@@ -13,6 +13,7 @@ export default function PersonaCarousel({ onSelectPersona }: PersonaCarouselProp
     const [activeIndex, setActiveIndex] = useState(2); // Start with center persona (Neha)
     const [isVisible, setIsVisible] = useState(false);
     const [rotationAngle, setRotationAngle] = useState(0); // Current global rotation offset in degrees
+    const [isMobileViewport, setIsMobileViewport] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const orbRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -23,6 +24,17 @@ export default function PersonaCarousel({ onSelectPersona }: PersonaCarouselProp
     useEffect(() => {
         const timer = setTimeout(() => setIsVisible(true), 300);
         return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        const update = () => setIsMobileViewport(window.innerWidth < 768);
+        update();
+        window.addEventListener('resize', update);
+        window.addEventListener('orientationchange', update);
+        return () => {
+            window.removeEventListener('resize', update);
+            window.removeEventListener('orientationchange', update);
+        };
     }, []);
 
     // Function to calculate target rotation to bring an index to the front (0 degrees)
@@ -87,7 +99,7 @@ export default function PersonaCarousel({ onSelectPersona }: PersonaCarouselProp
     return (
         <div
             ref={containerRef}
-            className="absolute inset-0 flex flex-col items-center justify-center z-10 overflow-hidden"
+            className="absolute inset-0 flex flex-col items-center justify-center z-10 overflow-x-hidden"
             style={{ perspective: '1200px' }}
         >
             {/* Background soft glow */}
@@ -115,8 +127,8 @@ export default function PersonaCarousel({ onSelectPersona }: PersonaCarouselProp
                     const angleRad = (orbAngle * Math.PI) / 180;
 
                     // Constants for the elliptical path
-                    const radiusX = window.innerWidth < 768 ? 180 : 450;
-                    const radiusZ = window.innerWidth < 768 ? 120 : 300;
+                    const radiusX = isMobileViewport ? 180 : 450;
+                    const radiusZ = isMobileViewport ? 120 : 300;
 
                     // Calculate 3D coordinates
                     // x is horizontal, z is depth (smaller = front, larger = back)
@@ -152,7 +164,7 @@ export default function PersonaCarousel({ onSelectPersona }: PersonaCarouselProp
                                 style={{
                                     scale: 1, // Handled by parent container
                                     opacity: 1, // Handled by parent container
-                                    size: window.innerWidth < 768 ? 140 : 220
+                                    size: isMobileViewport ? 140 : 220
                                 }}
                                 onClick={() => {
                                     if (index === activeIndex) {

@@ -10,6 +10,7 @@ import SplineBackground from './SplineBackground/SplineBackground';
 import { useVoice } from '../hooks/useVoice';
 
 export type ModalType = 'features' | 'faqs' | 'demo' | null;
+const BOOK_DEMO_URL = 'https://calendly.com/abhisheknahire89/30min';
 
 const App: React.FC = () => {
     const [personaIndex, setPersonaIndex] = useState(0);
@@ -21,6 +22,7 @@ const App: React.FC = () => {
     const touchStart = useRef<number | null>(null);
     const lastVoiceStartRef = useRef(0);
     const currentVoicePersonaRef = useRef<string | null>(null);
+    const [isCompactViewport, setIsCompactViewport] = useState(false);
 
     const { isConnecting, isListening, isSpeaking, error: voiceError, startListening, stopListening } = useVoice();
     const orbState: OrbState = isConnecting ? 'connecting' : isSpeaking ? 'speaking' : isListening ? 'listening' : 'idle';
@@ -40,6 +42,14 @@ const App: React.FC = () => {
     }, [isConnecting, isListening, isSpeaking]);
 
     // Arrow keys
+    useEffect(() => {
+        const media = window.matchMedia('(max-width: 1080px), (max-height: 760px)');
+        const update = () => setIsCompactViewport(media.matches);
+        update();
+        media.addEventListener('change', update);
+        return () => media.removeEventListener('change', update);
+    }, []);
+
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (activeModal) return;
@@ -77,8 +87,16 @@ const App: React.FC = () => {
         };
     }, [activeModal, cyclePersona]);
 
-    const openModal = useCallback((m: ModalType) => setActiveModal(m), []);
     const closeModal = useCallback(() => setActiveModal(null), []);
+    const openDemoLink = useCallback(() => {
+        const popup = window.open('', '_blank');
+        if (popup) {
+            popup.opener = null;
+            popup.location.href = BOOK_DEMO_URL;
+        } else {
+            window.location.href = BOOK_DEMO_URL;
+        }
+    }, []);
 
     const handleOrbClick = useCallback(() => {
         if (activeModal) return;
@@ -126,11 +144,11 @@ const App: React.FC = () => {
     return (
         <div
             style={{
-                position: 'absolute',
-                inset: 0,
+                position: 'relative',
                 width: '100%',
-                height: '100vh',
-                overflow: 'hidden',
+                minHeight: '100dvh',
+                overflowX: 'hidden',
+                overflowY: isCompactViewport ? 'auto' : 'hidden',
                 background: 'transparent',
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 userSelect: 'none',
@@ -158,7 +176,7 @@ const App: React.FC = () => {
                 {/* Navbar */}
                 <div style={{ pointerEvents: 'auto', flexShrink: 0 }}>
                     <Navbar
-                        onBookDemo={() => openModal('demo')}
+                        onBookDemo={openDemoLink}
                     />
                 </div>
 
@@ -167,20 +185,22 @@ const App: React.FC = () => {
                     flex: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'center',
+                    justifyContent: isCompactViewport ? 'flex-start' : 'center',
                     alignItems: 'center',
                     width: '100%',
-                    paddingBottom: '40px'
+                    paddingTop: isCompactViewport ? '96px' : '24px',
+                    paddingBottom: isCompactViewport ? '88px' : '40px'
                 }}>
 
                     {/* ── Headline ──────────────────────────────────────────────── */}
                     <div
                         style={{
                             textAlign: 'center',
-                            marginBottom: 40,
+                            marginBottom: isCompactViewport ? 20 : 40,
                             animation: 'fade-up 0.6s cubic-bezier(0.16,1,0.3,1) both',
                             padding: '0 clamp(12px, 4vw, 40px)',
                             width: '100%',
+                            pointerEvents: 'auto',
                         }}
                     >
                         <h1
@@ -211,7 +231,7 @@ const App: React.FC = () => {
                         {/* CTAs */}
                         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 0 }}>
                             <button
-                                onClick={() => openModal('demo')}
+                                onClick={openDemoLink}
                                 style={{
                                     padding: '14px 28px',
                                     borderRadius: 999,
@@ -227,32 +247,6 @@ const App: React.FC = () => {
                                 onMouseLeave={e => (e.currentTarget.style.background = '#7c3aed')}
                             >
                                 Book a Demo
-                            </button>
-                            <button
-                                style={{
-                                    padding: '14px 28px',
-                                    borderRadius: 999,
-                                    background: 'transparent',
-                                    color: '#ffffff',
-                                    fontSize: '1rem',
-                                    fontWeight: 500,
-                                    border: '1px solid rgba(255,255,255,0.2)',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 8,
-                                }}
-                                onMouseEnter={e => {
-                                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
-                                }}
-                                onMouseLeave={e => {
-                                    e.currentTarget.style.background = 'transparent';
-                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
-                                }}
-                            >
-                                <span style={{ fontSize: '1.2em' }}>▶</span> See it in Action
                             </button>
                         </div>
 
@@ -312,24 +306,12 @@ const App: React.FC = () => {
                                     <h2 className="agent-name">
                                         {activePersona.name}
                                     </h2>
-                                    <p
-                                        style={{
-                                            marginTop: 6,
-                                            marginBottom: 14,
-                                            fontSize: '0.8rem',
-                                            letterSpacing: '0.08em',
-                                            textTransform: 'uppercase',
-                                            color: 'rgba(255,255,255,0.62)',
-                                        }}
-                                    >
-                                        {activePersona.role} · {activePersona.gender} Voice
-                                    </p>
                                     <p className="agent-description">
                                         {activePersona.description}
                                     </p>
                                     <button
                                         className="cta-button"
-                                        onClick={() => openModal('demo')}
+                                        onClick={openDemoLink}
                                         style={{
                                             padding: '12px 28px',
                                             borderRadius: 999,
@@ -364,9 +346,10 @@ const App: React.FC = () => {
                                         padding: isConnecting ? '6px 12px' : '0',
                                         borderRadius: isConnecting ? 999 : 0,
                                         background: isConnecting ? 'rgba(250,204,21,0.16)' : 'transparent',
-                                        border: isConnecting ? '1px solid rgba(250,204,21,0.45)' : 'none'
+                                        border: isConnecting ? '1px solid rgba(250,204,21,0.45)' : 'none',
+                                        minHeight: '1.2em'
                                     }}>
-                                        {isConnecting ? 'Connecting… please wait' : isListening ? 'Listening…' : isSpeaking ? 'Speaking…' : 'Tap to talk'}
+                                        {isConnecting ? 'Connecting… please wait' : isListening ? 'Listening…' : isSpeaking ? 'Speaking…' : '\u00A0'}
                                     </p>
                                     {voiceError && (
                                         <p style={{ marginTop: 6, fontSize: '0.75rem', color: 'rgba(248,113,113,0.9)' }}>
@@ -393,9 +376,10 @@ const App: React.FC = () => {
 
             {/* ── Absolute Bottom: Trust Indicators ───────────────────── */}
             <div
+                className="trust-strip"
                 style={{
-                    position: 'absolute',
-                    bottom: 30,
+                    position: isCompactViewport ? 'static' : 'absolute',
+                    bottom: isCompactViewport ? undefined : 30,
                     left: 0,
                     right: 0,
                     display: 'flex',
@@ -410,6 +394,7 @@ const App: React.FC = () => {
                     flexWrap: 'wrap',
                     zIndex: 20,
                     pointerEvents: 'auto',
+                    paddingBottom: isCompactViewport ? 20 : 0,
                 }}
             >
                 <span>Trusted by leading enterprises</span>

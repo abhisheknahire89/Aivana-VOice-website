@@ -32,7 +32,8 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ onClose }) => {
 
     return (
         <div
-            className="absolute inset-0 z-50 flex items-center justify-center"
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ padding: 'clamp(8px, 2.8vw, 12px)', background: 'rgba(0,0,0,0.45)' }}
             onClick={e => { if (e.target === e.currentTarget) onClose(); }}
         >
             <div
@@ -42,11 +43,11 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ onClose }) => {
                     border: '1px solid rgba(255,255,255,0.9)',
                     borderRadius: 24,
                     backdropFilter: 'blur(32px)',
-                    padding: '36px 36px 28px',
+                    padding: 'clamp(18px, 4.8vw, 36px) clamp(16px, 4.8vw, 36px) clamp(18px, 4vw, 28px)',
                     maxWidth: 520,
-                    width: '90%',
+                    width: 'min(92vw, 520px)',
                     boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 4px 20px rgba(0,0,0,0.06)',
-                    maxHeight: '85vh',
+                    maxHeight: 'min(88dvh, 720px)',
                     overflowY: 'auto',
                 }}
             >

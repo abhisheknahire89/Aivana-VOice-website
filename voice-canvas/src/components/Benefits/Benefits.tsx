@@ -18,13 +18,13 @@ const BenefitCard: React.FC<{ title: string; subtitle: string; icon: React.React
 
 const Benefits: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     return (
-        <section className="min-h-screen py-40 px-8 bg-[#050505] relative overflow-hidden">
+        <section className="min-h-[100dvh] py-20 md:py-40 px-4 sm:px-6 md:px-8 bg-[#050505] relative overflow-x-clip">
             {/* Background Accents */}
             <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-500/5 blur-[150px] rounded-full pointer-events-none" />
 
             <div className="max-w-7xl mx-auto">
-                <div className="mb-32">
+                <div className="mb-16 md:mb-32">
                     <button
                         onClick={onBack}
                         className="group flex items-center gap-3 text-white/30 hover:text-white transition-all duration-300 text-[10px] uppercase font-bold tracking-[0.4em] mb-12"

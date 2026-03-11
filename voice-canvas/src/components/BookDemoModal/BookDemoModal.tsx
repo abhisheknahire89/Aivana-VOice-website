@@ -41,7 +41,7 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '16px',
+                padding: 'clamp(10px, 3vw, 16px)',
                 background: 'rgba(0,0,0,0.6)',
                 backdropFilter: 'blur(4px)'
             }}
@@ -55,6 +55,8 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                     padding: '16px 16px 20px 16px',
                     maxWidth: 580,
                     width: '100%',
+                    maxHeight: 'min(92dvh, 760px)',
+                    overflowY: 'auto',
                     boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
                     display: 'flex',
                     flexDirection: 'column',
@@ -62,7 +64,7 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                 }}
             >
                 {submitted ? (
-                    <div style={{ background: '#110f18', borderRadius: 24, padding: '48px', width: '100%', textAlign: 'center' }}>
+                    <div style={{ background: '#110f18', borderRadius: 24, padding: 'clamp(24px, 6vw, 48px)', width: '100%', textAlign: 'center' }}>
                         <div style={{ fontSize: 40, marginBottom: 16 }}>✓</div>
                         <h2 style={{ fontSize: 24, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', marginBottom: 8 }}>
                             You're on the list!
@@ -88,8 +90,8 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                     </div>
                 ) : (
                     <>
-                        <div style={{ background: '#110f18', borderRadius: 24, padding: '40px', width: '100%', textAlign: 'left' }}>
-                            <h2 style={{ fontSize: 28, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', marginBottom: 32 }}>
+                        <div style={{ background: '#110f18', borderRadius: 24, padding: 'clamp(18px, 5vw, 40px)', width: '100%', textAlign: 'left' }}>
+                            <h2 style={{ fontSize: 'clamp(1.3rem, 4.6vw, 1.75rem)', fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', marginBottom: 24 }}>
                                 Book a Live Demo
                             </h2>
 
@@ -98,7 +100,7 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                                 <h3 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
                                     CONTACT INFORMATION
                                 </h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 170px), 1fr))', gap: 12, marginBottom: 24 }}>
                                     <input
                                         required
                                         placeholder="Full Name*"
@@ -133,7 +135,7 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                                 <h3 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
                                     COMPANY INFORMATION
                                 </h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, paddingBottom: 16 }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 170px), 1fr))', gap: 12, paddingBottom: 8 }}>
                                     <input
                                         required
                                         placeholder="Company Name*"
@@ -165,12 +167,12 @@ const BookDemoModal: React.FC<BookDemoModalProps> = ({ onClose }) => {
                             </form>
                         </div>
 
-                        <div style={{ marginTop: -20, zIndex: 10 }}>
+                        <div style={{ marginTop: 12, zIndex: 10, width: '100%', display: 'flex', justifyContent: 'center' }}>
                             <button
                                 type="submit"
                                 form="demo-form"
                                 style={{
-                                    padding: '12px 32px',
+                                    padding: '12px clamp(24px, 8vw, 32px)',
                                     borderRadius: 999,
                                     background: '#efebfc',
                                     border: 'none',

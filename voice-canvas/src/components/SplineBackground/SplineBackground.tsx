@@ -8,37 +8,6 @@ interface SplineBackgroundProps {
     pulseKey: number;
 }
 
-const STAR_COUNT = 170;
-const NEURAL_COUNT = 140;
-
-const NEURAL_VERTEX_SHADER = `
-attribute float aAlpha;
-attribute float aSize;
-varying float vAlpha;
-
-void main() {
-  vAlpha = aAlpha;
-  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-  gl_PointSize = aSize * (260.0 / -mvPosition.z);
-  gl_Position = projectionMatrix * mvPosition;
-}
-`;
-
-const NEURAL_FRAGMENT_SHADER = `
-varying float vAlpha;
-
-void main() {
-  vec2 p = gl_PointCoord - vec2(0.5);
-  float d = length(p) * 2.0;
-  float mask = smoothstep(1.0, 0.0, d);
-
-  vec3 purple = vec3(0.67, 0.50, 0.98);
-  vec3 magenta = vec3(0.98, 0.42, 0.79);
-  vec3 col = mix(purple, magenta, clamp(vAlpha * 1.2, 0.0, 1.0));
-
-  gl_FragColor = vec4(col, mask * vAlpha);
-}
-`;
 
 const createRadialTexture = (inner: string, mid: string, outer: string) => {
     const size = 256;
@@ -64,74 +33,16 @@ const createRadialTexture = (inner: string, mid: string, outer: string) => {
     return texture;
 };
 
-const buildStars = () => {
-    const positions = new Float32Array(STAR_COUNT * 3);
-    const speed = new Float32Array(STAR_COUNT);
-
-    for (let i = 0; i < STAR_COUNT; i += 1) {
-        const idx = i * 3;
-        positions[idx] = (Math.random() - 0.5) * 14;
-        positions[idx + 1] = (Math.random() - 0.5) * 9;
-        positions[idx + 2] = -3.8 + Math.random() * 2.8;
-        speed[i] = 0.015 + Math.random() * 0.035;
-    }
-
-    return { positions, speed };
-};
-
-const buildNeural = () => {
-    const positions = new Float32Array(NEURAL_COUNT * 3);
-    const alpha = new Float32Array(NEURAL_COUNT);
-    const size = new Float32Array(NEURAL_COUNT);
-    const baseRadius = new Float32Array(NEURAL_COUNT);
-    const baseHeight = new Float32Array(NEURAL_COUNT);
-    const seed = new Float32Array(NEURAL_COUNT);
-    const speed = new Float32Array(NEURAL_COUNT);
-
-    for (let i = 0; i < NEURAL_COUNT; i += 1) {
-        const idx = i * 3;
-        const ang = Math.random() * Math.PI * 2;
-        const radius = 1 + Math.random() * 3.2;
-        const y = (Math.random() - 0.5) * 3.6;
-
-        positions[idx] = Math.cos(ang) * radius;
-        positions[idx + 1] = y;
-        positions[idx + 2] = -2.8 + Math.random() * 1.8;
-
-        baseRadius[i] = radius;
-        baseHeight[i] = y;
-        seed[i] = ang;
-        speed[i] = 0.08 + Math.random() * 0.19;
-        alpha[i] = 0.18 + Math.random() * 0.14;
-        size[i] = 0.35 + Math.random() * 0.6;
-    }
-
-    return { positions, alpha, size, baseRadius, baseHeight, seed, speed };
-};
-
 const EnvironmentScene: React.FC<{
     orbState: OrbState;
     pulseKey: number;
     reducedMotion: boolean;
     hoverStrength: number;
-    pointer: React.MutableRefObject<THREE.Vector2>;
-}> = ({ orbState, pulseKey, reducedMotion, hoverStrength, pointer }) => {
-    const starRef = useRef<THREE.Points>(null);
-    const neuralRef = useRef<THREE.Points>(null);
+}> = ({ orbState, pulseKey, reducedMotion, hoverStrength }) => {
     const auraRef = useRef<THREE.Mesh>(null);
-    const rippleRef = useRef<THREE.Mesh>(null);
-    const listenRingRef = useRef<THREE.Mesh>(null);
-
-    const stars = useMemo(() => buildStars(), []);
-    const neural = useMemo(() => buildNeural(), []);
 
     const auraTexture = useMemo(
         () => createRadialTexture('rgba(196,181,253,0.55)', 'rgba(124,58,237,0.24)', 'rgba(10,15,42,0.0)'),
-        [],
-    );
-
-    const rippleTexture = useMemo(
-        () => createRadialTexture('rgba(244,114,182,0.38)', 'rgba(124,58,237,0.12)', 'rgba(10,15,42,0.0)'),
         [],
     );
 
@@ -144,9 +55,8 @@ const EnvironmentScene: React.FC<{
     useEffect(() => {
         return () => {
             auraTexture.dispose();
-            rippleTexture.dispose();
         };
-    }, [auraTexture, rippleTexture]);
+    }, [auraTexture]);
 
     useFrame((_state, delta) => {
         const t = performance.now() * 0.001;
@@ -174,81 +84,6 @@ const EnvironmentScene: React.FC<{
             }
         }
 
-        if (rippleRef.current) {
-            const mat = rippleRef.current.material as THREE.MeshBasicMaterial;
-            rippleRef.current.scale.setScalar(1 + (1 - clickPulse.current) * 1.7);
-            mat.opacity = 0.22 * clickPulse.current;
-        }
-
-        if (listenRingRef.current) {
-            const active = orbState === 'listening' || orbState === 'speaking';
-            listenRingRef.current.visible = active;
-            if (active) {
-                const mat = listenRingRef.current.material as THREE.MeshBasicMaterial;
-                mat.color.set(orbState === 'listening' ? '#38bdf8' : '#a855f7');
-                mat.opacity = 0.24;
-                listenRingRef.current.rotation.z += delta * 0.17;
-                listenRingRef.current.scale.setScalar(1 + hoverStrength * 0.16 + (orbState === 'speaking' ? 0.08 : 0));
-            }
-        }
-
-        if (starRef.current && !reducedMotion) {
-            const attr = starRef.current.geometry.attributes.position as THREE.BufferAttribute;
-            const arr = attr.array as Float32Array;
-            for (let i = 0; i < STAR_COUNT; i += 1) {
-                const idx = i * 3;
-                arr[idx + 1] += Math.sin(t * stars.speed[i] + i) * 0.0009;
-            }
-            attr.needsUpdate = true;
-        }
-
-        if (neuralRef.current) {
-            const positionAttr = neuralRef.current.geometry.attributes.position as THREE.BufferAttribute;
-            const alphaAttr = neuralRef.current.geometry.attributes.aAlpha as THREE.BufferAttribute;
-            const sizeAttr = neuralRef.current.geometry.attributes.aSize as THREE.BufferAttribute;
-            const posArr = positionAttr.array as Float32Array;
-            const alphaArr = alphaAttr.array as Float32Array;
-            const sizeArr = sizeAttr.array as Float32Array;
-
-            const cursorWorldX = pointer.current.x * 5.2;
-            const cursorWorldY = pointer.current.y * 2.9;
-            const interactionRadius = 0.95;
-
-            for (let i = 0; i < NEURAL_COUNT; i += 1) {
-                const idx = i * 3;
-                const angle = neural.seed[i] + t * neural.speed[i];
-                const orbit = reducedMotion ? 0 : Math.sin(angle * 1.2) * 0.06;
-                const distFade = Math.max(0.2, 1 - neural.baseRadius[i] / 4.8);
-                const attract = hoverStrength * 0.18 * distFade;
-                const targetX = pointer.current.x * 2.4 * attract;
-                const targetY = pointer.current.y * 1.4 * attract;
-
-                const clickBurst = clickPulse.current * 0.32 * distFade;
-                const radius = neural.baseRadius[i] - hoverStrength * 0.12 * distFade + clickBurst;
-                const x = Math.cos(angle) * radius + targetX;
-                const y = neural.baseHeight[i] + orbit + targetY;
-                const z = -2.6 + Math.sin(angle) * 0.16;
-
-                posArr[idx] = THREE.MathUtils.lerp(posArr[idx], x, 0.07);
-                posArr[idx + 1] = THREE.MathUtils.lerp(posArr[idx + 1], y, 0.07);
-                posArr[idx + 2] = THREE.MathUtils.lerp(posArr[idx + 2], z, 0.06);
-
-                const dx = x - cursorWorldX;
-                const dy = y - cursorWorldY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                const localBoost = dist < interactionRadius ? (1 - dist / interactionRadius) : 0;
-
-                const targetAlpha = 0.18 + localBoost * 0.78;
-                const targetSize = 0.38 + localBoost * 1.35;
-
-                alphaArr[i] = THREE.MathUtils.lerp(alphaArr[i], targetAlpha, 0.16);
-                sizeArr[i] = THREE.MathUtils.lerp(sizeArr[i], targetSize, 0.14);
-            }
-
-            positionAttr.needsUpdate = true;
-            alphaAttr.needsUpdate = true;
-            sizeAttr.needsUpdate = true;
-        }
     });
 
     return (
@@ -267,51 +102,6 @@ const EnvironmentScene: React.FC<{
                 />
             </mesh>
 
-            <mesh ref={rippleRef} position={[0, 0, -1.5]}>
-                <planeGeometry args={[4.8, 4.8]} />
-                <meshBasicMaterial
-                    map={rippleTexture}
-                    color="#f472b6"
-                    transparent
-                    opacity={0}
-                    depthWrite={false}
-                    blending={THREE.AdditiveBlending}
-                />
-            </mesh>
-
-            <mesh ref={listenRingRef} position={[0, 0, -1.2]} visible={false}>
-                <ringGeometry args={[1.45, 1.6, 84]} />
-                <meshBasicMaterial color="#38bdf8" transparent opacity={0.24} blending={THREE.AdditiveBlending} />
-            </mesh>
-
-            <points ref={starRef}>
-                <bufferGeometry>
-                    <bufferAttribute attach="attributes-position" args={[stars.positions, 3]} />
-                </bufferGeometry>
-                <pointsMaterial
-                    color="#c4b5fd"
-                    size={0.024}
-                    transparent
-                    opacity={0.3}
-                    depthWrite={false}
-                    sizeAttenuation
-                />
-            </points>
-
-            <points ref={neuralRef}>
-                <bufferGeometry>
-                    <bufferAttribute attach="attributes-position" args={[neural.positions, 3]} />
-                    <bufferAttribute attach="attributes-aAlpha" args={[neural.alpha, 1]} />
-                    <bufferAttribute attach="attributes-aSize" args={[neural.size, 1]} />
-                </bufferGeometry>
-                <shaderMaterial
-                    vertexShader={NEURAL_VERTEX_SHADER}
-                    fragmentShader={NEURAL_FRAGMENT_SHADER}
-                    transparent
-                    depthWrite={false}
-                    blending={THREE.AdditiveBlending}
-                />
-            </points>
         </>
     );
 };
@@ -364,8 +154,8 @@ const SplineBackground: React.FC<SplineBackgroundProps> = ({ orbState, pulseKey 
             style={{
                 position: 'fixed',
                 inset: 0,
-                width: '100vw',
-                height: '100vh',
+                width: '100%',
+                height: '100dvh',
                 zIndex: 0,
                 overflow: 'hidden',
                 pointerEvents: 'none',
@@ -399,7 +189,6 @@ const SplineBackground: React.FC<SplineBackgroundProps> = ({ orbState, pulseKey 
                     pulseKey={pulseKey}
                     reducedMotion={reducedMotion}
                     hoverStrength={hoverStrength}
-                    pointer={pointer}
                 />
             </Canvas>
 

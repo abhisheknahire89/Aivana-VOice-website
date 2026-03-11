@@ -37,13 +37,13 @@ const LabProject: React.FC<{ title: string; status: string; progress: number; ic
 
 const Laboratory: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     return (
-        <section className="min-h-screen py-40 px-8 bg-[#050505] relative overflow-hidden">
+        <section className="min-h-[100dvh] py-20 md:py-40 px-4 sm:px-6 md:px-8 bg-[#050505] relative overflow-x-clip">
             {/* Lab Grid Background */}
             <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
                 style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-32 gap-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-32 gap-8 md:gap-12">
                     <div className="max-w-3xl">
                         <div className="flex items-center gap-4 mb-8">
                             <button
@@ -56,7 +56,7 @@ const Laboratory: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             <div className="h-px w-12 bg-white/10" />
                             <span className="text-[10px] uppercase tracking-[0.5em] text-white/20 font-bold">Research Division</span>
                         </div>
-                        <h1 className="text-6xl md:text-[100px] font-bold tracking-tighter leading-[0.8] text-premium-gradient">
+                        <h1 className="text-4xl sm:text-5xl md:text-[100px] font-bold tracking-tighter leading-[0.85] md:leading-[0.8] text-premium-gradient">
                             AIVANA <br />
                             LABORATORY.
                         </h1>
@@ -71,7 +71,7 @@ const Laboratory: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-40">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-20 md:mb-40">
                     <LabProject
                         title="Neural Emotion Engine"
                         status="In Beta"

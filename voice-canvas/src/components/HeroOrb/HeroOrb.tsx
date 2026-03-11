@@ -41,39 +41,10 @@ interface FlowerSceneProps {
     presentation: boolean;
 }
 
-const OUTER_PETAL_COUNT = 12;
-const INNER_PETAL_COUNT = 8;
-const PARTICLE_COUNT = 90;
+const OUTER_PETAL_COUNT = 10;
+const INNER_PETAL_COUNT = 0;
+const PARTICLE_COUNT = 0;
 const SURFACE_SPARKS = 72;
-
-const CORE_VERTEX_SHADER = `
-uniform float uTime;
-uniform float uAudio;
-uniform float uReduced;
-varying vec3 vNormal;
-
-void main() {
-  vNormal = normal;
-  vec3 transformed = position;
-  float wave = sin((position.y * 6.0) + (uTime * 2.0)) * (0.05 + uAudio * 0.16) * (1.0 - uReduced);
-  transformed += normal * wave;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
-}
-`;
-
-const CORE_FRAGMENT_SHADER = `
-uniform vec3 uColorA;
-uniform vec3 uColorB;
-uniform float uPulse;
-varying vec3 vNormal;
-
-void main() {
-  float fresnel = pow(1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0))), 2.3);
-  vec3 col = mix(uColorA, uColorB, fresnel);
-  col += vec3(0.10, 0.18, 0.35) * uPulse;
-  gl_FragColor = vec4(col, 0.8);
-}
-`;
 
 const INTERACTION_VERTEX_SHADER = `
 varying vec2 vUv;
@@ -134,8 +105,10 @@ void main() {
 const createPetalShape = () => {
     const shape = new THREE.Shape();
     shape.moveTo(0, 0);
-    shape.bezierCurveTo(0.22, 0.08, 0.32, 0.52, 0, 1.0);
-    shape.bezierCurveTo(-0.32, 0.52, -0.22, 0.08, 0, 0);
+    // Rounded lotus petal with a soft tip cap.
+    shape.bezierCurveTo(0.22, 0.08, 0.34, 0.56, 0.1, 0.9);
+    shape.quadraticCurveTo(0, 0.98, -0.1, 0.9);
+    shape.bezierCurveTo(-0.34, 0.56, -0.22, 0.08, 0, 0);
     return shape;
 };
 
@@ -170,7 +143,9 @@ const FlowerPetals: React.FC<{
     radius: number;
     material: THREE.Material;
     yScale: number;
-}> = ({ count, radius, material, yScale }) => {
+    xScale: number;
+    angleOffset?: number;
+}> = ({ count, radius, material, yScale, xScale, angleOffset = 0 }) => {
     const shape = useMemo(() => createPetalShape(), []);
     const geom = useMemo(() => new THREE.ShapeGeometry(shape, 30), [shape]);
 
@@ -181,7 +156,7 @@ const FlowerPetals: React.FC<{
     return (
         <>
             {Array.from({ length: count }, (_, i) => {
-                const angle = (Math.PI * 2 * i) / count;
+                const angle = (Math.PI * 2 * i) / count + angleOffset;
                 return (
                     <mesh
                         key={i}
@@ -189,7 +164,7 @@ const FlowerPetals: React.FC<{
                         material={material}
                         position={[Math.cos(angle) * radius, Math.sin(angle) * radius, 0]}
                         rotation={[0, 0, angle - Math.PI / 2]}
-                        scale={[0.72, yScale, 1]}
+                        scale={[xScale, yScale, 1]}
                     />
                 );
             })}
@@ -204,20 +179,19 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
     const rootRef = useRef<THREE.Group>(null);
     const outerRef = useRef<THREE.Group>(null);
     const innerRef = useRef<THREE.Group>(null);
-    const coreRef = useRef<THREE.Mesh>(null);
     const pointsRef = useRef<THREE.Points>(null);
     const pointLightRef = useRef<THREE.PointLight>(null);
     const interactionRef = useRef<THREE.Mesh>(null);
     const sparksRef = useRef<THREE.Points>(null);
 
     const currentMainColor = useRef(new THREE.Color(persona.color));
-    const currentDarkColor = useRef(new THREE.Color(darkenHex(persona.color, 0.55)));
-    const currentLightColor = useRef(new THREE.Color(lightenHex(persona.color, 0.35)));
+    const currentDarkColor = useRef(new THREE.Color(darkenHex(persona.color, 0.52)));
+    const currentLightColor = useRef(new THREE.Color(lightenHex(persona.color, 0.2)));
 
     useEffect(() => {
         const targetMain = new THREE.Color(persona.color);
-        const targetDark = new THREE.Color(darkenHex(persona.color, 0.55));
-        const targetLight = new THREE.Color(lightenHex(persona.color, 0.35));
+        const targetDark = new THREE.Color(darkenHex(persona.color, 0.52));
+        const targetLight = new THREE.Color(lightenHex(persona.color, 0.2));
         gsap.to(currentMainColor.current, {
             r: targetMain.r,
             g: targetMain.g,
@@ -265,10 +239,10 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
     const outerMat = useMemo(
         () =>
             new THREE.MeshBasicMaterial({
-                color: new THREE.Color(persona.color),
+                color: new THREE.Color(lightenHex(persona.color, 0.02)),
                 transparent: true,
-                opacity: 0.52,
-                blending: THREE.AdditiveBlending,
+                opacity: 0.9,
+                blending: THREE.NormalBlending,
                 depthWrite: false,
                 side: THREE.DoubleSide,
             }),
@@ -278,10 +252,10 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
     const innerMat = useMemo(
         () =>
             new THREE.MeshBasicMaterial({
-                color: new THREE.Color(lightenHex(persona.color, 0.35)),
+                color: new THREE.Color(lightenHex(persona.color, 0.24)),
                 transparent: true,
-                opacity: 0.42,
-                blending: THREE.AdditiveBlending,
+                opacity: 0,
+                blending: THREE.NormalBlending,
                 depthWrite: false,
                 side: THREE.DoubleSide,
             }),
@@ -318,8 +292,8 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
 
     useFrame((_state, delta) => {
         const time = performance.now() * 0.001;
-        const pulse = orbState === 'speaking' ? 1 : orbState === 'listening' ? 0.7 : 0.42;
-        const intensity = THREE.MathUtils.lerp(pulse, pulse + audioLevel * 0.95 + hoverBoost * 0.06, 0.7);
+        const pulse = orbState === 'speaking' ? 0.9 : orbState === 'listening' ? 0.65 : 0.42;
+        const intensity = THREE.MathUtils.lerp(pulse, pulse + audioLevel * 0.5 + hoverBoost * 0.03, 0.7);
 
         coreUniforms.uTime.value = time;
         coreUniforms.uAudio.value = audioLevel;
@@ -345,19 +319,19 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
             const tiltY = !allowTilt || reducedMotion ? 0 : pointer.current.x * 0.18;
             rootRef.current.rotation.x = THREE.MathUtils.lerp(rootRef.current.rotation.x, tiltX, 0.06);
             rootRef.current.rotation.y = THREE.MathUtils.lerp(rootRef.current.rotation.y, tiltY, 0.06);
-            const baseScale = presentation ? 1.8 : 1;
-            rootRef.current.scale.setScalar(baseScale * (1 + Math.sin(time * 1.25) * (reducedMotion ? 0.008 : 0.02)));
+            const baseScale = presentation ? 1.8 : 0.9;
+            rootRef.current.scale.setScalar(baseScale * (1 + Math.sin(time * 1.2) * (reducedMotion ? 0.003 : 0.008)));
         }
 
         if (outerRef.current) {
-            outerRef.current.rotation.z += delta * (reducedMotion ? 0.01 : 0.04);
-            const bloom = 1 + burst.current * 0.12 + (orbState === 'speaking' ? audioLevel * 0.18 : audioLevel * 0.08);
+            outerRef.current.rotation.z += delta * (reducedMotion ? 0.003 : 0.012);
+            const bloom = 1 + burst.current * 0.06 + (orbState === 'speaking' ? audioLevel * 0.05 : audioLevel * 0.02);
             outerRef.current.scale.setScalar(bloom);
         }
 
         if (innerRef.current) {
-            innerRef.current.rotation.z -= delta * (reducedMotion ? 0.008 : 0.03);
-            const bloom = 1 + burst.current * 0.08 + audioLevel * 0.06;
+            innerRef.current.rotation.z -= delta * (reducedMotion ? 0.005 : 0.014);
+            const bloom = 1 + burst.current * 0.03 + audioLevel * 0.02;
             innerRef.current.scale.setScalar(bloom);
         }
 
@@ -429,29 +403,24 @@ const FlowerScene: React.FC<FlowerSceneProps> = ({ persona, orbState, audioLevel
 
     return (
         <>
-            <ambientLight intensity={0.3} />
-            <pointLight ref={pointLightRef} position={[0, 0, 3]} intensity={1.1} color={currentMainColor.current.getStyle()} />
+            <ambientLight intensity={0.22} />
+            <pointLight ref={pointLightRef} position={[0, 0, 3]} intensity={0.48} color={currentMainColor.current.getStyle()} />
 
             <group ref={rootRef}>
                 <group ref={outerRef}>
-                    <FlowerPetals count={OUTER_PETAL_COUNT} radius={0.3} material={outerMat} yScale={0.95} />
+                    <FlowerPetals count={OUTER_PETAL_COUNT} radius={0} material={outerMat} yScale={1.08} xScale={0.86} />
                 </group>
 
                 <group ref={innerRef}>
-                    <FlowerPetals count={INNER_PETAL_COUNT} radius={0.2} material={innerMat} yScale={0.78} />
-                </group>
-
-                <mesh ref={coreRef}>
-                    <icosahedronGeometry args={[0.24, 4]} />
-                    <shaderMaterial
-                        uniforms={coreUniforms}
-                        vertexShader={CORE_VERTEX_SHADER}
-                        fragmentShader={CORE_FRAGMENT_SHADER}
-                        transparent
-                        depthWrite={false}
-                        blending={THREE.NormalBlending}
+                    <FlowerPetals
+                        count={INNER_PETAL_COUNT}
+                        radius={0.1}
+                        material={innerMat}
+                        yScale={0.84}
+                        xScale={0.78}
+                        angleOffset={Math.PI / OUTER_PETAL_COUNT}
                     />
-                </mesh>
+                </group>
 
                 {false && (
                     <mesh ref={interactionRef} position={[0, 0, 0.26]}>
@@ -680,8 +649,8 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                 borderRadius: '50%',
                 position: 'relative',
                 cursor: presentation ? 'default' : 'default',
-                background: presentation ? 'transparent' : `radial-gradient(circle, ${persona.color}1a 0%, rgba(7,8,20,0.0) 72%)`,
-                boxShadow: presentation ? 'none' : `0 0 70px ${persona.glowColor}, inset 0 0 28px ${persona.color}20`,
+                background: presentation ? 'transparent' : `radial-gradient(circle, ${persona.color}14 0%, rgba(7,8,20,0.0) 72%)`,
+                boxShadow: presentation ? 'none' : `0 0 30px ${persona.glowColor}, inset 0 0 12px ${persona.color}14`,
             }}
             role="button"
             tabIndex={presentation ? -1 : 0}
@@ -722,30 +691,25 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                         onClick={orbState === 'connecting' ? undefined : triggerClick}
                         style={{
                             position: 'absolute',
-                            inset: 0,
-                            margin: 'auto',
-                            width: 96,
-                            height: 96,
-                            transform: 'translateY(0px)',
+                            left: '50%',
+                            bottom: 'clamp(8%, 11.4%, 12.5%)',
+                            transform: 'translateX(-50%)',
+                            width: 'clamp(32px, 6.8vw, 38px)',
+                            height: 'clamp(32px, 6.8vw, 38px)',
                             borderRadius: '50%',
-                            border: `1px solid ${orbState === 'connecting' ? 'rgba(255,255,255,0.2)' : orbState === 'listening' ? 'rgba(56,189,248,0.68)' : `${persona.color}66`}`,
-                            background: orbState === 'connecting'
-                                ? 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), rgba(255,255,255,0.04) 100%)'
-                                : orbState === 'listening'
-                                ? 'radial-gradient(circle at 50% 50%, rgba(125,211,252,0.28), rgba(56,189,248,0.12) 52%, rgba(14,116,144,0.06) 100%)'
-                                : `radial-gradient(circle at 50% 50%, ${persona.color}30, ${persona.color}22 52%, ${persona.color}14 100%)`,
-                            boxShadow: `0 0 8px ${persona.color}40, inset 0 0 8px rgba(255,255,255,0.05)`,
+                            border: 'none',
+                            background: 'transparent',
                             display: 'grid',
                             placeItems: 'center',
                             cursor: orbState === 'connecting' ? 'not-allowed' : 'pointer',
                             pointerEvents: orbState === 'connecting' ? 'none' : 'auto',
-                            zIndex: 3,
-                            transition: 'all 200ms ease',
+                            zIndex: 4,
+                            transition: 'all 180ms ease',
                         }}
                     >
                         <svg
-                            width="42"
-                            height="42"
+                            width="clamp(18px, 4.2vw, 22px)"
+                            height="clamp(18px, 4.2vw, 22px)"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -753,8 +717,8 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             style={{
-                                color: 'rgba(244,244,255,0.82)',
-                                filter: `drop-shadow(0 0 6px ${persona.color}60)`,
+                                color: 'rgba(210, 230, 255, 0.9)',
+                                filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.24))',
                             }}
                         >
                             <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
@@ -768,24 +732,10 @@ const HeroOrb: React.FC<HeroOrbProps> = ({ persona, orbState, onClick, presentat
                         style={{
                             position: 'absolute',
                             left: '50%',
-                            top: 'calc(50% + 52px)',
-                            width: 2,
-                            height: 36,
+                            bottom: 'clamp(2.6%, 4.6%, 6.5%)',
                             transform: 'translateX(-50%)',
-                            background: `linear-gradient(to bottom, ${persona.color}8c, ${persona.color}14, ${persona.color}00)`,
-                            pointerEvents: 'none',
-                            zIndex: 2,
-                        }}
-                    />
-
-                    <div
-                        style={{
-                            position: 'absolute',
-                            left: '50%',
-                            bottom: '7%',
-                            transform: 'translateX(-50%)',
-                            fontSize: '0.76rem',
-                            letterSpacing: '0.16em',
+                            fontSize: 'clamp(0.62rem, 1.8vw, 0.76rem)',
+                            letterSpacing: 'clamp(0.08em, 0.3vw, 0.16em)',
                             textTransform: 'uppercase',
                             fontWeight: 500,
                             color: tapTextColor,
