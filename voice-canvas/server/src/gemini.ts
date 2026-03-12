@@ -39,7 +39,7 @@ export async function createGeminiSession(
   let lastErr: Error | null = null;
   for (const model of MODELS) {
     try {
-      let setupCompleteResolve: () => void = () => { };
+      let setupCompleteResolve: () => void = () => {};
       const setupCompletePromise = new Promise<void>((resolve) => {
         setupCompleteResolve = resolve;
       });
@@ -61,7 +61,7 @@ export async function createGeminiSession(
           })(),
         },
         callbacks: {
-          onopen: () => { },
+          onopen: () => {},
           onmessage: (msg: LiveServerMessage) => {
             const raw = msg as unknown as Record<string, unknown>;
             if (raw.setupComplete === true) setupCompleteResolve();
@@ -101,7 +101,7 @@ export async function createGeminiSession(
       const session = await ai.live.connect(liveConfig);
       Promise.race([
         setupCompletePromise,
-        new Promise<void>((r) => setTimeout(r, 1500)),
+        new Promise<void>((r) => setTimeout(r, 3000)),
       ]).then(() => {
         setTimeout(() => {
           try {
@@ -110,7 +110,7 @@ export async function createGeminiSession(
               turnComplete: true,
             });
           } catch { /* noop */ }
-        }, 30);
+        }, 80);
       });
 
       return {
